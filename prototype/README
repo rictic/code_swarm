@@ -1,3 +1,8 @@
+The program will not run out of the box. The hardcoded variable INPUT_FILE needs
+to be set to an existing data file.
+There are currently no data files in the repository because they are
+proprietary.
+
 How to run:
   Download the Processing IDE from http://processing.org.
   Run Processing and open code_swarm.pde.
