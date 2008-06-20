@@ -2,12 +2,13 @@
 
 import processing.xml.*;
 import java.util.*;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 
 // User-defined variables
 int WIDTH = 640;
 int HEIGHT = 480;
-int FRAME_RATE = 24;
+int FRAME_RATE = 30;
 String INPUT_FILE = "postgres-repository.xml";
 String SPRITE_FILE = "particle.png";
 String SCREENSHOT_FILE = "frames/swarm-#####.png";
@@ -410,6 +411,12 @@ void loadRepository( XMLElement xml, String path, String filename )
     for( int i = 0; i < xml.getChildCount(); i++ )
       loadRepository( xml.getChild(i), path + name, "" );
   }
+  else if ( tag.equals( "log" ) )
+  {
+    // The tag 'log' represents the xml output of a SVN log, which
+    // requires slightly different commit event parsing.
+    loadSVNRepository( xml );
+  }
 }
 
 /* Load event-formatted file */
@@ -427,6 +434,45 @@ void loadRepEvents( String filename1 )
     //int linesremoved = xml.getIntAttribute( "linesremoved" );
     FileEvent evt = new FileEvent( date, author, "", filename );
     eventsQueue.add( evt );
+  }
+}
+
+/* Load SVN log formatted file */
+void loadSVNRepository( XMLElement doc )
+{
+  // Iterate over commit nodes.
+  for( int i = 0; i < doc.getChildCount(); i++ )
+  {
+    XMLElement xml = doc.getChild(i);
+    
+    // In the SVN xml log, timestamps have the following format:
+    // 2008-06-19T03:46:04.335538Z
+    // The date and the time need to be parsed from this so that we can convert it to a 'long'
+    // with the sql.Timestamp class.
+    String datestr = xml.getChild("date").getContent();
+    String[] datesplit = datestr.split("\\.");
+    datesplit = datesplit[0].split("T");
+    datestr = datesplit[0] + " " + datesplit[1];
+    Timestamp ts = Timestamp.valueOf(datestr);
+    long date = ts.getTime();
+    
+    // When the SVN repository is created, there is no author associated with the commit, so for
+    // now just log it as anonymous.
+    // FIXME: Should we ignored events with no author completely or log them a different way?
+    XMLElement author_node = xml.getChild("author");
+    String author = "anonymous";
+    if ( author_node != null )
+      author = author_node.getContent();
+      
+    // Under each commit there is a child node named 'paths', which will have it's own
+    // 'path' children which contain the paths of the files which were modified and details
+    // about the change(file modified, deleted, created, etc...)
+    XMLElement paths = xml.getChild("paths");
+    for( int j = 0; j < paths.getChildCount(); j++ )
+    {
+      FileEvent evt = new FileEvent( date, author, "", paths.getChild(j).getContent());
+      eventsQueue.add( evt );
+    }
   }
 }
 
