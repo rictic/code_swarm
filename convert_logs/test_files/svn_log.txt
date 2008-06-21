@@ -1,0 +1,48 @@
+------------------------------------------------------------------------
+r14 | cgalvan@mail.utexas.edu | 2008-06-20 09:36:23 -0500 (Fri, 20 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/prototype/code_swarm.pde
+
+Initial commit of SVN repository log input parsing.  Modified loadRepository function to detect a SVN repository log.
+------------------------------------------------------------------------
+r13 | michael.ogawa | 2008-06-19 23:58:35 -0500 (Thu, 19 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/prototype/README
+
+added stuff about missing data files
+
+------------------------------------------------------------------------
+r12 | michael.ogawa | 2008-06-19 13:11:51 -0500 (Thu, 19 Jun 2008) | 2 lines
+Changed paths:
+   A /trunk/prototype/README
+
+added how-to-run README to prototype dir
+
+------------------------------------------------------------------------
+r9 | michael.ogawa | 2008-06-19 10:23:25 -0500 (Thu, 19 Jun 2008) | 3 lines
+Changed paths:
+   D /prototype
+   A /trunk/prototype (from /prototype:3)
+   R /trunk/prototype/ColorAssigner.pde (from /prototype/ColorAssigner.pde:8)
+   R /trunk/prototype/ColorBins.pde (from /prototype/ColorBins.pde:8)
+   R /trunk/prototype/Edge.pde (from /prototype/Edge.pde:8)
+   R /trunk/prototype/FileEvent.pde (from /prototype/FileEvent.pde:8)
+   R /trunk/prototype/FileNode.pde (from /prototype/FileNode.pde:8)
+   R /trunk/prototype/Node.pde (from /prototype/Node.pde:8)
+   R /trunk/prototype/PersonNode.pde (from /prototype/PersonNode.pde:8)
+   R /trunk/prototype/code_swarm.pde (from /prototype/code_swarm.pde:8)
+   R /trunk/prototype/data (from /prototype/data:8)
+   R /trunk/prototype/particle.png (from /prototype/particle.png:8)
+
+moved prototype to trunk
+
+
+------------------------------------------------------------------------
+r1 | (no author) | 2008-06-17 00:29:22 -0500 (Tue, 17 Jun 2008) | 1 line
+Changed paths:
+   A /branches
+   A /tags
+   A /trunk
+
+Initial directory structure.
+------------------------------------------------------------------------
