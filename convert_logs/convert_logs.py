@@ -83,7 +83,7 @@ def main():
                     date_parts = rev_parts[2].split(" ")
                     date = date_parts[0] + " " + date_parts[1]
                     date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                    date = time.mktime(date.timetuple())
+                    date = int(time.mktime(date.timetuple()))
                     
                     # Skip the 'Changed paths:' line and start reading in the changed filenames.
                     file_handle.readline()
@@ -113,6 +113,7 @@ def main():
             xml_handle.write('<?xml version="1.0"?>\n')
             xml_handle.write('<file_events>\n')
             # Write in the events from the event_list.
+            event_list.reverse()
             for event in event_list:
                 xml_handle.write('<event filename="%s" date="%s" author="%s" />\n' % \
                     (event.filename, event.date, event.author))
