@@ -8,8 +8,8 @@ import java.text.DateFormat;
 // User-defined variables
 int WIDTH = 640;
 int HEIGHT = 480;
-int FRAME_RATE = 30;
-String INPUT_FILE = "postgres-repository.xml";
+int FRAME_RATE = 24;
+String INPUT_FILE = "code_swarm-repository.xml";
 String SPRITE_FILE = "particle.png";
 String SCREENSHOT_FILE = "frames/swarm-#####.png";
 long dateSkipper = 6 * 60 * 60 * 1000;  // period in ms
@@ -255,7 +255,7 @@ void update()
   nextDate = new Date( prevDate.getTime() + dateSkipper );
   currentEvent = (FileEvent)eventsQueue.peek();
   
-  while( currentEvent.date.before( nextDate ) )
+  while( currentEvent != null && currentEvent.date.before( nextDate ) )
   {
     currentEvent = (FileEvent)eventsQueue.poll();
     FileNode n = findNode( currentEvent.path + currentEvent.filename );
@@ -468,10 +468,15 @@ void loadSVNRepository( XMLElement doc )
     // 'path' children which contain the paths of the files which were modified and details
     // about the change(file modified, deleted, created, etc...)
     XMLElement paths = xml.getChild("paths");
-    for( int j = 0; j < paths.getChildCount(); j++ )
+    String path;
+    if ( paths != null )
     {
-      FileEvent evt = new FileEvent( date, author, "", paths.getChild(j).getContent());
-      eventsQueue.add( evt );
+      for( int j = 0; j < paths.getChildCount(); j++ )
+      {
+        path = paths.getChild(j).getContent();
+        FileEvent evt = new FileEvent( date, author, "", path );
+        eventsQueue.add( evt );
+      }
     }
   }
 }

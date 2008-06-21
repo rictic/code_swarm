@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<log>
+<logentry
+   revision="14">
+<author>cgalvan@mail.utexas.edu</author>
+<date>2008-06-20T14:36:23.671559Z</date>
+<paths>
+<path
+   action="M">/trunk/prototype/code_swarm.pde</path>
+</paths>
+<msg>Initial commit of SVN repository log input parsing.  Modified loadRepository function to detect a SVN repository log.</msg>
+</logentry>
+<logentry
+   revision="13">
+<author>michael.ogawa</author>
+<date>2008-06-20T04:58:35.313850Z</date>
+<paths>
+<path
+   action="M">/trunk/prototype/README</path>
+</paths>
+<msg>added stuff about missing data files
+</msg>
+</logentry>
+<logentry
+   revision="12">
+<author>michael.ogawa</author>
+<date>2008-06-19T18:11:51.972375Z</date>
+<paths>
+<path
+   action="A">/trunk/prototype/README</path>
+</paths>
+<msg>added how-to-run README to prototype dir
+</msg>
+</logentry>
+<logentry
+   revision="9">
+<author>michael.ogawa</author>
+<date>2008-06-19T15:23:25.886597Z</date>
+<paths>
+<path
+   copyfrom-path="/prototype/FileEvent.pde"
+   copyfrom-rev="8"
+   action="R">/trunk/prototype/FileEvent.pde</path>
+<path
+   copyfrom-path="/prototype/data"
+   copyfrom-rev="8"
+   action="R">/trunk/prototype/data</path>
+<path
+   copyfrom-path="/prototype/code_swarm.pde"
+   copyfrom-rev="8"
+   action="R">/trunk/prototype/code_swarm.pde</path>
+<path
+   copyfrom-path="/prototype/Edge.pde"
+   copyfrom-rev="8"
+   action="R">/trunk/prototype/Edge.pde</path>
+<path
+   copyfrom-path="/prototype/FileNode.pde"
+   copyfrom-rev="8"
+   action="R">/trunk/prototype/FileNode.pde</path>
+<path
+   copyfrom-path="/prototype/Node.pde"
+   copyfrom-rev="8"
+   action="R">/trunk/prototype/Node.pde</path>
+<path
+   action="D">/prototype</path>
+<path
+   copyfrom-path="/prototype"
+   copyfrom-rev="3"
+   action="A">/trunk/prototype</path>
+<path
+   copyfrom-path="/prototype/ColorAssigner.pde"
+   copyfrom-rev="8"
+   action="R">/trunk/prototype/ColorAssigner.pde</path>
+<path
+   copyfrom-path="/prototype/ColorBins.pde"
+   copyfrom-rev="8"
+   action="R">/trunk/prototype/ColorBins.pde</path>
+<path
+   copyfrom-path="/prototype/PersonNode.pde"
+   copyfrom-rev="8"
+   action="R">/trunk/prototype/PersonNode.pde</path>
+<path
+   copyfrom-path="/prototype/particle.png"
+   copyfrom-rev="8"
+   action="R">/trunk/prototype/particle.png</path>
+</paths>
+<msg>moved prototype to trunk
+
+</msg>
+</logentry>
+<logentry
+   revision="1">
+<date>2008-06-17T05:29:22.312573Z</date>
+<paths>
+<path
+   action="A">/trunk</path>
+<path
+   action="A">/branches</path>
+<path
+   action="A">/tags</path>
+</paths>
+<msg>Initial directory structure.</msg>
+</logentry>
+</log>
