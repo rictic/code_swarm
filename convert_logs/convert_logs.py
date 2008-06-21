@@ -99,16 +99,19 @@ def main():
             # Generate standard event xml file from event_list.
             # By default, the generated xml file will be the same name as the input log file
             # but with an '.xml' extension.
-            # TODO: Integrate command-line option for specifying an output log file.
             log_file_path = os.path.abspath(log_file)
             dest_dir = os.path.dirname(log_file_path)
             log_file_base = os.path.basename(log_file_path)
             xml_filename = os.path.splitext(log_file_base)[0] + '.xml'
+            xml_path = os.path.join(dest_dir, xml_filename)
             
-            xml_handle = open(os.path.join(dest_dir, xml_filename),  'w')
+            # If the user specified an output log file, then use that.
+            if opts.output_log:
+                xml_path = opts.output_log
+            
+            xml_handle = open(xml_path,  'w')
             xml_handle.write('<?xml version="1.0"?>\n')
             xml_handle.write('<file_events>\n')
-            
             # Write in the events from the event_list.
             for event in event_list:
                 xml_handle.write('<event filename="%s" date="%s" author="%s" />\n' % \
