@@ -9,7 +9,7 @@ import java.text.DateFormat;
 int WIDTH = 640;
 int HEIGHT = 480;
 int FRAME_RATE = 24;
-String INPUT_FILE = "code_swarm-repository.xml";
+String INPUT_FILE = "sample-repevents.xml";
 String SPRITE_FILE = "particle.png";
 String SCREENSHOT_FILE = "frames/swarm-#####.png";
 long dateSkipper = 6 * 60 * 60 * 1000;  // period in ms
@@ -65,8 +65,8 @@ void setup()
   initColors();
   
   // Load data
-  loadRepository( INPUT_FILE );  // repository formatted
-  //loadRepEvents( INPUT_FILE );  // event formatted
+  //loadRepository( INPUT_FILE );  // repository formatted
+  loadRepEvents( INPUT_FILE );  // event formatted (this will be standard)
   // TODO: use adapter pattern to handle different data sources
   
   // Create fonts
