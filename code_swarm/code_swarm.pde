@@ -16,7 +16,7 @@ long dateSkipper = 6 * 60 * 60 * 1000;  // period in ms
 boolean takeSnapshots = false;
 
 // Data storage
-PriorityQueue eventsQueue;
+PriorityQueue eventsQueue; // MAC OSX: USE PROCESSING 0142 or higher
 ArrayList nodes;
 ArrayList edges;
 ArrayList people;
