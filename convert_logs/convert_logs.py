@@ -76,14 +76,14 @@ def main():
                     # The last line of the file is an svn_sep line, so if we try to retreive the
                     # revision line and get an empty string, we know we are at the end of the file
                     # and can break out of the loop.
-                    if rev_line is '':
+                    if rev_line is '' or len(rev_line) < 2:
                         break;
                     rev_parts = rev_line.split(' | ')
                     author = rev_parts[1]
                     date_parts = rev_parts[2].split(" ")
                     date = date_parts[0] + " " + date_parts[1]
                     date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                    date = int(time.mktime(date.timetuple()))
+                    date = int(time.mktime(date.timetuple()))*1000
                     
                     # Skip the 'Changed paths:' line and start reading in the changed filenames.
                     file_handle.readline()
