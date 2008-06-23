@@ -1,4 +1,131 @@
 ------------------------------------------------------------------------
+r40 | cgalvan@mail.utexas.edu | 2008-06-23 14:47:09 -0500 (Mon, 23 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/convert_logs.py
+
+Adding an additional error check to the parsing of the revision line that was failing on some systems.  Correcting the parsing of SVN timestamps to be milliseconds instead of seconds.
+------------------------------------------------------------------------
+r36 | michael.ogawa | 2008-06-22 01:27:08 -0500 (Sun, 22 Jun 2008) | 3 lines
+Changed paths:
+   A /trunk/doc
+   A /trunk/lib
+   A /trunk/lib/core.jar
+   A /trunk/lib/xml.jar
+   A /trunk/src
+   A /trunk/src/code_swarm.java
+
+Added P's Java translation of code_swarm. Needs lots of cleanup.
+Also added P's core and xml library.
+
+------------------------------------------------------------------------
+r35 | michael.ogawa | 2008-06-22 01:10:15 -0500 (Sun, 22 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/code_swarm/README
+
+Added caveat to README
+
+------------------------------------------------------------------------
+r34 | michael.ogawa | 2008-06-22 00:39:14 -0500 (Sun, 22 Jun 2008) | 2 lines
+Changed paths:
+   A /trunk/COPYING
+   M /trunk/code_swarm/ColorAssigner.pde
+   M /trunk/code_swarm/ColorBins.pde
+   M /trunk/code_swarm/Edge.pde
+   M /trunk/code_swarm/FileEvent.pde
+   M /trunk/code_swarm/FileNode.pde
+   M /trunk/code_swarm/Node.pde
+   M /trunk/code_swarm/PersonNode.pde
+   M /trunk/code_swarm/code_swarm.pde
+
+GPL'd code
+
+------------------------------------------------------------------------
+r32 | michael.ogawa | 2008-06-21 20:01:48 -0500 (Sat, 21 Jun 2008) | 3 lines
+Changed paths:
+   M /trunk/code_swarm/README
+   M /trunk/code_swarm/code_swarm.pde
+
+Address Mac PriorityQueue problem.
+README updated to reflect new sample input file.
+
+------------------------------------------------------------------------
+r31 | michael.ogawa | 2008-06-21 19:52:09 -0500 (Sat, 21 Jun 2008) | 2 lines
+Changed paths:
+   A /trunk/code_swarm (from /trunk/prototype:30)
+   D /trunk/prototype
+
+Renamed dir prototype to code_swarm. Will make testing easier.
+
+------------------------------------------------------------------------
+r30 | michael.ogawa | 2008-06-21 19:49:58 -0500 (Sat, 21 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/prototype/code_swarm.pde
+
+Changed default input file to data/sample-repevents.xml
+
+------------------------------------------------------------------------
+r29 | cgalvan@mail.utexas.edu | 2008-06-21 17:42:29 -0500 (Sat, 21 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/convert_logs.py
+
+Make sure the SVN log dates are stored in the xml output as integers, not floats.  Also reverse the event list so that it is read in correctly.
+------------------------------------------------------------------------
+r28 | cgalvan@mail.utexas.edu | 2008-06-21 16:54:19 -0500 (Sat, 21 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/convert_logs.py
+
+Integrate command-line option for specifying the output log file.
+------------------------------------------------------------------------
+r27 | cgalvan@mail.utexas.edu | 2008-06-21 16:37:15 -0500 (Sat, 21 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/convert_logs.py
+   A /trunk/convert_logs/test_files
+   A /trunk/convert_logs/test_files/svn_log.txt
+
+Updating SVN log conversion option on log conversion tool.  The output of a 'svn log -v' command will now be turned into our standard event xml format.  Can still use some cleanup, but basic functionality is now there.  Also adding a test file of an svn text log.
+------------------------------------------------------------------------
+r26 | michael.ogawa | 2008-06-21 15:10:49 -0500 (Sat, 21 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/prototype/data/sample-repevents.xml
+
+made the sample a bit more interesting
+
+------------------------------------------------------------------------
+r25 | michael.ogawa | 2008-06-21 14:51:16 -0500 (Sat, 21 Jun 2008) | 2 lines
+Changed paths:
+   A /trunk/prototype/data/sample-repevents.xml
+
+A sample repevents file
+
+------------------------------------------------------------------------
+r24 | cgalvan@mail.utexas.edu | 2008-06-21 14:48:54 -0500 (Sat, 21 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/convert_logs.py
+
+Setup option parsing handling for log conversion script.
+------------------------------------------------------------------------
+r23 | cgalvan@mail.utexas.edu | 2008-06-21 14:09:28 -0500 (Sat, 21 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/README
+   M /trunk/convert_logs/convert_logs.py
+
+Setting svn:eol-style native propset.
+------------------------------------------------------------------------
+r22 | cgalvan@mail.utexas.edu | 2008-06-21 14:08:39 -0500 (Sat, 21 Jun 2008) | 1 line
+Changed paths:
+   A /trunk/convert_logs
+   A /trunk/convert_logs/README
+   A /trunk/convert_logs/convert_logs.py
+
+Initial check-in of directory structure of log conversion tool.
+------------------------------------------------------------------------
+r19 | cgalvan@mail.utexas.edu | 2008-06-21 13:11:26 -0500 (Sat, 21 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/prototype/code_swarm.pde
+   A /trunk/prototype/data/code_swarm-repository.xml
+
+Adding an error check for logs with not 'paths' node to the SVN log parsing.  Adding error check for a null currentEvent in the main update loop.  Adding an example data log of the code_swarm repository so far.
+------------------------------------------------------------------------
 r14 | cgalvan@mail.utexas.edu | 2008-06-20 09:36:23 -0500 (Fri, 20 Jun 2008) | 1 line
 Changed paths:
    M /trunk/prototype/code_swarm.pde
