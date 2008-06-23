@@ -1,4 +1,10 @@
 Simple tool to convert the xml log formats of various repositories to
 a standard input format.
 
-Usage insructions to come.
+To convert an SVN log to the standard format:
+1. Run this command in the SVN repository checkout
+> svn log -v > my_svn.log
+2. Convert the log to our event-based XML format:
+> python convert_log.py -s path/to/my_svn.log -o svn_log.xml
+
+More usage detailed instructions to come.
