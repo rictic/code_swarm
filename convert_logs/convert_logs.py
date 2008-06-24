@@ -89,7 +89,7 @@ def main():
                     file_handle.readline()
                     path = file_handle.readline()
                     while len(path) > 1:
-                        ch_path = path[5:].split(" ")[0].replace("\n", "")
+                        ch_path = path[5:].split(" (from")[0].replace("\n", "")
                         event_list.append(Event(ch_path, date, author))
                         path = file_handle.readline()
                     
@@ -134,4 +134,6 @@ def main():
 if __name__ == "__main__":
     """ Main entry point."""
     main()
+
+
     
