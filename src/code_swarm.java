@@ -54,7 +54,7 @@ public class code_swarm extends PApplet
 int WIDTH = 640;
 int HEIGHT = 480;
 int FRAME_RATE = 24;
-String INPUT_FILE = "sample-repevents.xml";
+String INPUT_FILE = "../data/sample-repevents.xml";
 String SPRITE_FILE = "particle.png";
 String SCREENSHOT_FILE = "frames/swarm-#####.png";
 long dateSkipper = 6 * 60 * 60 * 1000;  // period in ms

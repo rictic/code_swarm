@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<project name="code_swarm" default="all" basedir=".">
+
+  <target name="init" description="Sets build properties">
+    <echo>Running INIT</echo>
+    <property name="src" value="${basedir}/src" />
+    <property name="build" value="${basedir}/build" />
+    <property name="doc" value="${basedir}/doc" />
+    <property name="lib" value="${basedir}/lib" />
+    <property name="dist" value="${basedir}/dist" />
+    <property name="data" value="${basedir}/data" />
+    <tstamp/>
+  </target>
+
+  <target name="all" depends="jar" description="Builds JAR and Javadoc">
+    <echo>Building ALL</echo>
+  </target>
+
+  <target name="build" depends="init" description="Compiles">
+    <echo>Running BUILD</echo>
+    <mkdir dir="${build}" />
+    <javac destdir="${build}" srcdir="${src}"
+classpath="${lib}/core.jar;${lib}/xml.jar" debug="true" deprecation="false" />
+    <copy file="${src}/particle.png" todir="${build}" />
+  </target>
+
+  <target name="doc" depends="init" description="Generates Javadoc documentation">
+  </target>
+
+  <target name="jar" depends="build" description="Packs application into a JAR">
+    <echo>Running JAR</echo>
+    <mkdir dir="${dist}" />
+    <jar basedir="${build}" jarfile="${dist}/${ant.project.name}.jar">
+      <manifest>
+        <attribute name="Main-Class" value="code_swarm" />
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="run" depends="jar" description="Runs the program">
+    <echo>Running code_swarm</echo>
+    <java classname="code_swarm" fork="true">
+      <classpath>
+        <fileset dir="${dist}">
+          <include name="${ant.project.name}.jar"/>
+        </fileset>
+        <fileset dir="${lib}">
+          <include name="**/*.jar"/>
+        </fileset>
+      </classpath>
+    </java>
+  </target>
+
+  <target name="clean" depends="init" description="Removed compiled files">
+    <echo>Running CLEAN</echo>
+    <delete dir="${build}" verbose="true"/>
+    <delete file="${ant.project.name}.jar" verbose="true"/>
+  </target>
+
+</project>
+
