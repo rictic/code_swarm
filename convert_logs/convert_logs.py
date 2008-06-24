@@ -67,7 +67,7 @@ def main():
             event_list = []
             file_handle = open(log_file,  'r')
             line = file_handle.readline()
-            while line is not '':
+            while len(line) > 0:
                 # The svn_sep indicates a new revision history to parse.
                 if line.startswith(svn_sep):
                     # Extract author and date from revision line.  Here is a sample revision line:
