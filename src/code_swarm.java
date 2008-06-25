@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2008 Michael Ogawa
+    Copyright 2008 Michael Ogawa
 
     This file is part of code_swarm.
 
@@ -14,7 +14,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import processing.core.*;
