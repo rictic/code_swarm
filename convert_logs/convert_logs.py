@@ -8,6 +8,7 @@ import time
 
 # Some global variables
 svn_sep = "------------------------------------------------------------------------"
+cvs_sep = "----------------------------"
 
 # Event to hold all of the separate events as we parse them from the logs.
 class Event():
@@ -123,7 +124,68 @@ def main():
             print "Please specify an existing path."
         
     if opts.cvs_log:
-        print "Not yet implemented."
+        log_file = opts.cvs_log
+        
+        # Check to be sure the specified log path exists.
+        if os.path.exists(log_file):
+            entry = []
+            filename = ""
+           
+            file_handle = open(log_file,  'r')
+            line = file_handle.readline()
+            while line is not '':
+            	tmp = {}
+            	# The cvs_sep indicates a new revision history to parse.
+            	if line.startswith(cvs_sep):
+            		#Read the revision number
+            		rev_line = file_handle.readline()
+            		tmp['revision'] = rev_line.split("revision ")[-1].strip('\n')
+            		if(tmp['revision'] == cvs_sep):
+            			break
+
+            		# Extract author and date from revision line.
+            		rev_line = file_handle.readline()
+            		if(rev_line.lower().find("date:") == 0):
+            			rev_parts = rev_line.split(';  ')
+            			date_parts = rev_parts[0].split(": ")
+            			tmp['date'] = datetime.strptime(date_parts[1], '%Y/%m/%d %H:%M:%S')
+            			tmp['date'] = int(time.mktime(tmp['date'].timetuple())*1000)
+            			tmp['author'] = rev_parts[1].split(": ")[1]
+                        tmp['filename'] = filename
+                        entry.append(tmp)
+                        
+                line = file_handle.readline()
+                if(str(line) == ""):
+                	break
+                elif(line.lower().find("rcs file: ") >= 0):
+                    rev_line = line.split(": ");
+                    filename = rev_line[1].strip('\n').split(',')[0]
+                    
+            # Generate standard event xml file from event_list.
+            # By default, the generated xml file will be the same name as the input log file
+            # but with an '.xml' extension.
+            log_file_path = os.path.abspath(log_file)
+            dest_dir = os.path.dirname(log_file_path)
+            log_file_base = os.path.basename(log_file_path)
+            xml_filename = os.path.splitext(log_file_base)[0] + '.xml'
+            xml_path = os.path.join(dest_dir, xml_filename)
+            
+            # If the user specified an output log file, then use that.
+            if opts.output_log:
+                xml_path = opts.output_log
+            
+            xml_handle = open(xml_path,  'w')
+            xml_handle.write('<?xml version="1.0"?>\n')
+            xml_handle.write('<file_events>\n')
+            for event in entry:
+                try:
+                	xml_handle.write("<event filename=\""+str(event['filename'])+"\" date=\""+str(event['date'])+"\" author=\""+str(event['author'])+"\" />\n")
+                except:
+                	print "error when writing file: "+str(event)
+            xml_handle.write('</file_events>\n')
+            xml_handle.close()
+        else:
+            print "Please specify an existing path."
         
     if opts.git_log:
         print "Not yet implemented."
