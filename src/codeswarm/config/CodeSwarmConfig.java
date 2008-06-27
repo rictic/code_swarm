@@ -50,4 +50,8 @@ public class CodeSwarmConfig {
     public String getStringProperty(String key, String defValue) {
         return p.getProperty(key, defValue);
     }
+
+    public int getIntProperty(String key, int defValue) {
+        return Integer.valueOf(p.getProperty(key, String.valueOf(defValue)));
+    }
 }
