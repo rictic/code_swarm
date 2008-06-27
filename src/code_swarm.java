@@ -1019,14 +1019,21 @@ public class code_swarm extends PApplet
 
 	static public void main(String args[])
 	{
-		if ( args.length > 0 )
-		{
-			CodeSwarmConfig cfg = new CodeSwarmConfig( args[0] );
-			PApplet.main( new String[] { "code_swarm" } );
-		}
-		else
-		{
-			System.err.println( "Specify a config file." );
-		}
-	}
+        try
+        {
+            if (args.length > 0)
+            {
+                CodeSwarmConfig cfg = new CodeSwarmConfig(args[0]);
+                PApplet.main(new String[]{"code_swarm"});
+            }
+            else
+            {
+                System.err.println("Specify a config file.");
+            }
+        }
+        catch (IOException e)
+        {
+            System.err.println("Failed due to exception: " + e.getMessage());
+        }
+    }
 }
