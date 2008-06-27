@@ -50,14 +50,9 @@ public class code_swarm extends PApplet
 
 	// User-defined variables
 	CodeSwarmConfig config;
-	int WIDTH = 640;
-	int HEIGHT = 480;
 	int FRAME_RATE = 24;
-	String INPUT_FILE = "../data/sample-repevents.xml";
 	String SPRITE_FILE = "particle.png";
 	String SCREENSHOT_FILE = "frames/swarm-#####.png";
-	long dateSkipper = 6 * 60 * 60 * 1000;  // period in ms
-	boolean takeSnapshots = false;
 
 	// Data storage
 	PriorityQueue eventsQueue; // MAC OSX: USE PROCESSING 0142 or higher
@@ -90,11 +85,12 @@ public class code_swarm extends PApplet
 
 	// Formats the date string nicely
 	DateFormat formatter = DateFormat.getDateInstance();
+    private static CodeSwarmConfig cfg;
 
-	/* Initialization */
+    /* Initialization */
 	public void setup()
 	{
-		size( WIDTH, HEIGHT );
+		size( cfg.getWidth(), cfg.getHeight() );
 		smooth();
 		frameRate( FRAME_RATE );
 
@@ -110,7 +106,7 @@ public class code_swarm extends PApplet
 
 		// Load data
 		//loadRepository( INPUT_FILE );  // repository formatted
-		loadRepEvents( INPUT_FILE );  // event formatted (this will be standard)
+		loadRepEvents( cfg.getInputFile() );  // event formatted (this will be standard)
 		// TODO: use adapter pattern to handle different data sources
 
 		// Create fonts
@@ -201,7 +197,7 @@ public class code_swarm extends PApplet
 		if ( showDate )
 			drawDate();
 
-		if ( takeSnapshots )
+		if ( cfg.getTakeSnapshots() )
 			dumpFrame();
 
 		// Stop animation when we run out of data
@@ -296,7 +292,7 @@ public class code_swarm extends PApplet
 		ColorBins cb = new ColorBins();
 		history.add( cb );
 
-		nextDate = new Date( prevDate.getTime() + dateSkipper );
+		nextDate = new Date( prevDate.getTime() + cfg.getMSecPerFrame() );
 		currentEvent = (FileEvent)eventsQueue.peek();
 
 		while( currentEvent != null && currentEvent.date.before( nextDate ) )
@@ -706,7 +702,7 @@ public class code_swarm extends PApplet
 
 		public void freshen()
 		{
-			life = 255;
+            life = 255;
 		}
 	}
 
@@ -771,7 +767,7 @@ public class code_swarm extends PApplet
 
 		public void freshen()
 		{
-			life = 255;
+            life = 255;
 			touches++;
 		}
 
@@ -1006,7 +1002,7 @@ public class code_swarm extends PApplet
 
 		public void freshen()
 		{
-			life = 255;
+            life = 255;
 		}
 
 		public void addColor( int c )
@@ -1023,7 +1019,7 @@ public class code_swarm extends PApplet
         {
             if (args.length > 0)
             {
-                CodeSwarmConfig cfg = new CodeSwarmConfig(args[0]);
+                cfg = new CodeSwarmConfig(args[0]);
                 PApplet.main(new String[]{"code_swarm"});
             }
             else
