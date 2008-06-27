@@ -17,32 +17,19 @@
 	 along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import processing.core.*;
-import processing.xml.*;
-import java.util.*;
+import processing.core.PApplet;
+import processing.core.PFont;
+import processing.core.PImage;
+import processing.xml.XMLElement;
+
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.applet.*;
-import java.awt.*;
-import java.awt.image.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.*;
-import java.text.*;
-//import java.util.zip.*;
-//import javax.sound.midi.*;
-//import javax.sound.midi.spi.*;
-//import javax.sound.sampled.*;
-//import javax.sound.sampled.spi.*;
-import java.util.regex.*;
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.sax.*;
-import javax.xml.transform.stream.*;
-import org.xml.sax.*;
-import org.xml.sax.ext.*;
-import org.xml.sax.helpers.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 
 public class code_swarm extends PApplet
@@ -55,11 +42,11 @@ public class code_swarm extends PApplet
 	String SCREENSHOT_FILE = "frames/swarm-#####.png";
 
 	// Data storage
-	PriorityQueue eventsQueue; // MAC OSX: USE PROCESSING 0142 or higher
-	ArrayList nodes;
-	ArrayList edges;
-	ArrayList people;
-	LinkedList history;
+	PriorityQueue<FileEvent> eventsQueue; // MAC OSX: USE PROCESSING 0142 or higher
+	ArrayList<FileNode> nodes;
+	ArrayList<Edge> edges;
+	ArrayList<PersonNode> people;
+	LinkedList<ColorBins> history;
 
 	// Temporary variables
 	FileEvent currentEvent;
@@ -85,7 +72,10 @@ public class code_swarm extends PApplet
 
 	// Formats the date string nicely
 	DateFormat formatter = DateFormat.getDateInstance();
+
     private static CodeSwarmConfig cfg;
+    private long lastDrawDuration = 0;
+
 
     /* Initialization */
 	public void setup()
@@ -95,11 +85,11 @@ public class code_swarm extends PApplet
 		frameRate( FRAME_RATE );
 
 		// init data structures
-		eventsQueue = new PriorityQueue();
-		nodes = new ArrayList();
-		edges = new ArrayList();
-		people = new ArrayList();
-		history = new LinkedList();
+		eventsQueue = new PriorityQueue<FileEvent>();
+		nodes = new ArrayList<FileNode>();
+		edges = new ArrayList<Edge>();
+		people = new ArrayList<PersonNode>();
+		history = new LinkedList<ColorBins>();
 
 		// Init color map
 		initColors();
@@ -119,7 +109,7 @@ public class code_swarm extends PApplet
 		// Add translucency (using itself in this case)
 		sprite.mask( sprite );
 
-		prevDate = ((FileEvent)eventsQueue.peek()).date;
+		prevDate = eventsQueue.peek().date;
 	}
 
 	/* Load a colormap */
@@ -168,7 +158,8 @@ public class code_swarm extends PApplet
 	/* Main loop */
 	public void draw()
 	{
-		background( 0 );  // clear screen w/ black
+        long start = System.currentTimeMillis();
+        background( 0 );  // clear screen w/ black
 
 		this.update();  // update state to next frame
 
@@ -180,15 +171,18 @@ public class code_swarm extends PApplet
 		drawPeopleNodesBlur();
 
 		// Draw file particles
-		for( int i = 0; i < nodes.size(); i++ )
-			((FileNode)nodes.get(i)).draw();
+        for (FileNode node : nodes)
+            node.draw();
 
 		// Draw names
 		drawPeopleNodesSharp();
 
 		textFont( font );
 
-		if ( showHistogram )
+        if (cfg.getBooleanProperty("debug", false))
+            drawDebugData();
+
+        if ( showHistogram )
 			drawHistory();
 
 		if ( showLegend )
@@ -203,7 +197,10 @@ public class code_swarm extends PApplet
 		// Stop animation when we run out of data
 		if ( eventsQueue.isEmpty() )
 			noLoop();
-	}
+
+        long end = System.currentTimeMillis();
+        lastDrawDuration = end - start;
+    }
 
 	/* Surround names with aura */
 	public void drawPeopleNodesBlur()
@@ -247,11 +244,11 @@ public class code_swarm extends PApplet
 	/* Draw histogram in lower-left */
 	public void drawHistory()
 	{
-		Iterator itr = history.iterator();
+		Iterator<ColorBins> itr = history.iterator();
 		int counter = 0;
 		while( itr.hasNext() )
 		{
-			ColorBins cb = (ColorBins)itr.next();
+			ColorBins cb = itr.next();
 
 			for( int i = 0; i < cb.num; i++ )
 			{
@@ -273,11 +270,23 @@ public class code_swarm extends PApplet
 		text( "Legend:", 0, 0 );
 		for( int i = 0; i < colorAssigner.tests.size(); i++ )
 		{
-			ColorTest t = (ColorTest)colorAssigner.tests.get(i);
+			ColorTest t = colorAssigner.tests.get(i);
 			fill( t.c1, 200 );
 			text( t.expr, 10, (i+1) * 10 );
 		}
 	}
+
+    public void drawDebugData()
+    {
+        noStroke();
+        textFont( font );
+        textAlign( LEFT, TOP );
+        fill( 255, 200 );
+        text( "Nodes: " + nodes.size(), 0, 0 );
+        text( "People: " + people.size(), 0, 10 );
+        text( "Queue: " + eventsQueue.size(), 0, 20 );
+        text( "Last render time: " + lastDrawDuration, 0, 30);
+    }
 
 	/* Take screenshot */
 	public void dumpFrame()
@@ -294,11 +303,11 @@ public class code_swarm extends PApplet
 		history.add( cb );
 
 		nextDate = new Date( prevDate.getTime() + cfg.getMSecPerFrame() );
-		currentEvent = (FileEvent)eventsQueue.peek();
+		currentEvent = eventsQueue.peek();
 
 		while( currentEvent != null && currentEvent.date.before( nextDate ) )
 		{
-			currentEvent = (FileEvent)eventsQueue.poll();
+			currentEvent = eventsQueue.poll();
 			FileNode n = findNode( currentEvent.path + currentEvent.filename );
 			if ( n == null )
 			{
@@ -352,7 +361,7 @@ public class code_swarm extends PApplet
 
 			//prevDate = currentEvent.date;
 			prevNode = n;
-			currentEvent = (FileEvent)eventsQueue.peek();
+			currentEvent = eventsQueue.peek();
 		}
 
 		prevDate = nextDate;
@@ -364,57 +373,54 @@ public class code_swarm extends PApplet
 		while ( history.size() > 320 )
 			history.remove();
 
-		for( int i = 0; i < edges.size(); i++ )
-			((Edge)edges.get(i)).relax();
+        for (Edge edge : edges)
+            edge.relax();
 
-		for( int i = 0; i < nodes.size(); i++ )
-			((FileNode)nodes.get(i)).relax();
+        for (FileNode node : nodes)
+            node.relax();
 
-		for( int i = 0; i < people.size(); i++ )
-			((PersonNode)people.get(i)).relax();
+        for (PersonNode aPeople : people)
+            aPeople.relax();
 
-		for ( int i = 0; i < edges.size(); i++ )
-			((Edge)edges.get(i)).update();
+        for (Edge edge : edges)
+            edge.update();
 
-		for( int i = 0; i < nodes.size(); i++ )
-			((FileNode)nodes.get(i)).update();
+        for (FileNode node : nodes)
+            node.update();
 
-		for( int i = 0; i < people.size(); i++ )
-			((PersonNode)people.get(i)).update();
+        for (PersonNode aPeople : people)
+            aPeople.update();
 	}
 
 	public FileNode findNode( String name )
 	{
-		for( int i = 0; i < nodes.size(); i++ )
-		{
-			FileNode n = (FileNode)nodes.get(i);
-			if ( n.name.equals( name ) )
-				return n;
-		}
+        for (FileNode node : nodes)
+        {
+            if (node.name.equals(name))
+                return node;
+        }
 		return null;
 	}
 
 	public Edge findEdge( Node n1, Node n2 )
 	{
-		for ( int i = 0; i < edges.size(); i++ )
-		{
-			Edge e = (Edge)edges.get(i);
-			if ( e.from == n1 && e.to == n2 )
-				return e;
-			if ( e.from == n2 && e.to == n1 )
-				return e;
-		}
+        for (Edge edge : edges)
+        {
+            if (edge.from == n1 && edge.to == n2)
+                return edge;
+            if (edge.from == n2 && edge.to == n1)
+                return edge;
+        }
 		return null;
 	}
 
 	public PersonNode findPerson( String name )
 	{
-		for( int i = 0; i < people.size(); i++ )
-		{
-			PersonNode p = (PersonNode)people.get(i);
-			if ( p.name.equals( name ) )
-				return p; 
-		}
+        for (PersonNode p : people)
+        {
+            if (p.name.equals(name))
+                return p;
+        }
 		return null;
 	}
 
@@ -568,12 +574,12 @@ public class code_swarm extends PApplet
 
 	class ColorAssigner
 	{
-		ArrayList tests;
+		ArrayList<ColorTest> tests;
 		int defaultColor = color(128, 128, 128);
 
 		public ColorAssigner()
 		{
-			tests = new ArrayList();
+			tests = new ArrayList<ColorTest>();
 		}
 
 		public void addRule( String expr, int c1, int c2 )
@@ -592,12 +598,11 @@ public class code_swarm extends PApplet
 
 		public int getColor( String s )
 		{
-			for( int i = 0; i < tests.size(); i++ )
-			{
-				ColorTest t = (ColorTest)tests.get(i);
-				if ( t.passes( s ) )
-					return t.assign();
-			}
+            for (ColorTest t : tests)
+            {
+                if (t.passes(s))
+                    return t.assign();
+            }
 
 			return defaultColor;
 		}
@@ -727,7 +732,7 @@ public class code_swarm extends PApplet
 				String path, String filename,
 				int linesadded, int linesremoved )
 		{
-			this.date = new Date( (long)datenum );
+			this.date = new Date(datenum);
 			this.author = author;
 			this.path = path;
 			this.filename = filename;
@@ -748,7 +753,13 @@ public class code_swarm extends PApplet
 
 		int touches;
 
-		FileNode( FileEvent fe )
+
+        public String toString()
+        {
+            return "FileNode{" + "name='" + name + '\'' + ", nodeHue=" + nodeHue + ", touches=" + touches + '}';
+        }
+
+        FileNode( FileEvent fe )
 		{
 			super();
 			name = fe.path + fe.filename;
@@ -793,7 +804,10 @@ public class code_swarm extends PApplet
 				text( name, x, y );
 				 */
 			}
-		}
+            else {
+                nodes.remove(this);
+            }
+        }
 
 		public void drawSharp()
 		{
