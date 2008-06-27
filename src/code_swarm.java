@@ -29,7 +29,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.PriorityBlockingQueue;
 
 
 public class code_swarm extends PApplet
@@ -42,10 +43,10 @@ public class code_swarm extends PApplet
 	String SCREENSHOT_FILE = "frames/swarm-#####.png";
 
 	// Data storage
-	PriorityQueue<FileEvent> eventsQueue; // MAC OSX: USE PROCESSING 0142 or higher
-	ArrayList<FileNode> nodes;
-	ArrayList<Edge> edges;
-	ArrayList<PersonNode> people;
+	PriorityBlockingQueue<FileEvent> eventsQueue; // MAC OSX: USE PROCESSING 0142 or higher
+	CopyOnWriteArrayList<FileNode> nodes;
+	CopyOnWriteArrayList<Edge> edges;
+	CopyOnWriteArrayList<PersonNode> people;
 	LinkedList<ColorBins> history;
 
 	// Temporary variables
@@ -75,7 +76,7 @@ public class code_swarm extends PApplet
 
     private static CodeSwarmConfig cfg;
     private long lastDrawDuration = 0;
-
+    private boolean removeOldFiles = false;
 
     /* Initialization */
 	public void setup()
@@ -85,10 +86,10 @@ public class code_swarm extends PApplet
 		frameRate( FRAME_RATE );
 
 		// init data structures
-		eventsQueue = new PriorityQueue<FileEvent>();
-		nodes = new ArrayList<FileNode>();
-		edges = new ArrayList<Edge>();
-		people = new ArrayList<PersonNode>();
+		eventsQueue = new PriorityBlockingQueue<FileEvent>();
+		nodes = new CopyOnWriteArrayList<FileNode>();
+		edges = new CopyOnWriteArrayList<Edge>();
+		people = new CopyOnWriteArrayList<PersonNode>();
 		history = new LinkedList<ColorBins>();
 
 		// Init color map
@@ -99,7 +100,7 @@ public class code_swarm extends PApplet
 		loadRepEvents( cfg.getInputFile() );  // event formatted (this will be standard)
 		// TODO: use adapter pattern to handle different data sources
 
-		// Create fonts
+        // Create fonts
 		font = createFont( "SansSerif", 10 );
 		boldFont = createFont( "SansSerif.bold", 14 );
 		textFont( font );
@@ -110,7 +111,8 @@ public class code_swarm extends PApplet
 		sprite.mask( sprite );
 
 		prevDate = eventsQueue.peek().date;
-	}
+        removeOldFiles = cfg.getBooleanProperty("RemoveOldFiles", false);
+    }
 
 	/* Load a colormap */
 	/*   TODO: load from a file or GUI */
@@ -308,7 +310,9 @@ public class code_swarm extends PApplet
 		while( currentEvent != null && currentEvent.date.before( nextDate ) )
 		{
 			currentEvent = eventsQueue.poll();
-			FileNode n = findNode( currentEvent.path + currentEvent.filename );
+            if (currentEvent == null) return;
+            
+            FileNode n = findNode( currentEvent.path + currentEvent.filename );
 			if ( n == null )
 			{
 				n = new FileNode( currentEvent );
@@ -373,24 +377,21 @@ public class code_swarm extends PApplet
 		while ( history.size() > 320 )
 			history.remove();
 
-        for (Edge edge : edges)
+        for (Edge edge : edges) {
             edge.relax();
-
-        for (FileNode node : nodes)
-            node.relax();
-
-        for (PersonNode aPeople : people)
-            aPeople.relax();
-
-        for (Edge edge : edges)
             edge.update();
+        }
 
-        for (FileNode node : nodes)
+        for (FileNode node : nodes) {
+            node.relax();
             node.update();
+        }
 
-        for (PersonNode aPeople : people)
+        for (PersonNode aPeople : people) {
+            aPeople.relax();
             aPeople.update();
-	}
+        }
+    }
 
 	public FileNode findNode( String name )
 	{
@@ -702,9 +703,10 @@ public class code_swarm extends PApplet
 		public void decay()
 		{
 			life += -2;
-			if ( life < 0 )
-				life = 0;
-		}
+			if ( life < 0 && removeOldFiles) {
+				edges.remove(this);
+            }
+        }
 
 		public void freshen()
 		{
@@ -786,7 +788,10 @@ public class code_swarm extends PApplet
 		public void decay()
 		{
 			life += -2.0f;
-		}
+            if (life <= 0 && removeOldFiles) {
+                nodes.remove(this);
+            }
+        }
 
 		public void draw()
 		{
@@ -804,9 +809,6 @@ public class code_swarm extends PApplet
 				text( name, x, y );
 				 */
 			}
-            else {
-                nodes.remove(this);
-            }
         }
 
 		public void drawSharp()
@@ -1011,8 +1013,8 @@ public class code_swarm extends PApplet
 		public void decay()
 		{
 			life -= 1;
-			if ( life < 0 )
-				life = 0;
+			if ( life < 0 && removeOldFiles)
+				people.remove(this);
 		}
 
 		public void freshen()
