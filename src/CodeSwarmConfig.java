@@ -66,6 +66,16 @@ public class CodeSwarmConfig
         return Boolean.valueOf(p.getProperty(TAKE_SNAPSHOTS_KEY));
     }
 
+    public boolean getBooleanProperty(String key, boolean defValue)
+    {
+        return Boolean.valueOf(p.getProperty(key, String.valueOf(defValue)));
+    }
+    
+    public String getStringProperty(String key, String defValue)
+    {
+        return p.getProperty(key, defValue);
+    }
+
     public static void main(String[] args)
     {
         if (args.length > 0)

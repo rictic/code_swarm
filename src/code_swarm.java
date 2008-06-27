@@ -218,7 +218,8 @@ public class code_swarm extends PApplet
 		}
 
 		// Then blur it
-		filter( BLUR, 3 );
+        if (cfg.getBooleanProperty("RunSlowly", true))
+            filter( BLUR, 3 );
 	}
 
 	/* Draw person's name */
