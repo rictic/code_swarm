@@ -21,7 +21,7 @@
     <echo>Running BUILD</echo>
     <mkdir dir="${build}" />
     <javac destdir="${build}" srcdir="${src}"
-classpath="${lib}/core.jar;${lib}/xml.jar;${lib}/jogl.jar" debug="true" deprecation="false" />
+classpath="${lib}/core.jar;${lib}/xml.jar;${lib}/jogl.jar;${lib}/opengl.jar" debug="true" deprecation="false" />
     <copy file="${src}/particle.png" todir="${build}" />
   </target>
 
@@ -41,6 +41,7 @@ classpath="${lib}/core.jar;${lib}/xml.jar;${lib}/jogl.jar" debug="true" deprecat
   <target name="run" depends="jar" description="Runs the program">
     <echo>Running code_swarm</echo>
     <java classname="code_swarm" fork="true">
+      <arg value="data/sample.config"/>
       <classpath>
         <fileset dir="${dist}">
           <include name="${ant.project.name}.jar"/>

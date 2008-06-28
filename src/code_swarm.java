@@ -76,13 +76,17 @@ public class code_swarm extends PApplet
 
     private static CodeSwarmConfig cfg;
     private long lastDrawDuration = 0;
-    private boolean removeOldFiles = false;
 
     /* Initialization */
 	public void setup()
 	{
-		size( cfg.getWidth(), cfg.getHeight() );
-		smooth();
+        if (cfg.getBooleanProperty("UseOpenGL", false)) {
+            size( cfg.getWidth(), cfg.getHeight(), OPENGL);
+        } else {
+            size( cfg.getWidth(), cfg.getHeight());            
+        }
+                   
+        smooth();
 		frameRate( FRAME_RATE );
 
 		// init data structures
@@ -111,7 +115,6 @@ public class code_swarm extends PApplet
 		sprite.mask( sprite );
 
 		prevDate = eventsQueue.peek().date;
-        removeOldFiles = cfg.getBooleanProperty("RemoveOldFiles", false);
     }
 
 	/* Load a colormap */
@@ -246,7 +249,7 @@ public class code_swarm extends PApplet
 	/* Draw histogram in lower-left */
 	public void drawHistory()
 	{
-		Iterator<ColorBins> itr = history.iterator();
+        Iterator<ColorBins> itr = history.iterator();
 		int counter = 0;
 		while( itr.hasNext() )
 		{
@@ -255,8 +258,8 @@ public class code_swarm extends PApplet
 			for( int i = 0; i < cb.num; i++ )
 			{
 				int c = cb.colorList[i];
-				stroke( c, 200 );
-				point( counter, height - i - 3 );
+				stroke( c, 200 );                
+                point( counter, height - i - 3 );
 			}
 			counter++;
 		}
@@ -370,6 +373,7 @@ public class code_swarm extends PApplet
 
 		prevDate = nextDate;
 
+
 		// sort colorbins
 		cb.sort();
 
@@ -379,16 +383,25 @@ public class code_swarm extends PApplet
 
         for (Edge edge : edges) {
             edge.relax();
-            edge.update();
         }
 
         for (FileNode node : nodes) {
             node.relax();
-            node.update();
         }
 
         for (PersonNode aPeople : people) {
             aPeople.relax();
+        }
+
+        for (Edge edge : edges) {
+            edge.update();
+        }
+
+        for (FileNode node : nodes) {
+            node.update();
+        }
+
+        for (PersonNode aPeople : people) {
             aPeople.update();
         }
     }
@@ -703,8 +716,8 @@ public class code_swarm extends PApplet
 		public void decay()
 		{
 			life += -2;
-			if ( life < 0 && removeOldFiles) {
-				edges.remove(this);
+			if ( life < 0 ) {
+				life = 0;
             }
         }
 
@@ -788,8 +801,8 @@ public class code_swarm extends PApplet
 		public void decay()
 		{
 			life += -2.0f;
-            if (life <= 0 && removeOldFiles) {
-                nodes.remove(this);
+            if (life <= 0) {
+                life = 0;
             }
         }
 
@@ -890,7 +903,7 @@ public class code_swarm extends PApplet
 			}
 			float dlen = mag( ddx, ddy ) / 2;
 			if ( dlen > 0 )
-			{
+			{                                                        
 				dx += ddx / dlen;
 				dy += ddy / dlen;
 			}
@@ -1013,8 +1026,8 @@ public class code_swarm extends PApplet
 		public void decay()
 		{
 			life -= 1;
-			if ( life < 0 && removeOldFiles)
-				people.remove(this);
+			if ( life < 0 )
+                life = 0;
 		}
 
 		public void freshen()
