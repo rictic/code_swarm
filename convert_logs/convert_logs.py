@@ -104,28 +104,7 @@ def main():
             file_handle.close()
             
             # Generate standard event xml file from event_list.
-            # By default, the generated xml file will be the same name as the input log file
-            # but with an '.xml' extension.
-            log_file_path = os.path.abspath(log_file)
-            dest_dir = os.path.dirname(log_file_path)
-            log_file_base = os.path.basename(log_file_path)
-            xml_filename = os.path.splitext(log_file_base)[0] + '.xml'
-            xml_path = os.path.join(dest_dir, xml_filename)
-            
-            # If the user specified an output log file, then use that.
-            if opts.output_log:
-                xml_path = opts.output_log
-            
-            xml_handle = open(xml_path,  'w')
-            xml_handle.write('<?xml version="1.0"?>\n')
-            xml_handle.write('<file_events>\n')
-            # Write in the events from the event_list.
-            event_list.reverse()
-            for event in event_list:
-                xml_handle.write('<event filename="%s" date="%s" author="%s" />\n' % \
-                    (event.filename, event.date, event.author))
-            xml_handle.write('</file_events>\n')
-            xml_handle.close()
+            create_event_xml(event_list, log_file, opts.output_log)
         else:
             print "Please specify an existing path."
         
@@ -161,33 +140,10 @@ def main():
                 elif(line.lower().find("rcs file: ") >= 0):
                     rev_line = line.split(": ");
                     filename = rev_line[1].strip().split(',')[0]
-                    
+            file_handle.close()
+            
             # Generate standard event xml file from event_list.
-            # By default, the generated xml file will be the same name as the input log file
-            # but with an '.xml' extension.
-            log_file_path = os.path.abspath(log_file)
-            dest_dir = os.path.dirname(log_file_path)
-            log_file_base = os.path.basename(log_file_path)
-            xml_filename = os.path.splitext(log_file_base)[0] + '.xml'
-            xml_path = os.path.join(dest_dir, xml_filename)
-            
-            # If the user specified an output log file, then use that.
-            if opts.output_log:
-                xml_path = opts.output_log
-            
-            xml_handle = open(xml_path,  'w')
-            xml_handle.write('<?xml version="1.0"?>\n')
-            xml_handle.write('<file_events>\n')
-            # Write the events from event_list.
-            event_list.sort()
-            for event in event_list:
-                try:
-                    xml_handle.write('<event filename="%s" date="%s" author="%s" />\n' % \
-                        (event.filename, event.date, event.author))
-                except:
-                    print "Error when writing this file: " + str(event)
-            xml_handle.write('</file_events>\n')
-            xml_handle.close()
+            create_event_xml(event_list, log_file, opts.output_log)
         else:
             print "Please specify an existing path."
         
@@ -196,6 +152,38 @@ def main():
         
     if opts.wikimedia_log:
         print "Not yet implemented."
+        
+def create_event_xml(events, base_log, output_log=None):
+    """ Write out the final XML output log file based on an input
+    list of events and input log files.
+    """
+    # By default, the generated xml file will be the same name as the input log file
+    # but with an '.xml' extension.
+    log_file_path = os.path.abspath(base_log)
+    dest_dir = os.path.dirname(log_file_path)
+    log_file_base = os.path.basename(log_file_path)
+    xml_filename = os.path.splitext(log_file_base)[0] + '.xml'
+    xml_path = os.path.join(dest_dir, xml_filename)
+            
+    # If the user specified an output log file, then use that.
+    if output_log:
+        xml_path = output_log
+            
+    # Create new empty xml file.
+    xml_handle = open(xml_path,  'w')
+    xml_handle.write('<?xml version="1.0"?>\n')
+    xml_handle.write('<file_events>\n')
+    # Make sure the events are sorted in ascending order by date, then
+    # write the events into the xml file.
+    events.sort()
+    for event in events:
+        try:
+            xml_handle.write('<event filename="%s" date="%s" author="%s" />\n' % \
+                (event.filename, event.date, event.author))
+        except:
+                print "Error when writing this file: " + str(event)
+    xml_handle.write('</file_events>\n')
+    xml_handle.close()
     
 if __name__ == "__main__":
     """ Main entry point."""
