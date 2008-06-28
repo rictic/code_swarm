@@ -20,6 +20,11 @@ class Event():
         self.filename = filename
         self.date = date
         self.author = author
+        
+    # Some version control system's logs are not in chronological order, so
+    # this compare method will return a compare of the date attributes.
+    def __cmp__(self, other):
+        return cmp(self.date, other.date)
     
 def parse_args(argv):
     """ Parses command line arguments and returns an options object
@@ -129,29 +134,26 @@ def main():
         
         # Check to be sure the specified log path exists.
         if os.path.exists(log_file):
-            entry = []
+            event_list = []
             filename = ""
            
             file_handle = open(log_file,  'r')
             line = file_handle.readline()
             while len(line) > 0:
-            	tmp = {}
             	# The cvs_sep indicates a new revision history to parse.
             	if line.startswith(cvs_sep):
             		#Read the revision number
             		rev_line = file_handle.readline()
-            		tmp['revision'] = rev_line.split("revision ")[-1].strip()
 
             		# Extract author and date from revision line.
             		rev_line = file_handle.readline()
             		if(rev_line.lower().find("date:") == 0):
             			rev_parts = rev_line.split(';  ')
             			date_parts = rev_parts[0].split(": ")
-            			tmp['date'] = datetime.strptime(date_parts[1], '%Y/%m/%d %H:%M:%S')
-            			tmp['date'] = int(time.mktime(tmp['date'].timetuple())*1000)
-            			tmp['author'] = rev_parts[1].split(": ")[1]
-                        tmp['filename'] = filename
-                        entry.append(tmp)
+            			date = datetime.strptime(date_parts[1], '%Y/%m/%d %H:%M:%S')
+            			date = int(time.mktime(date.timetuple())*1000)
+            			author = rev_parts[1].split(": ")[1]
+                        event_list.append(Event(filename, date, author))
                         
                 line = file_handle.readline()
                 if(str(line) == ""):
@@ -176,11 +178,14 @@ def main():
             xml_handle = open(xml_path,  'w')
             xml_handle.write('<?xml version="1.0"?>\n')
             xml_handle.write('<file_events>\n')
-            for event in entry:
+            # Write the events from event_list.
+            event_list.sort()
+            for event in event_list:
                 try:
-                	xml_handle.write("<event filename=\""+str(event['filename'])+"\" date=\""+str(event['date'])+"\" author=\""+str(event['author'])+"\" />\n")
+                    xml_handle.write('<event filename="%s" date="%s" author="%s" />\n' % \
+                        (event.filename, event.date, event.author))
                 except:
-                	print "error when writing file: "+str(event)
+                    print "Error when writing this file: " + str(event)
             xml_handle.write('</file_events>\n')
             xml_handle.close()
         else:

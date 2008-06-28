@@ -1,4 +1,159 @@
 ------------------------------------------------------------------------
+r71 | arjenw | 2008-06-27 17:14:54 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/build.xml
+
+Adding jogl.jar to the classpath in the ant build script
+------------------------------------------------------------------------
+r69 | arjenw | 2008-06-27 17:12:59 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   A /trunk/lib/gluegen-rt.jar
+   A /trunk/lib/jogl.jar
+
+Adding JOGL and GlueGen-rt jars in order to build the app, they are howevery useless without the runtime libraries which are platform dependent
+------------------------------------------------------------------------
+r68 | arjenw | 2008-06-27 17:09:58 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/src/codeswarm/config/CodeSwarmConfig.java
+   M /trunk/src/codeswarm/jogl/CodeSwarm.java
+
+Setup a basic AWT panel + JOGL panel, adding a windowClosing handler. Also using the configuration data to setup screen size.
+------------------------------------------------------------------------
+r67 | arjenw | 2008-06-27 17:02:12 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/src/codeswarm/jogl/CodeSwarm.java
+
+Setup a basic AWT panel + JOGL panel, adding a windowClosing handler
+------------------------------------------------------------------------
+r66 | arjenw | 2008-06-27 16:43:36 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   A /trunk/src/codeswarm/config
+   A /trunk/src/codeswarm/config/CodeSwarmConfig.java (from /trunk/src/CodeSwarmConfig.java:61)
+
+Adding trimmed down config class, will enhance later
+------------------------------------------------------------------------
+r65 | arjenw | 2008-06-27 16:38:38 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   A /trunk/src/codeswarm
+   A /trunk/src/codeswarm/jogl
+   A /trunk/src/codeswarm/jogl/CodeSwarm.java
+
+Initial import of JOGL based code, just the main package name and "main" method.
+------------------------------------------------------------------------
+r64 | arjenw | 2008-06-27 15:58:40 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/src/code_swarm.java
+
+Added the ability to remove "old" files, ie, files that have a life of 0. This removes strain from the internal structures and loops, without apparently changing something... although if a file isn't touched in a while it size reverts to default, therefor I made it optional
+------------------------------------------------------------------------
+r63 | arjenw | 2008-06-27 15:41:14 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/src/code_swarm.java
+
+Cleaned up the for loops and the use of non-generic collections, this of course assumes java 1.5+, but everyone should have that by now. Also cleaned up imports and added some debug output to the screen, set the property: debug=true to see it.
+------------------------------------------------------------------------
+r62 | arjenw | 2008-06-27 15:07:30 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/data/sample.config
+
+Added the RunSlowly property (default true) to toggle the entire scene blurring
+------------------------------------------------------------------------
+r61 | arjenw | 2008-06-27 15:06:22 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/src/CodeSwarmConfig.java
+   M /trunk/src/code_swarm.java
+
+Added getStringProperty and getBooleanProperty to the config class, made blurring the entire scene optional (RunSlowly config property) in the draw method to get some more speed out of a normal run
+------------------------------------------------------------------------
+r60 | arjenw | 2008-06-27 14:55:39 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/src/code_swarm.java
+
+Now using the config file, so please pass it along when running 'main'
+------------------------------------------------------------------------
+r59 | arjenw | 2008-06-27 14:35:07 -0500 (Fri, 27 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/src/CodeSwarmConfig.java
+   M /trunk/src/code_swarm.java
+
+Changed the config to just read a properties file, instead of doing it all by hand. Implemented simple accessors for each of the properties to be compatible.
+------------------------------------------------------------------------
+r56 | cgalvan@mail.utexas.edu | 2008-06-26 08:05:19 -0500 (Thu, 26 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/convert_logs.py
+
+Initial cvs log support for the conversion tool submitted by someone on the wiki.
+------------------------------------------------------------------------
+r55 | michael.ogawa | 2008-06-25 19:01:40 -0500 (Wed, 25 Jun 2008) | 2 lines
+Changed paths:
+   M /trunk/src/code_swarm.java
+
+Minor code cleanup
+
+------------------------------------------------------------------------
+r53 | michael.ogawa | 2008-06-25 00:42:17 -0500 (Wed, 25 Jun 2008) | 2 lines
+Changed paths:
+   A /trunk/data/sample.config
+   A /trunk/src/CodeSwarmConfig.java
+   M /trunk/src/code_swarm.java
+
+Configuration class and sample config file
+
+------------------------------------------------------------------------
+r52 | cgalvan@mail.utexas.edu | 2008-06-24 16:38:37 -0500 (Tue, 24 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/convert_logs.py
+
+Improving the way the log conversion tool checks for the end of the log file.
+------------------------------------------------------------------------
+r48 | cgalvan@mail.utexas.edu | 2008-06-24 00:30:24 -0500 (Tue, 24 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/convert_logs.py
+
+Fixing issue where paths in the SVN logs were being clipped while being parsed.
+------------------------------------------------------------------------
+r47 | cgalvan@mail.utexas.edu | 2008-06-24 00:19:03 -0500 (Tue, 24 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/test_files/svn_log.txt
+
+Setting eol-style to native on log conversion script directory.
+------------------------------------------------------------------------
+r46 | cgalvan@mail.utexas.edu | 2008-06-24 00:17:49 -0500 (Tue, 24 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/test_files/svn_log.txt
+
+Removing CR+LF line endings in svn log test file.
+------------------------------------------------------------------------
+r44 | cgalvan@mail.utexas.edu | 2008-06-24 00:06:32 -0500 (Tue, 24 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/README
+
+Correcting typo in log conversion script README.
+------------------------------------------------------------------------
+r43 | michael.ogawa | 2008-06-23 23:26:33 -0500 (Mon, 23 Jun 2008) | 2 lines
+Changed paths:
+   A /trunk/build.xml
+   A /trunk/data
+   A /trunk/data/sample-repevents.xml
+   M /trunk/src/code_swarm.java
+   A /trunk/src/particle.png
+
+Java-ized src + ant build file
+
+------------------------------------------------------------------------
+r42 | cgalvan@mail.utexas.edu | 2008-06-23 18:51:42 -0500 (Mon, 23 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/convert_logs/README
+
+Adding some more detail to the conversion log usage README.
+------------------------------------------------------------------------
+r41 | cgalvan@mail.utexas.edu | 2008-06-23 15:02:05 -0500 (Mon, 23 Jun 2008) | 1 line
+Changed paths:
+   M /trunk/code_swarm/data/code_swarm-repository.xml
+   M /trunk/convert_logs/test_files/svn_log.txt
+
+Correcting the sample SVN log and code_swarm xml log.
+------------------------------------------------------------------------
 r40 | cgalvan@mail.utexas.edu | 2008-06-23 14:47:09 -0500 (Mon, 23 Jun 2008) | 1 line
 Changed paths:
    M /trunk/convert_logs/convert_logs.py
