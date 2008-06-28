@@ -54,7 +54,8 @@ def parse_args(argv):
     
 def main():
     """ Calls the parse_args function based on the 
-    command-line inputs and handles parsed arguments."""
+    command-line inputs and handles parsed arguments.
+    """
     (opts, args) = parse_args(sys.argv)
     
     # Handle parsed options.
@@ -133,15 +134,13 @@ def main():
            
             file_handle = open(log_file,  'r')
             line = file_handle.readline()
-            while line is not '':
+            while len(line) > 0:
             	tmp = {}
             	# The cvs_sep indicates a new revision history to parse.
             	if line.startswith(cvs_sep):
             		#Read the revision number
             		rev_line = file_handle.readline()
-            		tmp['revision'] = rev_line.split("revision ")[-1].strip('\n')
-            		if(tmp['revision'] == cvs_sep):
-            			break
+            		tmp['revision'] = rev_line.split("revision ")[-1].strip()
 
             		# Extract author and date from revision line.
             		rev_line = file_handle.readline()
@@ -159,7 +158,7 @@ def main():
                 	break
                 elif(line.lower().find("rcs file: ") >= 0):
                     rev_line = line.split(": ");
-                    filename = rev_line[1].strip('\n').split(',')[0]
+                    filename = rev_line[1].strip().split(',')[0]
                     
             # Generate standard event xml file from event_list.
             # By default, the generated xml file will be the same name as the input log file
