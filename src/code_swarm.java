@@ -76,6 +76,8 @@ public class code_swarm extends PApplet
 
     private static CodeSwarmConfig cfg;
     private long lastDrawDuration = 0;
+    private boolean loading = true;
+    private String loadingMessage = "Reading input file";
 
     /* Initialization */
 	public void setup()
@@ -101,8 +103,15 @@ public class code_swarm extends PApplet
 
 		// Load data
 		//loadRepository( INPUT_FILE );  // repository formatted
-		loadRepEvents( cfg.getInputFile() );  // event formatted (this will be standard)
-		// TODO: use adapter pattern to handle different data sources
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                loadRepEvents( cfg.getInputFile() );  // event formatted (this will be standard)
+                prevDate = eventsQueue.peek().date;
+            }
+        });
+        t.setDaemon(true);
+        t.start();
+        // TODO: use adapter pattern to handle different data sources
 
         // Create fonts
 		font = createFont( "SansSerif", 10 );
@@ -114,7 +123,6 @@ public class code_swarm extends PApplet
 		// Add translucency (using itself in this case)
 		sprite.mask( sprite );
 
-		prevDate = eventsQueue.peek().date;
     }
 
 	/* Load a colormap */
@@ -166,43 +174,46 @@ public class code_swarm extends PApplet
         long start = System.currentTimeMillis();
         background( 0 );  // clear screen w/ black
 
-		this.update();  // update state to next frame
+        if (loading) {
+            drawLoading();
+        }
+        else {
+            this.update();  // update state to next frame
+            // Draw edges (for debugging only)
+            //for (Edge edge : edges)
+            //    edge.draw();
 
-		// Draw edges (for debugging only)
-		//for( int i = 0; i < edges.size(); i++ )
-		//  ((Edge)edges.get(i)).draw();
+            // Surround names with aura
+            drawPeopleNodesBlur();
 
-		// Surround names with aura
-		drawPeopleNodesBlur();
+            // Draw file particles
+            for (FileNode node : nodes)
+                node.draw();
 
-		// Draw file particles
-        for (FileNode node : nodes)
-            node.draw();
+            // Draw names
+            drawPeopleNodesSharp();
 
-		// Draw names
-		drawPeopleNodesSharp();
+            textFont(font);
 
-		textFont( font );
+            if (cfg.getBooleanProperty("debug", false))
+                drawDebugData();
 
-        if (cfg.getBooleanProperty("debug", false))
-            drawDebugData();
+            if (showHistogram)
+                drawHistory();
 
-        if ( showHistogram )
-			drawHistory();
+            if (showLegend)
+                drawLegend();
 
-		if ( showLegend )
-			drawLegend();
+            if (showDate)
+                drawDate();
 
-		if ( showDate )
-			drawDate();
+            if (cfg.getTakeSnapshots())
+                dumpFrame();
 
-		if ( cfg.getTakeSnapshots() )
-			dumpFrame();
-
-		// Stop animation when we run out of data
-		if ( eventsQueue.isEmpty() )
-			noLoop();
-
+            // Stop animation when we run out of data
+            if (eventsQueue.isEmpty())
+                noLoop();
+        }
         long end = System.currentTimeMillis();
         lastDrawDuration = end - start;
     }
@@ -265,7 +276,16 @@ public class code_swarm extends PApplet
 		}
 	}
 
-	/* Show color codings */
+    public void drawLoading()
+    {
+        noStroke();
+        textFont(font, 20);
+        textAlign( LEFT, TOP );
+        fill( 255, 200 );
+        text(loadingMessage, 0, 0);
+    }
+
+    /* Show color codings */
 	public void drawLegend()
 	{
 		noStroke();
@@ -484,7 +504,7 @@ public class code_swarm extends PApplet
 	public void loadRepEvents( String filename1 )
 	{
 		XMLElement doc = new XMLElement( this, filename1 );
-		for( int i = 0; i < doc.getChildCount(); i++ )
+        for( int i = 0; i < doc.getChildCount(); i++ )
 		{
 			XMLElement xml = doc.getChild(i);
 			String filename = xml.getStringAttribute( "filename" );
@@ -495,8 +515,11 @@ public class code_swarm extends PApplet
 			//int linesremoved = xml.getIntAttribute( "linesremoved" );
 			FileEvent evt = new FileEvent( date, author, "", filename );
 			eventsQueue.add( evt );
+            if (eventsQueue.size() % 100 == 0)
+                loadingMessage = "Creating events: " + eventsQueue.size();
 		}
-	}
+        loading = false;
+    }
 
 	/* Load SVN log formatted file */
 	public void loadSVNRepository( XMLElement doc )
