@@ -43,7 +43,7 @@ public class code_swarm extends PApplet
 	String SCREENSHOT_FILE = "frames/swarm-#####.png";
 
 	// Data storage
-	PriorityBlockingQueue<FileEvent> eventsQueue; // MAC OSX: USE PROCESSING 0142 or higher
+	PriorityBlockingQueue<FileEvent> eventsQueue; // USE PROCESSING 0142 or higher
 	CopyOnWriteArrayList<FileNode> nodes;
 	CopyOnWriteArrayList<Edge> edges;
 	CopyOnWriteArrayList<PersonNode> people;
@@ -74,21 +74,21 @@ public class code_swarm extends PApplet
 	// Formats the date string nicely
 	DateFormat formatter = DateFormat.getDateInstance();
 
-    private static CodeSwarmConfig cfg;
-    private long lastDrawDuration = 0;
-    private boolean loading = true;
-    private String loadingMessage = "Reading input file";
+	private static CodeSwarmConfig cfg;
+	private long lastDrawDuration = 0;
+	private boolean loading = true;
+	private String loadingMessage = "Reading input file";
 
-    /* Initialization */
+	/* Initialization */
 	public void setup()
 	{
-        if (cfg.getBooleanProperty("UseOpenGL", false)) {
-            size( cfg.getWidth(), cfg.getHeight(), OPENGL);
-        } else {
-            size( cfg.getWidth(), cfg.getHeight());            
-        }
-                   
-        smooth();
+		if (cfg.getBooleanProperty("UseOpenGL", false)) {
+			size( cfg.getWidth(), cfg.getHeight(), OPENGL);
+		} else {
+			size( cfg.getWidth(), cfg.getHeight());            
+		}
+
+		smooth();
 		frameRate( FRAME_RATE );
 
 		// init data structures
@@ -103,17 +103,17 @@ public class code_swarm extends PApplet
 
 		// Load data
 		//loadRepository( INPUT_FILE );  // repository formatted
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                loadRepEvents( cfg.getInputFile() );  // event formatted (this will be standard)
-                prevDate = eventsQueue.peek().date;
-            }
-        });
-        t.setDaemon(true);
-        t.start();
-        // TODO: use adapter pattern to handle different data sources
+		Thread t = new Thread(new Runnable() {
+				public void run() {
+				loadRepEvents( cfg.getInputFile() );  // event formatted (this will be standard)
+				prevDate = eventsQueue.peek().date;
+				}
+				});
+		t.setDaemon(true);
+		t.start();
+		// TODO: use adapter pattern to handle different data sources
 
-        // Create fonts
+		// Create fonts
 		font = createFont( "SansSerif", 10 );
 		boldFont = createFont( "SansSerif.bold", 14 );
 		textFont( font );
@@ -123,7 +123,7 @@ public class code_swarm extends PApplet
 		// Add translucency (using itself in this case)
 		sprite.mask( sprite );
 
-    }
+	}
 
 	/* Load a colormap */
 	/*   TODO: load from a file or GUI */
@@ -171,52 +171,52 @@ public class code_swarm extends PApplet
 	/* Main loop */
 	public void draw()
 	{
-        long start = System.currentTimeMillis();
-        background( 0 );  // clear screen w/ black
+		long start = System.currentTimeMillis();
+		background( cfg.getBackground().getRGB() );  // clear screen with background color
 
-        if (loading) {
-            drawLoading();
-        }
-        else {
-            this.update();  // update state to next frame
-            // Draw edges (for debugging only)
-            //for (Edge edge : edges)
-            //    edge.draw();
+		if (loading) {
+			drawLoading();
+		}
+		else {
+			this.update();  // update state to next frame
+			// Draw edges (for debugging only)
+			//for (Edge edge : edges)
+			//    edge.draw();
 
-            // Surround names with aura
-            drawPeopleNodesBlur();
+			// Surround names with aura
+			drawPeopleNodesBlur();
 
-            // Draw file particles
-            for (FileNode node : nodes)
-                node.draw();
+			// Draw file particles
+			for (FileNode node : nodes)
+				node.draw();
 
-            // Draw names
-            drawPeopleNodesSharp();
+			// Draw names
+			drawPeopleNodesSharp();
 
-            textFont(font);
+			textFont(font);
 
-            if (cfg.getBooleanProperty("debug", false))
-                drawDebugData();
+			if (cfg.getBooleanProperty("debug", false))
+				drawDebugData();
 
-            if (showHistogram)
-                drawHistory();
+			if (showHistogram)
+				drawHistory();
 
-            if (showLegend)
-                drawLegend();
+			if (showLegend)
+				drawLegend();
 
-            if (showDate)
-                drawDate();
+			if (showDate)
+				drawDate();
 
-            if (cfg.getTakeSnapshots())
-                dumpFrame();
+			if (cfg.getTakeSnapshots())
+				dumpFrame();
 
-            // Stop animation when we run out of data
-            if (eventsQueue.isEmpty())
-                noLoop();
-        }
-        long end = System.currentTimeMillis();
-        lastDrawDuration = end - start;
-    }
+			// Stop animation when we run out of data
+			if (eventsQueue.isEmpty())
+				noLoop();
+		}
+		long end = System.currentTimeMillis();
+		lastDrawDuration = end - start;
+	}
 
 	/* Surround names with aura */
 	public void drawPeopleNodesBlur()
@@ -231,8 +231,8 @@ public class code_swarm extends PApplet
 		}
 
 		// Then blur it
-        if (cfg.getBooleanProperty("RunSlowly", true))
-            filter( BLUR, 3 );
+		if (cfg.getBooleanProperty("NameHalos", true))
+			filter( BLUR, 3 );
 	}
 
 	/* Draw person's name */
@@ -260,7 +260,7 @@ public class code_swarm extends PApplet
 	/* Draw histogram in lower-left */
 	public void drawHistory()
 	{
-        Iterator<ColorBins> itr = history.iterator();
+		Iterator<ColorBins> itr = history.iterator();
 		int counter = 0;
 		while( itr.hasNext() )
 		{
@@ -270,22 +270,22 @@ public class code_swarm extends PApplet
 			{
 				int c = cb.colorList[i];
 				stroke( c, 200 );                
-                point( counter, height - i - 3 );
+				point( counter, height - i - 3 );
 			}
 			counter++;
 		}
 	}
 
-    public void drawLoading()
-    {
-        noStroke();
-        textFont(font, 20);
-        textAlign( LEFT, TOP );
-        fill( 255, 200 );
-        text(loadingMessage, 0, 0);
-    }
+	public void drawLoading()
+	{
+		noStroke();
+		textFont(font, 20);
+		textAlign( LEFT, TOP );
+		fill( 255, 200 );
+		text(loadingMessage, 0, 0);
+	}
 
-    /* Show color codings */
+	/* Show color codings */
 	public void drawLegend()
 	{
 		noStroke();
@@ -301,17 +301,17 @@ public class code_swarm extends PApplet
 		}
 	}
 
-    public void drawDebugData()
-    {
-        noStroke();
-        textFont( font );
-        textAlign( LEFT, TOP );
-        fill( 255, 200 );
-        text( "Nodes: " + nodes.size(), 0, 0 );
-        text( "People: " + people.size(), 0, 10 );
-        text( "Queue: " + eventsQueue.size(), 0, 20 );
-        text( "Last render time: " + lastDrawDuration, 0, 30);
-    }
+	public void drawDebugData()
+	{
+		noStroke();
+		textFont( font );
+		textAlign( LEFT, TOP );
+		fill( 255, 200 );
+		text( "Nodes: " + nodes.size(), 0, 0 );
+		text( "People: " + people.size(), 0, 10 );
+		text( "Queue: " + eventsQueue.size(), 0, 20 );
+		text( "Last render time: " + lastDrawDuration, 0, 30);
+	}
 
 	/* Take screenshot */
 	public void dumpFrame()
@@ -333,9 +333,9 @@ public class code_swarm extends PApplet
 		while( currentEvent != null && currentEvent.date.before( nextDate ) )
 		{
 			currentEvent = eventsQueue.poll();
-            if (currentEvent == null) return;
-            
-            FileNode n = findNode( currentEvent.path + currentEvent.filename );
+			if (currentEvent == null) return;
+
+			FileNode n = findNode( currentEvent.path + currentEvent.filename );
 			if ( n == null )
 			{
 				n = new FileNode( currentEvent );
@@ -401,60 +401,60 @@ public class code_swarm extends PApplet
 		while ( history.size() > 320 )
 			history.remove();
 
-        for (Edge edge : edges) {
-            edge.relax();
-        }
+		for (Edge edge : edges) {
+			edge.relax();
+		}
 
-        for (FileNode node : nodes) {
-            node.relax();
-        }
+		for (FileNode node : nodes) {
+			node.relax();
+		}
 
-        for (PersonNode aPeople : people) {
-            aPeople.relax();
-        }
+		for (PersonNode aPeople : people) {
+			aPeople.relax();
+		}
 
-        for (Edge edge : edges) {
-            edge.update();
-        }
+		for (Edge edge : edges) {
+			edge.update();
+		}
 
-        for (FileNode node : nodes) {
-            node.update();
-        }
+		for (FileNode node : nodes) {
+			node.update();
+		}
 
-        for (PersonNode aPeople : people) {
-            aPeople.update();
-        }
-    }
+		for (PersonNode aPeople : people) {
+			aPeople.update();
+		}
+	}
 
 	public FileNode findNode( String name )
 	{
-        for (FileNode node : nodes)
-        {
-            if (node.name.equals(name))
-                return node;
-        }
+		for (FileNode node : nodes)
+		{
+			if (node.name.equals(name))
+				return node;
+		}
 		return null;
 	}
 
 	public Edge findEdge( Node n1, Node n2 )
 	{
-        for (Edge edge : edges)
-        {
-            if (edge.from == n1 && edge.to == n2)
-                return edge;
-            if (edge.from == n2 && edge.to == n1)
-                return edge;
-        }
+		for (Edge edge : edges)
+		{
+			if (edge.from == n1 && edge.to == n2)
+				return edge;
+			if (edge.from == n2 && edge.to == n1)
+				return edge;
+		}
 		return null;
 	}
 
 	public PersonNode findPerson( String name )
 	{
-        for (PersonNode p : people)
-        {
-            if (p.name.equals(name))
-                return p;
-        }
+		for (PersonNode p : people)
+		{
+			if (p.name.equals(name))
+				return p;
+		}
 		return null;
 	}
 
@@ -504,7 +504,7 @@ public class code_swarm extends PApplet
 	public void loadRepEvents( String filename1 )
 	{
 		XMLElement doc = new XMLElement( this, filename1 );
-        for( int i = 0; i < doc.getChildCount(); i++ )
+		for( int i = 0; i < doc.getChildCount(); i++ )
 		{
 			XMLElement xml = doc.getChild(i);
 			String filename = xml.getStringAttribute( "filename" );
@@ -515,11 +515,11 @@ public class code_swarm extends PApplet
 			//int linesremoved = xml.getIntAttribute( "linesremoved" );
 			FileEvent evt = new FileEvent( date, author, "", filename );
 			eventsQueue.add( evt );
-            if (eventsQueue.size() % 100 == 0)
-                loadingMessage = "Creating events: " + eventsQueue.size();
+			if (eventsQueue.size() % 100 == 0)
+				loadingMessage = "Creating events: " + eventsQueue.size();
 		}
-        loading = false;
-    }
+		loading = false;
+	}
 
 	/* Load SVN log formatted file */
 	/* DEPRECATED */
@@ -664,12 +664,12 @@ public class code_swarm extends PApplet
 			life += -2;
 			if ( life < 0 ) {
 				life = 0;
-            }
-        }
+			}
+		}
 
 		public void freshen()
 		{
-            life = 255;
+			life = 255;
 		}
 	}
 
@@ -715,12 +715,12 @@ public class code_swarm extends PApplet
 		int touches;
 
 
-        public String toString()
-        {
-            return "FileNode{" + "name='" + name + '\'' + ", nodeHue=" + nodeHue + ", touches=" + touches + '}';
-        }
+		public String toString()
+		{
+			return "FileNode{" + "name='" + name + '\'' + ", nodeHue=" + nodeHue + ", touches=" + touches + '}';
+		}
 
-        FileNode( FileEvent fe )
+		FileNode( FileEvent fe )
 		{
 			super();
 			name = fe.path + fe.filename;
@@ -740,17 +740,17 @@ public class code_swarm extends PApplet
 
 		public void freshen()
 		{
-            life = 255;
+			life = 255;
 			touches++;
 		}
 
 		public void decay()
 		{
 			life += -2.0f;
-            if (life <= 0) {
-                life = 0;
-            }
-        }
+			if (life <= 0) {
+				life = 0;
+			}
+		}
 
 		public void draw()
 		{
@@ -768,7 +768,7 @@ public class code_swarm extends PApplet
 				text( name, x, y );
 				 */
 			}
-        }
+		}
 
 		public void drawSharp()
 		{
@@ -973,12 +973,12 @@ public class code_swarm extends PApplet
 		{
 			life -= 1;
 			if ( life < 0 )
-                life = 0;
+				life = 0;
 		}
 
 		public void freshen()
 		{
-            life = 255;
+			life = 255;
 		}
 
 		public void addColor( int c )
@@ -991,21 +991,21 @@ public class code_swarm extends PApplet
 
 	static public void main(String args[])
 	{
-        try
-        {
-            if (args.length > 0)
-            {
-                cfg = new CodeSwarmConfig(args[0]);
-                PApplet.main(new String[]{"code_swarm"});
-            }
-            else
-            {
-                System.err.println("Specify a config file.");
-            }
-        }
-        catch (IOException e)
-        {
-            System.err.println("Failed due to exception: " + e.getMessage());
-        }
-    }
+		try
+		{
+			if (args.length > 0)
+			{
+				cfg = new CodeSwarmConfig(args[0]);
+				PApplet.main(new String[]{"code_swarm"});
+			}
+			else
+			{
+				System.err.println("Specify a config file.");
+			}
+		}
+		catch (IOException e)
+		{
+			System.err.println("Failed due to exception: " + e.getMessage());
+		}
+	}
 }
