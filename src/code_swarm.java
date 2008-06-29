@@ -610,32 +610,6 @@ public class code_swarm extends PApplet
 		looping = !looping;
 	}
 
-	class ColorBins
-	{
-		int [] colorList;
-		int num;
-
-		ColorBins()
-		{
-			colorList = new int[2];
-			num = 0;
-		}
-
-		public void add( int c )
-		{
-			if ( num >= colorList.length )
-				colorList = expand( colorList );
-
-			colorList[num] = c;
-			num++;
-		}
-
-		public void sort()
-		{
-			colorList = PApplet.sort( colorList );
-		}
-	}
-
 	class Edge
 	{
 		Node from;
