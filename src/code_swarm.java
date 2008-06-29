@@ -522,6 +522,7 @@ public class code_swarm extends PApplet
     }
 
 	/* Load SVN log formatted file */
+	/* DEPRECATED */
 	public void loadSVNRepository( XMLElement doc )
 	{
 		// Iterate over commit nodes.
@@ -607,58 +608,6 @@ public class code_swarm extends PApplet
 		else
 			loop();
 		looping = !looping;
-	}
-
-	class ColorAssigner
-	{
-		ArrayList<ColorTest> tests;
-		int defaultColor = color(128, 128, 128);
-
-		public ColorAssigner()
-		{
-			tests = new ArrayList<ColorTest>();
-		}
-
-		public void addRule( String expr, int c1, int c2 )
-		{
-			ColorTest t = new ColorTest();
-			t.expr = expr;
-			t.c1 = c1;
-			t.c2 = c2;
-			addRule( t );
-		}
-
-		public void addRule( ColorTest t )
-		{
-			tests.add( t );
-		}
-
-		public int getColor( String s )
-		{
-            for (ColorTest t : tests)
-            {
-                if (t.passes(s))
-                    return t.assign();
-            }
-
-			return defaultColor;
-		}
-	}
-
-	class ColorTest
-	{
-		String expr;
-		int c1, c2;
-
-		public boolean passes( String s )
-		{
-			return s.matches( expr );
-		}
-
-		public int assign()
-		{
-			return lerpColor( c1, c2, random(1.0f) );
-		}
 	}
 
 	class ColorBins
