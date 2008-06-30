@@ -38,14 +38,20 @@ public class CodeSwarmConfig
 
 	public CodeSwarmConfig(String configFileName) throws IOException
 	{
-		p = new Properties();
-		p.setProperty(WIDTH_KEY, "640");
-		p.setProperty(HEIGHT_KEY, "480");
-		p.setProperty(INPUT_FILE_KEY, "data/sample-repevents.xml");
-		p.setProperty(MSEC_PER_FRAME_KEY, "21600000");
-		p.setProperty( BACKGROUND_KEY, "0,0,0" );
-		p.setProperty(TAKE_SNAPSHOTS_KEY, "false");
-		p.load(new FileInputStream(configFileName));
+		p = new Properties( this.createDefaults() );
+		p.load( new FileInputStream(configFileName) );
+	}
+
+	private Properties createDefaults()
+	{
+		Properties def = new Properties();
+		def.setProperty( WIDTH_KEY, "640" );
+		def.setProperty( HEIGHT_KEY, "480");
+		def.setProperty( INPUT_FILE_KEY, "data/sample-repevents.xml");
+		def.setProperty( MSEC_PER_FRAME_KEY, "21600000");
+		def.setProperty( BACKGROUND_KEY, "0,0,0" );
+		def.setProperty( TAKE_SNAPSHOTS_KEY, "false");
+		return def;
 	}
 
 	public int getWidth()
@@ -63,9 +69,9 @@ public class CodeSwarmConfig
 		return p.getProperty(INPUT_FILE_KEY);
 	}
 
-	public int getMSecPerFrame()
+	public long getMSecPerFrame()
 	{
-		return Integer.valueOf(p.getProperty(MSEC_PER_FRAME_KEY));
+		return Long.valueOf(p.getProperty(MSEC_PER_FRAME_KEY));
 	}
 
 	public Color getBackground()
@@ -92,6 +98,7 @@ public class CodeSwarmConfig
 
 	public static Color stringToColor( String str )
 	{
+		// assume format is "R,G,B"
 		String [] tokens = str.split( "," );
 		int [] values = new int[3];
 		for( int i = 0; i < 3; i++ )
