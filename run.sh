@@ -1,1 +1,1 @@
-java -classpath dist/code_swarm.jar:lib/core.jar:lib/xml.jar:. code_swarm $@
+java -Xmx1000m -classpath dist/code_swarm.jar:lib/core.jar:lib/xml.jar:. code_swarm $@
