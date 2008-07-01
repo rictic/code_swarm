@@ -17,7 +17,7 @@
    along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+import java.awt.Color;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -34,6 +34,42 @@ class ColorTest
 	public int assign()
 	{
 		return PApplet.lerpColor( c1, c2, (float)Math.random(), PConstants.RGB );
+	}
+
+	public void loadProperty( String value )
+	{
+		// should have the format "regex", r1,g1,b1, r2,g2,b2
+		// get the stuff in quotes first
+		int firstQ = value.indexOf( '\"' );
+		int lastQ = value.lastIndexOf( '\"' );
+		expr = value.substring( firstQ + 1, lastQ );
+
+		// then the comma delimited colors
+		String rest = value.substring( lastQ + 1 );
+		String [] tokens = rest.split( "," );
+		int [] components = new int[6];
+
+		int j = 0;
+		for( int i = 0; i < tokens.length; i++ )
+		{
+			String tok = tokens[i].trim();
+			if ( tok.length() > 0 )
+			{
+				components[j++] = Integer.parseInt( tok );
+			}
+		}
+		c1 = new Color( components[0], components[1], components[2] ).getRGB();
+		c2 = new Color( components[3], components[4], components[5] ).getRGB();
+	}
+
+	public static void main( String [] args )
+	{
+		ColorTest ct = new ColorTest();
+		System.out.println( "input=" + args[0] );
+		ct.loadProperty( args[0] );
+		System.out.println( "regex=" + ct.expr );
+		System.out.println( "color1=" + Integer.toHexString(ct.c1) );
+		System.out.println( "color2=" + Integer.toHexString(ct.c2) );
 	}
 }
 

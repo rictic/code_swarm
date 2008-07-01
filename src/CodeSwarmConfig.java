@@ -20,6 +20,7 @@
 import java.awt.Color;
 import java.io.*;
 import java.util.Properties;
+import java.util.Enumeration;
 
 public class CodeSwarmConfig
 {
@@ -116,11 +117,13 @@ public class CodeSwarmConfig
 			try
 			{
 				config = new CodeSwarmConfig(args[0]);
-				System.out.println(CodeSwarmConfig.WIDTH_KEY + " = " + config.getWidth());
-				System.out.println(CodeSwarmConfig.HEIGHT_KEY + " = " + config.getHeight());
-				System.out.println(CodeSwarmConfig.INPUT_FILE_KEY + " = " + config.getInputFile());
-				System.out.println(CodeSwarmConfig.MSEC_PER_FRAME_KEY + " = " + config.getMSecPerFrame());
-				System.out.println(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY + " = " + config.getTakeSnapshots());
+				Enumeration en = config.p.propertyNames();
+				while ( en.hasMoreElements() )
+				{
+					String key = (String)en.nextElement();
+					String value = config.p.getProperty( key );
+					System.out.println( key + "=" + value );
+				}
 			}
 			catch (IOException e)
 			{
