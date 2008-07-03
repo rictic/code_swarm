@@ -864,6 +864,8 @@ public class code_swarm extends PApplet
 
 		float life;
 
+        protected float maxSpeed = 7.0f;
+        
 		Node()
 		{
 			x = random(width);
@@ -876,8 +878,13 @@ public class code_swarm extends PApplet
 		{
 			if ( !fixed )
 			{
-				x += constrain( dx, -5, 5 );
-				y += constrain( dy, -5, 5 );
+                if(mag(dx, dy) > maxSpeed){
+                    float div = mag(dx/maxSpeed, dy/maxSpeed);
+                    dx = dx/div;
+                    dy = dy/div;
+                }
+                x += dx;
+                y += dy;
 				x = constrain( x, 0, width );
 				y = constrain( y, 0, height );
 			}
@@ -901,6 +908,7 @@ public class code_swarm extends PApplet
 		PersonNode( String n )
 		{
 			super();
+            maxSpeed = 2.0f;
 			name = n;
 			fixed = false;
 			life = 255;
