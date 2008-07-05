@@ -56,7 +56,7 @@ classpath="${lib}/core.jar;${lib}/xml.jar;${lib}/jogl.jar;${lib}/opengl.jar" deb
   <target name="clean" depends="init" description="Removed compiled files">
     <echo>Running CLEAN</echo>
     <delete dir="${build}" verbose="true"/>
-    <delete file="${ant.project.name}.jar" verbose="true"/>
+    <delete dir="${dist}" verbose="true"/>
   </target>
 
 </project>
