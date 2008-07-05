@@ -31,6 +31,14 @@ public class CodeSwarmConfig
 	public static final String TAKE_SNAPSHOTS_KEY = "TakeSnapshots";
 	public static final String NAME_HALOS_KEY = "NameHalos";
 	public static final String BACKGROUND_KEY = "Background";
+	public static final String COLOR_ASSIGN_KEY [] = { "ColorAssign1",
+	                                                   "ColorAssign2",
+	                                                   "ColorAssign3",
+	                                                   "ColorAssign4",
+	                                                   "ColorAssign5",
+	                                                   "ColorAssign6",
+	                                                   "ColorAssign7" };
+	public static String DEFAULT_COLOR_ASSIGN = "\".*\",128,128,128,128,128,128";
 
 	private Properties p = null;
 
@@ -52,6 +60,12 @@ public class CodeSwarmConfig
 		def.setProperty( MSEC_PER_FRAME_KEY, "21600000");
 		def.setProperty( BACKGROUND_KEY, "0,0,0" );
 		def.setProperty( TAKE_SNAPSHOTS_KEY, "false");
+
+		for( int i = 0; i < COLOR_ASSIGN_KEY.length; i++ )
+		{
+			def.setProperty( COLOR_ASSIGN_KEY[i], DEFAULT_COLOR_ASSIGN );
+		}
+
 		return def;
 	}
 
@@ -95,6 +109,11 @@ public class CodeSwarmConfig
 	public String getStringProperty(String key, String defValue)
 	{
 		return p.getProperty(key, defValue);
+	}
+
+	public String getColorAssignProperty( int index )
+	{
+		return p.getProperty( COLOR_ASSIGN_KEY[index] );
 	}
 
 	public static Color stringToColor( String str )

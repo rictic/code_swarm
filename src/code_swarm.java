@@ -126,18 +126,20 @@ public class code_swarm extends PApplet
 	}
 
 	/* Load a colormap */
-	/*   TODO: load from a file or GUI */
 	public void initColors()
 	{
 		colorAssigner = new ColorAssigner();
-		colorMode( HSB );
 
-		//apacheColors();
-		//pythonColors();
-		//javaColors();
-		eclipseColors();
+		for( int i = 0; i < 7; i++ )
+		{
+			ColorTest ct = new ColorTest();
+			String property = cfg.getColorAssignProperty( i );
+			ct.loadProperty( property );
+			colorAssigner.addRule( ct );
+		}
 	}
 
+	/* DEPRECATED, kept for reference */
 	public void apacheColors()
 	{
 		colorAssigner.addRule( "/src.*", color(0,255,255), color(15,255,255) );
@@ -145,6 +147,7 @@ public class code_swarm extends PApplet
 		colorAssigner.addRule( "/mod.*|/contrib.*", color(25,255,255), color(40,255,255) );
 	}
 
+	/* DEPRECATED, kept for reference */
 	public void pythonColors()
 	{
 		colorAssigner.addRule( ".*\\.tex|.*\\.txt", color(150,255,255), color(170,255,255) );
@@ -153,6 +156,7 @@ public class code_swarm extends PApplet
 		colorAssigner.addRule( ".*/Doc/.*", color(150,255,255), color(170,255,255) );
 	}
 
+	/* DEPRECATED, kept for reference */
 	public void javaColors()
 	{
 		colorAssigner.addRule( ".*\\.java|.*/src/.*", color(0,255,255), color(15,255,255) );
@@ -160,6 +164,7 @@ public class code_swarm extends PApplet
 		colorAssigner.addRule( ".*/lib/.*", color(25,255,255), color(40,255,255) );
 	}
 
+	/* DEPRECATED, kept for reference */
 	public void eclipseColors()
 	{
 		colorAssigner.addRule( ".*\\.java|.*/src/.*", color(0,255,255), color(15,255,255) );
