@@ -21,7 +21,14 @@ IF "%1"=="/?" goto help
 IF "%1"=="/H" goto help
 IF "%1"=="-h" goto help
 IF "%1"=="--help" goto help
+goto binaryCheck
+:help
+    REM if help needed, print it and exit
+    echo usage: run configfile
+    echo    data/sample.config  is the default config file"
+    exit
 
+:binaryCheck
 REM checking for code_swarm java binaries
 IF NOT EXIST dist\code_swarm.jar (
     echo no code_swarm binaries !
@@ -35,12 +42,4 @@ REM echo %params%
 echo code_swarm project !
 java -Xmx1000m -classpath dist/code_swarm.jar;lib/core.jar;lib/xml.jar;. code_swarm %params%
 
-exit
 
-
-:help
-    REM if help needed, print it and exit
-    echo usage: run configfile
-    echo    data/sample.config  is the default config file"
-   
-   
