@@ -71,6 +71,16 @@ public class code_swarm extends PApplet
 	ColorAssigner colorAssigner;
 	int currentColor;
 
+	// Edge Len
+	private final int EDGE_LEN				= 25;
+	// Drawable object life decrement
+	private final int EDGE_LIFE_INIT			= 255;
+	private final int FILE_LIFE_INIT			= 255;
+	private final int PERSON_LIFE_INIT		= 255;
+	private final int EDGE_LIFE_DECREMENT		= -2;
+	private final int FILE_LIFE_DECREMENT		= -2;
+	private final int PERSON_LIFE_DECREMENT	= -1;
+
 	// Formats the date string nicely
 	DateFormat formatter = DateFormat.getDateInstance();
 
@@ -111,7 +121,7 @@ public class code_swarm extends PApplet
 				});
 		t.setDaemon(true);
 		t.start();
-		// TODO: use adapter pattern to handle different data sources
+		//! @todo TODO: use adapter pattern to handle different data sources
 
 		// Create fonts
 		font = createFont( "SansSerif", 10 );
@@ -548,7 +558,7 @@ public class code_swarm extends PApplet
 
 			// When the SVN repository is created, there is no author associated with the commit, so for
 			// now just log it as anonymous.
-			// FIXME: Should we ignored events with no author completely or log them a different way?
+			//! @todo FIXME: Should we ignored events with no author completely or log them a different way?
 			XMLElement author_node = xml.getChild("author");
 			String author = "anonymous";
 			if ( author_node != null )
@@ -615,32 +625,117 @@ public class code_swarm extends PApplet
 		looping = !looping;
 	}
 
-	class Edge
+	/**
+	 * @brief Describe an event on a file
+	*/
+	class FileEvent implements Comparable
 	{
-		Node from;
-		Node to;
-		float len;
-		int life;
+		Date 	date;
+		String 	author;
+		String 	filename;
+		String 	path;
+		int 	linesadded;
+		int 	linesremoved;
 
-		Edge( Node from, Node to )
+		/**
+		 * @brief short constructor with base data
+		*/
+		FileEvent( long datenum, String author, String path, String filename )
 		{
-			this.from = from;
-			this.to = to;   
-			this.len = 40; //25
-			this.life = 255;
+			this( datenum, author, path, filename, 0, 0 );
 		}
 
+		/**
+		 * @brief constructor with number of modified lines
+		*/
+		FileEvent( 	long datenum, String author, 
+					String path, String filename,
+					int linesadded, int linesremoved )
+		{
+			this.date 			= new Date( datenum );
+			this.author 		= author;
+			this.path 			= path;
+			this.filename 		= filename;
+			this.linesadded 	= linesadded;
+			this.linesremoved 	= linesremoved;
+		}
+
+		/**
+		 * @brief Comparing two events by date (Not Used)
+		*/
+		public int compareTo( Object o )
+		{
+			return date.compareTo( ((FileEvent)o).date );
+		}
+	}
+
+	/** 
+	 * @brief Abstract base class for all drawable objects
+	 *
+	 * List the features common to all drawable objects
+	 * Edge and Node, FileNode and PersonNode
+	*/
+	abstract class Drawable
+	{
+		public int life;
+		
+		//! @tode those are variables used for physic calculation, but they need more appropriate names
+		float dx, dy;
+		float distx, disty;
+
+		final public int LIFE_DECREMENT;
+		
+		// 1) constructor(s)
+		//! @todo This is in preparation for the (hypotetic) displacement of update() and decay()
+		Drawable( int lifeDecrement )
+		{
+			LIFE_DECREMENT = lifeDecrement;
+		}
+		
+		public abstract void relax();		// 2) calculating next frame state
+		public	abstract void update()	;	// 3) applying next frame state
+		public abstract void decay();		// 4) shortening life
+		public abstract void draw();		// 5) drawing the new state
+		public abstract void freshen();	// 6) reseting life as if new
+	}
+
+	/** 
+	 * @brief An Edge link two nodes together : a File to a Person
+	*/
+	class Edge extends Drawable
+	{
+		Node	from;
+		Node	to;
+		float	len;
+
+		/**
+		 * 1) constructor
+		*/
+		Edge( Node from, Node to )
+		{
+			super(EDGE_LIFE_DECREMENT);	// -2
+			this.from	= from;
+			this.to		= to;   
+			this.len	= EDGE_LEN;		//  25
+			this.life	= EDGE_LIFE_INIT; // 255
+		}
+
+		/**
+		 * 2) calculating next frame state
+		*/
 		public void relax()
 		{
-			float vx = to.x - from.x;
-			float vy = to.y - from.y;
-			float d = mag( vx, vy );
+			distx = to.x - from.x;
+			disty = to.y - from.y;
+			float d = mag( distx, disty );
 			if ( d > 0 )
 			{
 				float f = (len - d) / (d * 3);
 				f = f * map( life, 0, 255, 0, 1.0f );
-				float dx = f * vx;
-				float dy = f * vy;
+				dx = f * distx;
+				dy = f * disty;
+				
+				//! @todo : remove direct access to attributes, use setters instead
 				to.dx += dx;
 				to.dy += dy;
 				from.dx -= dx;
@@ -648,7 +743,33 @@ public class code_swarm extends PApplet
 			}
 		}
 
+		/**
+		 * 3) applying next frame state
+		 *
+		 *  @todo shouln'd it be moved directly in Drawable ?
+		*/
+		public void update()
+		{
+			//super.update(); // @todo would be more homogeneous (then update() could be in Drawable)
+			decay();
+		}
 
+		/**
+		 * 4) shortening life
+		 *
+		 *  @todo shouln'd it be moved directly in Drawable ?
+		*/
+		public void decay()
+		{
+			life += LIFE_DECREMENT;
+			if ( life < 0 ) {
+				life = 0;
+			}
+		}
+
+		/**
+		 * 5) drawing the new state
+		*/
 		public void draw()
 		{
 			if ( life > 240 )
@@ -659,107 +780,171 @@ public class code_swarm extends PApplet
 			}
 		}
 
-		public void update()
-		{
-			decay();
-		}
-
-		public void decay()
-		{
-			life += -2;
-			if ( life < 0 ) {
-				life = 0;
-			}
-		}
-
+		/**
+		 * 6) reseting life as if new
+		*/
 		public void freshen()
 		{
 			life = 255;
 		}
 	}
 
-
-
-	class FileEvent implements Comparable
+	/** 
+	 * @brief A node is an abstraction for a File or a Person
+	 *
+	 * @todo Should not be called "abstract" if there is code inside...
+	*/
+	abstract class Node extends Drawable
 	{
-		Date date;
-		String author;
-		String filename;
-		String path;
-		int linesadded;
-		int linesremoved;
+		String name;
+		float x, y;
 
-		FileEvent( long datenum, String author, String path, String filename )
+		//! @tode those are variables used for physic calculation, but they need more appropriate names
+		float ddx, ddy;
+		float lensq, dlen;
+
+		boolean fixed;
+		protected float maxSpeed = 7.0f;
+        
+		/**
+		 * 1) constructor
+		*/
+		Node( int lifeDecrement )
 		{
-			this( datenum, author, path, filename, 0, 0 );
+			super(lifeDecrement);
+			x = random(width);
+			y = random(height);
 		}
 
-		FileEvent( long datenum, String author, 
-				String path, String filename,
-				int linesadded, int linesremoved )
+		/**
+		 * 3) applying next frame state
+		*/
+		public void update()
 		{
-			this.date = new Date(datenum);
-			this.author = author;
-			this.path = path;
-			this.filename = filename;
-			this.linesadded = linesadded;
-			this.linesremoved = linesremoved;
-		}
-
-		public int compareTo( Object o )
-		{
-			return date.compareTo( ((FileEvent)o).date );
+			if ( !fixed )
+			{
+				if ( mag(dx, dy) > maxSpeed )
+				{
+					float div = mag(dx/maxSpeed, dy/maxSpeed);
+					dx = dx/div;
+					dy = dy/div;
+				}
+				x += dx;
+				y += dy;
+				x = constrain( x, 0, width );
+				y = constrain( y, 0, height );
+			}
+			dx /= 2;
+			dy /= 2;
 		}
 	}
 
+
+	/** 
+	 * @brief A node describing a file, which is repulsed by other files
+	*/
 	class FileNode extends Node
 	{
-		String name;
 		int nodeHue;
-
 		int touches;
 
-
+		/**
+		 * getting file node as a string
+		*/
 		public String toString()
 		{
 			return "FileNode{" + "name='" + name + '\'' + ", nodeHue=" + nodeHue + ", touches=" + touches + '}';
 		}
 
+		/**
+		 * 1) constructor
+		*/
 		FileNode( FileEvent fe )
 		{
-			super();
+			super(FILE_LIFE_DECREMENT); // -2
 			name = fe.path + fe.filename;
 			fixed = false;
-			life = 255;
+			life = FILE_LIFE_INIT;
 			touches = 1;
 			colorMode( RGB );
 
 			nodeHue = colorAssigner.getColor( name );
 		}
 
+		/**
+		 * 2) calculating next frame state
+		 *
+		 * @todo this physic job should be uniformed between file a person nodes => then it could be moved up
+		*/
+		public void relax()
+		{
+			if ( life <= 0 )
+				return;
+
+			ddx = 0;
+			ddy = 0;
+
+			for( int j = 0; j < nodes.size(); j++ )
+			{
+				FileNode n = (FileNode)nodes.get(j);
+				if ( n.life <= 0 )
+					continue;
+
+				if ( n != this )
+				{
+					distx = x - n.x;
+					disty = y - n.y;
+					lensq = distx * distx + disty * disty;
+					if ( lensq == 0 )
+					{
+						ddx += random(0.1f);
+						ddy += random(0.1f);
+					}
+					else if ( lensq < 100 * 100 )
+					{
+						ddx += distx / lensq;
+						ddy += disty / lensq;
+					}
+				}
+			}
+			dlen = mag( ddx, ddy ) / 2;
+			if ( dlen > 0 )
+			{                                                        
+				dx += ddx / dlen;
+				dy += ddy / dlen;
+			}
+		}
+		
+		/**
+		 * 3) applying next frame state
+		 *
+		 *  @todo shouln'd it be moved direcly in Node ?
+		*/
 		public void update()
 		{
 			super.update();
 			decay();
 		}
 
-		public void freshen()
-		{
-			life = 255;
-			touches++;
-		}
-
+		/**
+		 * 4) shortening life
+		 *
+		 *  @todo shouln'd it be moved directly in Drawable ?
+		*/
 		public void decay()
 		{
-			life += -2.0f;
+			life += LIFE_DECREMENT;
 			if (life <= 0) {
 				life = 0;
 			}
 		}
 
+		/**
+		 * 5) drawing the new state
+		*/
 		public void draw()
 		{
-			if ( life > 0.0f )
+			if ( life > 0 )
 			{
 				//drawSharp();
 				drawFuzzy();
@@ -821,110 +1006,112 @@ public class code_swarm extends PApplet
 			ellipse( x, y, w, w );
 		}
 
-		public void relax()
+		/**
+		 * 6) reseting life as if new
+		*/
+		public void freshen()
 		{
-			if ( life <= 0 )
-				return;
-
-			float ddx = 0;
-			float ddy = 0;
-
-			for( int j = 0; j < nodes.size(); j++ )
-			{
-				FileNode n = (FileNode)nodes.get(j);
-				if ( n.life <= 0 )
-					continue;
-
-				if ( n != this )
-				{
-					float vx = x - n.x;
-					float vy = y - n.y;
-					float lensq = vx * vx + vy * vy;
-					if ( lensq == 0 )
-					{
-						ddx += random(0.1f);
-						ddy += random(0.1f);
-					}
-					else if ( lensq < 100 * 100 )
-					{
-						ddx += vx / lensq;
-						ddy += vy / lensq;
-					}
-				}
-			}
-			float dlen = mag( ddx, ddy ) / 2;
-			if ( dlen > 0 )
-			{                                                        
-				dx += ddx / dlen;
-				dy += ddy / dlen;
-			}
+			life = 255;
+			touches++;
 		}
 	}
 
-	abstract class Node
-	{
-		float x, y;
-		float dx, dy;
-		boolean fixed;
-
-		float life;
-
-        protected float maxSpeed = 7.0f;
-        
-		Node()
-		{
-			x = random(width);
-			y = random(height);
-		}
-
-		public abstract void draw();
-
-		public void update()
-		{
-			if ( !fixed )
-			{
-                if(mag(dx, dy) > maxSpeed){
-                    float div = mag(dx/maxSpeed, dy/maxSpeed);
-                    dx = dx/div;
-                    dy = dy/div;
-                }
-                x += dx;
-                y += dy;
-				x = constrain( x, 0, width );
-				y = constrain( y, 0, height );
-			}
-			dx /= 2;
-			dy /= 2;
-		}
-
-		public abstract void relax();
-	}
-
+	/** 
+	 * @brief A node describing a person, which is repulsed by other persons
+	*/
 	class PersonNode extends Node
 	{
-		String name;
-
 		int flavor = color(0);
 		int colorCount = 1;
 
 		float mass = 10;
 		float accel = 0.0f;
 
+		/**
+		 * 1) constructor
+		*/
 		PersonNode( String n )
 		{
-			super();
-            maxSpeed = 2.0f;
+			super(PERSON_LIFE_DECREMENT); // -1
+			maxSpeed = 2.0f;
 			name = n;
 			fixed = false;
-			life = 255;
+			life = PERSON_LIFE_INIT;
 		}
 
+		/**
+		 * 2) calculating next frame state
+		 *
+		 * @todo this physic job should be uniformed between file a person nodes => then it could be moved up
+		*/
+		public void relax()
+		{
+			if ( life <= 0 )
+				return;
+
+			ddx = 0;
+			ddy = 0;
+
+			for( int j = 0; j < people.size(); j++ )
+			{
+				Node n = (Node)people.get(j);
+				if ( n.life <= 0 )
+					continue;
+
+				if ( n != this )
+				{
+					distx = x - n.x;
+					disty = y - n.y;
+					lensq = distx * distx + disty * disty;
+					if ( lensq == 0 )
+					{
+						ddx += random(0.01f);
+						ddy += random(0.01f);
+					}
+					else if ( lensq < 100 * 100 )
+					{
+						ddx += distx / lensq;
+						ddy += disty / lensq;
+					}
+				}
+			}
+			dlen = mag( ddx, ddy ) / 2;
+			if ( dlen > 0 )
+			{
+				dx += ddx / dlen;
+				dy += ddy / dlen;
+			}
+
+			dx /= 12;
+			dy /= 12;
+		}
+
+		/**
+		 * 3) applying next frame state
+		 *
+		 *  @todo shouln'd it be moved direcly in Node ?
+		*/
 		public void update()
 		{
 			super.update();
 			decay();
 		}
 
+		/**
+		 * 4) shortening life
+		 *
+		 *  @todo shouln'd it be moved directly in Drawable ?
+		*/
+		public void decay()
+		{
+			life += LIFE_DECREMENT;
+			if ( life < 0 )
+				life = 0;
+		}
+
+		/**
+		 * 5) drawing the new state
+		*/
 		public void draw()
 		{
 			if ( life <= 0 )
@@ -940,55 +1127,11 @@ public class code_swarm extends PApplet
 			text( name, x, y );
 		}
 
-		public void relax()
-		{
-			if ( life <= 0 )
-				return;
-
-			float fx = 0;
-			float fy = 0;
-
-			for( int j = 0; j < people.size(); j++ )
-			{
-				Node n = (Node)people.get(j);
-				if ( n.life <= 0 )
-					continue;
-
-				if ( n != this )
-				{
-					float distx = x - n.x;
-					float disty = y - n.y;
-					float lensq = distx * distx + disty * disty;
-					if ( lensq == 0 )
-					{
-						fx += random(0.01f);
-						fy += random(0.01f);
-					}
-					else if ( lensq < 100 * 100 )
-					{
-						fx += distx / lensq;
-						fy += disty / lensq;
-					}
-				}
-			}
-			float dlen = mag( fx, fy ) / 2;
-			if ( dlen > 0 )
-			{
-				dx += fx / dlen;
-				dy += fy / dlen;
-			}
-
-			dx /= 12;
-			dy /= 12;
-		}
-
-		public void decay()
-		{
-			life -= 1;
-			if ( life < 0 )
-				life = 0;
-		}
-
+		/**
+		 * 6) reseting life as if new
+		 *
+		 *  @todo shouln'd it be moved direcly in Node ? (with a "touches++" stuff like in FileNode)
+		*/
 		public void freshen()
 		{
 			life = 255;
@@ -1002,6 +1145,11 @@ public class code_swarm extends PApplet
 		}
 	}
 
+
+
+	/**
+	 * code_swarm Entry point
+	*/
 	static public void main(String args[])
 	{
 		try
