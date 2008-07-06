@@ -26,7 +26,7 @@ classpath="${lib}/core.jar;${lib}/xml.jar;${lib}/jogl.jar;${lib}/opengl.jar" deb
   </target>
 
   <target name="doc" depends="init" description="Generates Javadoc documentation">
-    <javadoc destdir="${doc}" >
+    <javadoc destdir="${doc}" access="private">
       <fileset dir="${src}" includes="*.java"/>
     </javadoc>
   </target>
