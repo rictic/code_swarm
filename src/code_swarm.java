@@ -610,7 +610,10 @@ public class code_swarm extends PApplet
 				showLegend = !showLegend;
 				break;
 			case '?':
-				showHelp = !showHelp; // not implemented yet
+				showHelp = !showHelp; //! @todo not implemented yet
+				break;
+			case 'q':
+				exit();
 				break;
 		}
 	}
@@ -1156,6 +1159,10 @@ public class code_swarm extends PApplet
 		{
 			if (args.length > 0)
 			{
+				System.out.println("code_swarm is free software: you can redistribute it and/or modify");
+				System.out.println("it under the terms of the GNU General Public License as published by");
+				System.out.println("the Free Software Foundation, either version 3 of the License, or");
+				System.out.println("(at your option) any later version.");
 				cfg = new CodeSwarmConfig(args[0]);
 				PApplet.main(new String[]{"code_swarm"});
 			}
