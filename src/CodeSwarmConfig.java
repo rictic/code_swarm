@@ -39,6 +39,7 @@ public class CodeSwarmConfig
 	                                                   "ColorAssign6",
 	                                                   "ColorAssign7" };
 	public static final String SNAPSHOT_LOCATION_KEY = "SnapshotLocation";
+	public static final String EDGE_LENGTH_KEY = "EdgeLength";
 	public static String DEFAULT_COLOR_ASSIGN = "\".*\",128,128,128,128,128,128";
 
 	private Properties p = null;
@@ -62,6 +63,7 @@ public class CodeSwarmConfig
 		def.setProperty( BACKGROUND_KEY, "0,0,0" );
 		def.setProperty( TAKE_SNAPSHOTS_KEY, "false");
 		def.setProperty( SNAPSHOT_LOCATION_KEY, "frames/snap-#####.png" );
+		def.setProperty( EDGE_LENGTH_KEY, "25" );
 
 		for( int i = 0; i < COLOR_ASSIGN_KEY.length; i++ )
 		{
@@ -116,6 +118,11 @@ public class CodeSwarmConfig
 	public String getStringProperty(String key, String defValue)
 	{
 		return p.getProperty(key, defValue);
+	}
+
+	public int getIntProperty( String key )
+	{
+		return Integer.parseInt( p.getProperty(key) );
 	}
 
 	public String getColorAssignProperty( int index )

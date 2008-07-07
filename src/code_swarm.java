@@ -72,7 +72,7 @@ public class code_swarm extends PApplet
 	int currentColor;
 
 	// Edge Len
-	private final int EDGE_LEN				= 25;
+	private int EDGE_LEN				= 25;
 	// Drawable object life decrement
 	private final int EDGE_LIFE_INIT			= 255;
 	private final int FILE_LIFE_INIT			= 255;
@@ -124,6 +124,7 @@ public class code_swarm extends PApplet
 		//! @todo TODO: use adapter pattern to handle different data sources
 
 		SCREENSHOT_FILE = cfg.getStringProperty( CodeSwarmConfig.SNAPSHOT_LOCATION_KEY );
+		EDGE_LEN = cfg.getIntProperty( CodeSwarmConfig.EDGE_LENGTH_KEY );
 
 		// Create fonts
 		font = createFont( "SansSerif", 10 );
