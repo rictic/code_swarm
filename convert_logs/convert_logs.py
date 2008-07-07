@@ -68,8 +68,11 @@ def main():
     (opts, args) = parse_args(sys.argv)
     
     # Handle parsed options.
-    if opts.svn_log:
+    if opts.svn_log or opts.git_log:
+        # Grab the correct log file based on what was specified.
         log_file = opts.svn_log
+        if opts.git_log:
+            log_file = opts.git_log
         
         # Check to be sure the specified log path exists.
         if os.path.exists(log_file):
@@ -100,7 +103,12 @@ def main():
                     file_handle.readline()
                     path = file_handle.readline()
                     while len(path) > 1:
-                        ch_path = path[5:].split(" (from")[0].replace("\n", "")
+                        ch_path = None
+                        if opts.svn_log:
+                            ch_path = path[5:].split(" (from")[0].replace("\n", "")
+                        else:
+                            # git uses quotes if filename contains unprintable characters
+                            ch_path = path[2:].replace("\n", "").replace("\"", "")
                         event_list.append(Event(ch_path, date, author))
                         path = file_handle.readline()
                     
@@ -182,9 +190,6 @@ def main():
                     t = line[42:48].strip()
                     
             create_event_xml(event_list, log_file, opts.output_log)
-        
-    if opts.git_log:
-        print "Not yet implemented."
         
     if opts.wikimedia_log:
         print "Not yet implemented."

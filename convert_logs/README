@@ -8,3 +8,9 @@ To convert an SVN log to the standard format:
 > python convert_logs.py -s path/to/my_svn.log -o svn_log.xml
 
 More usage detailed instructions to come.
+
+Special note for git logs, must be prepared in this fashion:
+
+git-log --name-status
+--pretty=format:'%n------------------------------------------------------------------------%nr%h
+| %ae | %ai (%aD) | x lines%nChanged paths:' > activity.log
