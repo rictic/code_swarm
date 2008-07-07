@@ -38,6 +38,7 @@ public class CodeSwarmConfig
 	                                                   "ColorAssign5",
 	                                                   "ColorAssign6",
 	                                                   "ColorAssign7" };
+	public static final String SNAPSHOT_LOCATION_KEY = "SnapshotLocation";
 	public static String DEFAULT_COLOR_ASSIGN = "\".*\",128,128,128,128,128,128";
 
 	private Properties p = null;
@@ -60,6 +61,7 @@ public class CodeSwarmConfig
 		def.setProperty( MSEC_PER_FRAME_KEY, "21600000");
 		def.setProperty( BACKGROUND_KEY, "0,0,0" );
 		def.setProperty( TAKE_SNAPSHOTS_KEY, "false");
+		def.setProperty( SNAPSHOT_LOCATION_KEY, "frames/snap-#####.png" );
 
 		for( int i = 0; i < COLOR_ASSIGN_KEY.length; i++ )
 		{
@@ -104,6 +106,11 @@ public class CodeSwarmConfig
 	public boolean getBooleanProperty(String key, boolean defValue)
 	{
 		return Boolean.valueOf(p.getProperty(key, String.valueOf(defValue)));
+	}
+
+	public String getStringProperty( String key )
+	{
+		return p.getProperty( key );
 	}
 
 	public String getStringProperty(String key, String defValue)

@@ -40,7 +40,7 @@ public class code_swarm extends PApplet
 	CodeSwarmConfig config;
 	int FRAME_RATE = 24;
 	String SPRITE_FILE = "particle.png";
-	String SCREENSHOT_FILE = "frames/swarm-#####.png";
+	String SCREENSHOT_FILE;
 
 	// Data storage
 	PriorityBlockingQueue<FileEvent> eventsQueue; // USE PROCESSING 0142 or higher
@@ -122,6 +122,8 @@ public class code_swarm extends PApplet
 		t.setDaemon(true);
 		t.start();
 		//! @todo TODO: use adapter pattern to handle different data sources
+
+		SCREENSHOT_FILE = cfg.getStringProperty( CodeSwarmConfig.SNAPSHOT_LOCATION_KEY );
 
 		// Create fonts
 		font = createFont( "SansSerif", 10 );
