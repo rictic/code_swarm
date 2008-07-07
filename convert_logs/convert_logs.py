@@ -89,8 +89,8 @@ def main():
                     author = rev_parts[1]
                     date_parts = rev_parts[2].split(" ")
                     date = date_parts[0] + " " + date_parts[1]
-                    date = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-                    date = int(time.mktime(date.timetuple()))*1000
+                    date = time.strptime(date, '%Y-%m-%d %H:%M:%S')
+                    date = int(time.mktime(date))*1000
                     
                     # Skip the 'Changed paths:' line and start reading in the changed filenames.
                     file_handle.readline()
@@ -119,24 +119,24 @@ def main():
             file_handle = open(log_file,  'r')
             line = file_handle.readline()
             while len(line) > 0:
-            	# The cvs_sep indicates a new revision history to parse.
-            	if line.startswith(cvs_sep):
-            		#Read the revision number
-            		rev_line = file_handle.readline()
+                # The cvs_sep indicates a new revision history to parse.
+                if line.startswith(cvs_sep):
+                    #Read the revision number
+                    rev_line = file_handle.readline()
 
-            		# Extract author and date from revision line.
-            		rev_line = file_handle.readline()
-            		if(rev_line.lower().find("date:") == 0):
-            			rev_parts = rev_line.split(';  ')
-            			date_parts = rev_parts[0].split(": ")
-            			date = datetime.strptime(date_parts[1], '%Y/%m/%d %H:%M:%S')
-            			date = int(time.mktime(date.timetuple())*1000)
-            			author = rev_parts[1].split(": ")[1]
+                    # Extract author and date from revision line.
+                    rev_line = file_handle.readline()
+                    if(rev_line.lower().find("date:") == 0):
+                        rev_parts = rev_line.split(';  ')
+                        date_parts = rev_parts[0].split(": ")
+                        date = time.strptime(date_parts[1], '%Y/%m/%d %H:%M:%S')
+                        date = int(time.mktime(date))*1000
+                        author = rev_parts[1].split(": ")[1]
                         event_list.append(Event(filename, date, author))
                         
                 line = file_handle.readline()
                 if(str(line) == ""):
-                	break
+                    break
                 elif(line.lower().find("rcs file: ") >= 0):
                     rev_line = line.split(": ");
                     filename = rev_line[1].strip().split(',')[0]
