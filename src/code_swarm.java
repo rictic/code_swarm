@@ -131,6 +131,7 @@ public class code_swarm extends PApplet
 		boldFont = createFont( "SansSerif.bold", 14 );
 		textFont( font );
 
+		String SPRITE_FILE = cfg.getStringProperty( CodeSwarmConfig.SPRITE_FILE_KEY );
 		// Create the file particle image
 		sprite = loadImage( SPRITE_FILE );
 		// Add translucency (using itself in this case)

@@ -40,6 +40,7 @@ public class CodeSwarmConfig
 	                                                   "ColorAssign7" };
 	public static final String SNAPSHOT_LOCATION_KEY = "SnapshotLocation";
 	public static final String EDGE_LENGTH_KEY = "EdgeLength";
+	public static final String SPRITE_FILE_KEY = "ParticleSpriteFile";
 	public static String DEFAULT_COLOR_ASSIGN = "\".*\",128,128,128,128,128,128";
 
 	private Properties p = null;
@@ -64,6 +65,7 @@ public class CodeSwarmConfig
 		def.setProperty( TAKE_SNAPSHOTS_KEY, "false");
 		def.setProperty( SNAPSHOT_LOCATION_KEY, "frames/snap-#####.png" );
 		def.setProperty( EDGE_LENGTH_KEY, "25" );
+		def.setProperty( SPRITE_FILE_KEY, "particle.png" );
 
 		for( int i = 0; i < COLOR_ASSIGN_KEY.length; i++ )
 		{
