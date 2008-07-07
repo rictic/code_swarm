@@ -33,24 +33,28 @@ def parse_args(argv):
     p = OptionParser()
     
     p.add_option("-s", "--svn-log", dest="svn_log", 
-                  metavar="<log file>",
-                  help="input svn log to convert to standard event xml")
+        metavar="<log file>",
+        help="input svn log to convert to standard event xml")
 
     p.add_option("-c", "--cvs-log", dest="cvs_log", 
-                  metavar="<log file>",
-                  help="input cvs log to convert to standard event xml")
+        metavar="<log file>",
+        help="input cvs log to convert to standard event xml")
 
     p.add_option("-g", "--git-log", dest="git_log", 
-                  metavar="<log file>",
-                  help="input git log to convert to standard event xml")
-                  
+        metavar="<log file>",
+        help="input git log to convert to standard event xml")
+    
+    p.add_option("-v", "--vss-log", dest="vss_log",
+        metavar="<log file>",
+        help="input vss report to convert to standard event xml")
+        
     p.add_option("-w", "--wikimedia-log", dest="wikimedia_log", 
-                  metavar="<log file>",
-                  help="input wikimedia log to convert to standard event xml")
+        metavar="<log file>",
+        help="input wikimedia log to convert to standard event xml")
 
     p.add_option( "-o", "--output-log", dest="output_log", 
-                  metavar="<log file>",
-                  help="specify standard log output file")
+        metavar="<log file>",
+        help="specify standard log output file")
 
     (options, args) = p.parse_args(argv)
 
@@ -146,6 +150,38 @@ def main():
             create_event_xml(event_list, log_file, opts.output_log)
         else:
             print "Please specify an existing path."
+        
+    if opts.vss_log:
+        log_file = opts.vss_log
+        
+        if os.path.exists(log_file):
+            event_list = []
+            file_handle = open(log_file, 'r')
+            
+            filename = ""
+            author = ""
+            mdy = ""
+            t = ""
+            
+            # The VSS report can have multiple lines for each entry, where the values
+            # are continued within a column range.
+            for line in file_handle.readlines():
+                if line.startswith(' '):
+                    # Handle a continuation line
+                    filename += line[0:20].strip()
+                    author += line[22:31].strip()
+                else:
+                    if mdy:
+                        filename = filename.replace("$", "")
+                        date = datetime.strptime(mdy + ' ' + t[:-1]+t[-1].upper()+'M', "%m/%d/%y %I:%M%p")
+                        date = int(time.mktime(date.timetuple())*1000)
+                        event_list.append(Event(filename, date, author.lower()))
+                    filename = line[0:20].strip()
+                    author = line[21:31].strip()
+                    mdy = line[32:40].strip()
+                    t = line[42:48].strip()
+                    
+            create_event_xml(event_list, log_file, opts.output_log)
         
     if opts.git_log:
         print "Not yet implemented."
