@@ -24,6 +24,7 @@ import processing.core.PConstants;
 class ColorTest
 {
 	String expr;
+	String label;
 	int c1, c2;
 
 	public boolean passes( String s )
@@ -38,15 +39,22 @@ class ColorTest
 
 	public void loadProperty( String value )
 	{
-		// should have the format "regex", r1,g1,b1, r2,g2,b2
+		String [] tokens;
+		// should have the format "label", "regex", r1,g1,b1, r2,g2,b2
 		// get the stuff in quotes first
 		int firstQ = value.indexOf( '\"' );
 		int lastQ = value.lastIndexOf( '\"' );
-		expr = value.substring( firstQ + 1, lastQ );
-
+		String firstpart = value.substring( firstQ + 1, lastQ );
+		tokens = firstpart.split( "\"" );
+        label = tokens[0];
+		if (tokens.length == 3) {
+          expr = tokens[2];
+		} else {
+          expr = tokens[0];
+		}
 		// then the comma delimited colors
 		String rest = value.substring( lastQ + 1 );
-		String [] tokens = rest.split( "," );
+		tokens = rest.split( "," );
 		int [] components = new int[6];
 
 		int j = 0;

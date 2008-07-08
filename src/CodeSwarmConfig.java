@@ -31,23 +31,16 @@ public class CodeSwarmConfig
 	public static final String TAKE_SNAPSHOTS_KEY = "TakeSnapshots";
 	public static final String NAME_HALOS_KEY = "NameHalos";
 	public static final String BACKGROUND_KEY = "Background";
-	public static final String COLOR_ASSIGN_KEY [] = { "ColorAssign1",
-	                                                   "ColorAssign2",
-	                                                   "ColorAssign3",
-	                                                   "ColorAssign4",
-	                                                   "ColorAssign5",
-	                                                   "ColorAssign6",
-	                                                   "ColorAssign7" };
+	public static final String COLOR_ASSIGN_KEY  =  "ColorAssign";
 	public static final String SNAPSHOT_LOCATION_KEY = "SnapshotLocation";
 	public static final String EDGE_LENGTH_KEY = "EdgeLength";
 	public static final String SPRITE_FILE_KEY = "ParticleSpriteFile";
-	public static String DEFAULT_COLOR_ASSIGN = "\".*\",128,128,128,128,128,128";
+	public static String DEFAULT_COLOR_ASSIGN = "\"Misc\",\".*\",128,128,128,128,128,128";
 
 	private Properties p = null;
 
 	// Cache variables
 	private Color _background = null;
-
 	public CodeSwarmConfig(String configFileName) throws IOException
 	{
 		p = new Properties( this.createDefaults() );
@@ -66,11 +59,7 @@ public class CodeSwarmConfig
 		def.setProperty( SNAPSHOT_LOCATION_KEY, "frames/snap-#####.png" );
 		def.setProperty( EDGE_LENGTH_KEY, "25" );
 		def.setProperty( SPRITE_FILE_KEY, "particle.png" );
-
-		for( int i = 0; i < COLOR_ASSIGN_KEY.length; i++ )
-		{
-			def.setProperty( COLOR_ASSIGN_KEY[i], DEFAULT_COLOR_ASSIGN );
-		}
+        def.setProperty( COLOR_ASSIGN_KEY + "1" , DEFAULT_COLOR_ASSIGN );
 
 		return def;
 	}
@@ -127,9 +116,9 @@ public class CodeSwarmConfig
 		return Integer.parseInt( p.getProperty(key) );
 	}
 
-	public String getColorAssignProperty( int index )
+	public String getColorAssignProperty( Integer index )
 	{
-		return p.getProperty( COLOR_ASSIGN_KEY[index] );
+		return p.getProperty( COLOR_ASSIGN_KEY + index.toString() );
 	}
 
 	public static Color stringToColor( String str )

@@ -36,6 +36,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 public class code_swarm extends PApplet
 {
 
+	public static final long serialVersionUID = 0;
 	// User-defined variables
 	CodeSwarmConfig config;
 	int FRAME_RATE = 24;
@@ -143,48 +144,49 @@ public class code_swarm extends PApplet
 	public void initColors()
 	{
 		colorAssigner = new ColorAssigner();
-
-		for( int i = 0; i < 7; i++ )
+        int i = 1;
+        String property;
+		while( (property = cfg.getColorAssignProperty(i)) != null)
 		{
 			ColorTest ct = new ColorTest();
-			String property = cfg.getColorAssignProperty( i );
 			ct.loadProperty( property );
 			colorAssigner.addRule( ct );
+			i++;
 		}
 	}
 
 	/* DEPRECATED, kept for reference */
 	public void apacheColors()
 	{
-		colorAssigner.addRule( "/src.*", color(0,255,255), color(15,255,255) );
-		colorAssigner.addRule( "/doc.*", color(150,255,255), color(170,255,255) );
-		colorAssigner.addRule( "/mod.*|/contrib.*", color(25,255,255), color(40,255,255) );
+		colorAssigner.addRule( "Source", "/src.*", color(0,255,255), color(15,255,255) );
+		colorAssigner.addRule( "Docs", "/doc.*", color(150,255,255), color(170,255,255) );
+		colorAssigner.addRule( "Modules", "/mod.*|/contrib.*", color(25,255,255), color(40,255,255) );
 	}
 
 	/* DEPRECATED, kept for reference */
 	public void pythonColors()
 	{
-		colorAssigner.addRule( ".*\\.tex|.*\\.txt", color(150,255,255), color(170,255,255) );
-		colorAssigner.addRule( ".*/Modules/.*", color(25,255,255), color(40,255,255) );
-		colorAssigner.addRule( ".*\\.py|.*\\.c|.*\\.h", color(0,255,255), color(15,255,255) );
-		colorAssigner.addRule( ".*/Doc/.*", color(150,255,255), color(170,255,255) );
+		colorAssigner.addRule( "Text", ".*\\.tex|.*\\.txt", color(150,255,255), color(170,255,255) );
+		colorAssigner.addRule( "Modules", ".*/Modules/.*", color(25,255,255), color(40,255,255) );
+		colorAssigner.addRule( "Source", ".*\\.py|.*\\.c|.*\\.h", color(0,255,255), color(15,255,255) );
+		colorAssigner.addRule( "Docs", ".*/Doc/.*", color(150,255,255), color(170,255,255) );
 	}
 
 	/* DEPRECATED, kept for reference */
 	public void javaColors()
 	{
-		colorAssigner.addRule( ".*\\.java|.*/src/.*", color(0,255,255), color(15,255,255) );
-		colorAssigner.addRule( ".*/docs/.*|.*/xdocs/.*", color(150,255,255), color(170,255,255) );
-		colorAssigner.addRule( ".*/lib/.*", color(25,255,255), color(40,255,255) );
+		colorAssigner.addRule( "Source", ".*\\.java|.*/src/.*", color(0,255,255), color(15,255,255) );
+		colorAssigner.addRule( "Docs", ".*/docs/.*|.*/xdocs/.*", color(150,255,255), color(170,255,255) );
+		colorAssigner.addRule( "Libs", ".*/lib/.*", color(25,255,255), color(40,255,255) );
 	}
 
 	/* DEPRECATED, kept for reference */
 	public void eclipseColors()
 	{
-		colorAssigner.addRule( ".*\\.java|.*/src/.*", color(0,255,255), color(15,255,255) );
-		colorAssigner.addRule( ".*/doc/.*|.*/xdocs/.*", color(150,255,255), color(170,255,255) );
-		colorAssigner.addRule( ".*/lib/.*", color(25,255,255), color(40,255,255) );
-		colorAssigner.addRule( ".*\\.gif|.*\\.jpg", color(120,255,255), color(135,255,255) );
+		colorAssigner.addRule( "Source", ".*\\.java|.*/src/.*", color(0,255,255), color(15,255,255) );
+		colorAssigner.addRule( "Docs", ".*/doc/.*|.*/xdocs/.*", color(150,255,255), color(170,255,255) );
+		colorAssigner.addRule( "Libs", ".*/lib/.*", color(25,255,255), color(40,255,255) );
+		colorAssigner.addRule( "Images", ".*\\.gif|.*\\.jpg", color(120,255,255), color(135,255,255) );
 	}
 
 	/* Main loop */
@@ -316,7 +318,7 @@ public class code_swarm extends PApplet
 		{
 			ColorTest t = colorAssigner.tests.get(i);
 			fill( t.c1, 200 );
-			text( t.expr, 10, (i+1) * 10 );
+			text( t.label, 10, (i+1) * 10 );
 		}
 	}
 
