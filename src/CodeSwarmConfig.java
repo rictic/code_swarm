@@ -141,7 +141,7 @@ public class CodeSwarmConfig
 			try
 			{
 				config = new CodeSwarmConfig(args[0]);
-				Enumeration en = config.p.propertyNames();
+				Enumeration<?> en = config.p.propertyNames();
 				while ( en.hasMoreElements() )
 				{
 					String key = (String)en.nextElement();

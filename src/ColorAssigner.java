@@ -17,7 +17,7 @@
    along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import processing.core.PApplet;
+//not used: import processing.core.PApplet;
 import java.awt.Color;
 import java.util.*;
 

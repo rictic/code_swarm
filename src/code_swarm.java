@@ -25,7 +25,7 @@ import processing.xml.XMLElement;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.util.ArrayList;
+//not used: import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -637,7 +637,7 @@ public class code_swarm extends PApplet
 	/**
 	 * @brief Describe an event on a file
 	*/
-	class FileEvent implements Comparable
+	class FileEvent implements Comparable<Object>
 	{
 		Date 	date;
 		String 	author;
@@ -991,7 +991,7 @@ public class code_swarm extends PApplet
 			tint( nodeHue, life );
 
 			float w = 8 + sqrt( touches ) * 4;
-			float dubw = w * 2;
+//not used			float dubw = w * 2;
 			float halfw = w / 2;
 			if ( life >= 244 )
 			{
