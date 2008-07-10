@@ -701,6 +701,26 @@ public class code_swarm extends PApplet
 			LIFE_DECREMENT = lifeDecrement;
 		}
 		
+		public float getDX()
+		{
+			return dx;
+		}
+		
+		public float getDY()
+		{
+			return dy;
+		}
+		
+		public void adjDX(float amt)
+		{
+			dx += amt;
+		}
+		
+		public void adjDY(float amt)
+		{
+			dy += amt;
+		}
+		
 		public abstract void relax();		// 2) calculating next frame state
 		public	abstract void update()	;	// 3) applying next frame state
 		public abstract void decay();		// 4) shortening life
@@ -734,8 +754,8 @@ public class code_swarm extends PApplet
 		*/
 		public void relax()
 		{
-			distx = to.x - from.x;
-			disty = to.y - from.y;
+			distx = to.getX() - from.getX();
+			disty = to.getY() - from.getY();
 			float d = mag( distx, disty );
 			if ( d > 0 )
 			{
@@ -744,11 +764,10 @@ public class code_swarm extends PApplet
 				dx = f * distx;
 				dy = f * disty;
 				
-				//! @todo : remove direct access to attributes, use setters instead
-				to.dx += dx;
-				to.dy += dy;
-				from.dx -= dx;
-				from.dy -= dy;
+				to.adjDX(dx);
+				to.adjDY(dy);
+				from.adjDX(-dx);
+				from.adjDY(-dy);
 			}
 		}
 
@@ -846,6 +865,16 @@ public class code_swarm extends PApplet
 			dx /= 2;
 			dy /= 2;
 		}
+		
+		public float getX()
+		{
+			return x;
+		}
+		
+		public float getY()
+		{
+			return y;
+		}
 	}
 
 
@@ -901,15 +930,15 @@ public class code_swarm extends PApplet
 
 				if ( n != this )
 				{
-					distx = x - n.x;
-					disty = y - n.y;
+					distx = x - n.getX();
+					disty = y - n.getY();
 					lensq = distx * distx + disty * disty;
 					if ( lensq == 0 )
 					{
 						ddx += random(0.1f);
 						ddy += random(0.1f);
 					}
-					else if ( lensq < 100 * 100 )
+					else if ( lensq < 10000 )
 					{
 						ddx += distx / lensq;
 						ddy += disty / lensq;
@@ -955,6 +984,7 @@ public class code_swarm extends PApplet
 		{
 			if ( life > 0 )
 			{
+   		        //  @todo This should be in the config. Should allow a combination.  Sharp and Jelly looks cool.
 				//drawSharp();
 				drawFuzzy();
 				//drawJelly();
@@ -1069,15 +1099,15 @@ public class code_swarm extends PApplet
 
 				if ( n != this )
 				{
-					distx = x - n.x;
-					disty = y - n.y;
+					distx = x - n.getX();
+					disty = y - n.getY();
 					lensq = distx * distx + disty * disty;
 					if ( lensq == 0 )
 					{
 						ddx += random(0.01f);
 						ddy += random(0.01f);
 					}
-					else if ( lensq < 100 * 100 )
+					else if ( lensq < 10000 )
 					{
 						ddx += distx / lensq;
 						ddy += disty / lensq;
