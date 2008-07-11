@@ -18,18 +18,20 @@
  */
 
 import java.awt.Color;
+import java.util.regex.*;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
 class ColorTest
 {
-	String expr;
+	Pattern expr;
 	String label;
 	int c1, c2;
 
 	public boolean passes( String s )
 	{
-		return s.matches( expr );
+		Matcher m = expr.matcher(s);
+		return m.matches();
 	}
 
 	public int assign()
@@ -48,9 +50,9 @@ class ColorTest
 		tokens = firstpart.split( "\"" );
         label = tokens[0];
 		if (tokens.length == 3) {
-          expr = tokens[2];
+          expr = Pattern.compile( tokens[2] );
 		} else {
-          expr = tokens[0];
+          expr = Pattern.compile( tokens[0] );
 		}
 		// then the comma delimited colors
 		String rest = value.substring( lastQ + 1 );
@@ -75,7 +77,7 @@ class ColorTest
 		ColorTest ct = new ColorTest();
 		System.out.println( "input=" + args[0] );
 		ct.loadProperty( args[0] );
-		System.out.println( "regex=" + ct.expr );
+		//System.out.println( "regex=" + ct.expr );
 		System.out.println( "color1=" + Integer.toHexString(ct.c1) );
 		System.out.println( "color2=" + Integer.toHexString(ct.c2) );
 	}

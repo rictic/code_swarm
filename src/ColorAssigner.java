@@ -35,7 +35,7 @@ class ColorAssigner
 	public void addRule( String label, String expr, int c1, int c2 )
 	{
 		ColorTest t = new ColorTest();
-		t.expr = expr;
+		t.expr = java.util.regex.Pattern.compile( expr );
 		t.label = label;
 		t.c1 = c1;
 		t.c2 = c2;
