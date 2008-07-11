@@ -48,6 +48,10 @@ def parse_args(argv):
         metavar="<log file>",
         help="input vss report to convert to standard event xml")
         
+    p.add_option("-t", "--starteam-log", dest="starteam_log",
+        metavar="<log file>",
+        help="input starteam log to convert to standard event xml")
+
     p.add_option("-w", "--wikimedia-log", dest="wikimedia_log", 
         metavar="<log file>",
         help="input wikimedia log to convert to standard event xml")
@@ -191,6 +195,48 @@ def main():
                     
             create_event_xml(event_list, log_file, opts.output_log)
         
+    if opts.starteam_log:
+        log_file = opts.starteam_log
+        
+        if os.path.exists(log_file):
+            import re
+            
+            event_list = []
+            file_handle = open(log_file, 'r')
+            
+            folder = None
+            filename = None
+            
+            # The Starteam log can have multiple lines for each entry
+            for line in file_handle.readlines():                
+                m = re.compile("^Folder: (\w*)  \(working dir: (.*)\)$").match(line)
+                
+                if m:
+                    folder = m.group(2)
+                    #print "parsing folder %s @ %s" % (m.group(1), folder)
+                    continue
+                
+                m = re.compile("^History for: (.*)$").match(line)
+                
+                if m:
+                    filename = m.group(1)
+                    #print "parsing file %s" % filename
+                    continue
+                    
+                m = re.compile("^Author: (.*) Date: (.*) \w+$").match(line)
+                
+                if m:
+                    author = m.group(1)
+                    date = datetime.strptime(m.group(2), "%m/%d/%y %I:%M:%S %p")
+                    date = int(time.mktime(date.timetuple())*1000)
+                    
+                    event_list.append(Event(os.path.join(folder, filename), date, author))
+                    
+                    #print "%s check in at %s" % (author, date)
+                    continue
+                
+            create_event_xml(event_list, log_file, opts.output_log)
+
     if opts.wikimedia_log:
         print "Not yet implemented."
         
