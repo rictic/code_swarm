@@ -9,8 +9,14 @@ To convert an SVN log to the standard format:
 
 More usage detailed instructions to come.
 
-Special note for git logs, must be prepared in this fashion:
+Special notes:
+
+git logs must be prepared in this fashion:
 
 git-log --name-status
 --pretty=format:'%n------------------------------------------------------------------------%nr%h
 | %ae | %ai (%aD) | x lines%nChanged paths:' > activity.log
+
+Starteam logs must be prepared in this fashion:
+
+stcmd.exe hist -p <url> -nologo -is > activity.log
