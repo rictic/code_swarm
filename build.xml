@@ -44,6 +44,7 @@ classpath="${lib}/core.jar;${lib}/xml.jar;${lib}/jogl.jar;${lib}/opengl.jar" deb
   <target name="run" depends="jar" description="Runs the program">
     <echo>Running code_swarm</echo>
     <java classname="code_swarm" fork="true">
+      <jvmarg value="-Xmx1000m" />
       <arg value="data/sample.config"/>
       <classpath>
         <fileset dir="${dist}">
