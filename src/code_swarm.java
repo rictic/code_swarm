@@ -851,17 +851,20 @@ public class code_swarm extends PApplet
 		{
 			if ( !fixed )
 			{
+				//This block enforces a maximum absolute velocity. 
 				if ( mag(dx, dy) > maxSpeed )
 				{
 					float div = mag(dx/maxSpeed, dy/maxSpeed);
 					dx = dx/div;
 					dy = dy/div;
 				}
+				
 				x += dx;
 				y += dy;
 				x = constrain( x, 0, width );
 				y = constrain( y, 0, height );
 			}
+			//Apply drag 
 			dx /= 2;
 			dy /= 2;
 		}
