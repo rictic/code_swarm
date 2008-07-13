@@ -1237,8 +1237,8 @@ public class code_swarm extends PApplet
 		public void freshen()
 		{
 			life = PERSON_LIFE_INIT;
-      x = random(0,width);
-      y = random(0,height);
+//      x = random(0,width);
+//      y = random(0,height);
 		}
 
 		public void addColor( int c )
