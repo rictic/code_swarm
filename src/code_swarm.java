@@ -25,7 +25,7 @@ import processing.xml.XMLElement;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
-//not used: import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,6 +47,7 @@ public class code_swarm extends PApplet
 	PriorityBlockingQueue<FileEvent> eventsQueue; // USE PROCESSING 0142 or higher
 	CopyOnWriteArrayList<FileNode> nodes;
 	CopyOnWriteArrayList<Edge> edges;
+	CopyOnWriteArrayList<Edge> pedges; // Edges between people.
 	CopyOnWriteArrayList<PersonNode> people;
 	LinkedList<ColorBins> history;
 
@@ -106,6 +107,7 @@ public class code_swarm extends PApplet
 		eventsQueue = new PriorityBlockingQueue<FileEvent>();
 		nodes = new CopyOnWriteArrayList<FileNode>();
 		edges = new CopyOnWriteArrayList<Edge>();
+		pedges = new CopyOnWriteArrayList<Edge>();
 		people = new CopyOnWriteArrayList<PersonNode>();
 		history = new LinkedList<ColorBins>();
 
@@ -153,6 +155,10 @@ public class code_swarm extends PApplet
 			colorAssigner.addRule( ct );
 			i++;
 		}
+		// Load the default.
+		ColorTest ct = new ColorTest();
+		ct.loadProperty( CodeSwarmConfig.DEFAULT_COLOR_ASSIGN );
+		colorAssigner.addRule( ct );
 	}
 
 	/* DEPRECATED, kept for reference */
@@ -390,6 +396,22 @@ public class code_swarm extends PApplet
 			}
 			else
 				ped.freshen();
+			
+			// Intent here is to add an edge between the current
+			// owner and the previous owners of this file.
+			// Helps keep the people separated.
+			ArrayList<Node> al = findEdgeTo(edges, n);
+			int i = 0;
+			while (i < al.size()) {
+			  Edge ted = findEdge ( p , al.get(i));
+			  if (ted == null) {
+				  ted = new Edge( p, al.get(i));
+				  pedges.add( ted );
+			  } else {
+			    ted.freshen();
+			  }
+			  i++;
+			}
 
 			/*
 				 if ( currentEvent.date.equals( prevDate ) )
@@ -425,6 +447,10 @@ public class code_swarm extends PApplet
 		for (Edge edge : edges) {
 			edge.relax();
 		}
+		
+		for (Edge edge : pedges) {
+			edge.relax();
+		}
 
 		for (FileNode node : nodes) {
 			node.relax();
@@ -435,6 +461,10 @@ public class code_swarm extends PApplet
 		}
 
 		for (Edge edge : edges) {
+			edge.update();
+		}
+		
+		for (Edge edge : pedges) {
 			edge.update();
 		}
 
@@ -463,12 +493,35 @@ public class code_swarm extends PApplet
 		{
 			if (edge.from == n1 && edge.to == n2)
 				return edge;
-			if (edge.from == n2 && edge.to == n1)
-				return edge;
+// Shouldn't need this.			
+//			if (edge.from == n2 && edge.to == n1)
+//				return edge;
 		}
 		return null;
 	}
-
+	
+	public ArrayList<Node> findEdgeFrom( CopyOnWriteArrayList<Edge> al, Node n1 )
+	{
+	  ArrayList<Node> a = new ArrayList<Node>();
+		for (Edge edge : al)
+		{
+			if (edge.from == n1)
+				a.add(edge.from);
+		}
+		return a;
+	}
+	
+	public ArrayList<Node> findEdgeTo( CopyOnWriteArrayList<Edge> al, Node n1 )
+	{
+	  ArrayList<Node> a = new ArrayList<Node>();
+		for (Edge edge : al)
+		{
+			if (edge.to == n1)
+				a.add(edge.to);
+		}
+		return a;
+	}
+	
 	public PersonNode findPerson( String name )
 	{
 		for (PersonNode p : people)
@@ -722,7 +775,7 @@ public class code_swarm extends PApplet
 		}
 		
 		public abstract void relax();		// 2) calculating next frame state
-		public	abstract void update()	;	// 3) applying next frame state
+		public abstract void update()	;	// 3) applying next frame state
 		public abstract void decay();		// 4) shortening life
 		public abstract void draw();		// 5) drawing the new state
 		public abstract void freshen();	// 6) reseting life as if new
@@ -789,10 +842,12 @@ public class code_swarm extends PApplet
 		*/
 		public void decay()
 		{
-			life += LIFE_DECREMENT;
-			if ( life < 0 ) {
-				life = 0;
-			}
+		  if (life > 0) {
+			  life += LIFE_DECREMENT;
+			  if ( life < 0 ) {
+				  life = 0;
+			  }
+		  }
 		}
 
 		/**
@@ -813,7 +868,7 @@ public class code_swarm extends PApplet
 		*/
 		public void freshen()
 		{
-			life = 255;
+			life = EDGE_LIFE_INIT;
 		}
 	}
 
@@ -974,10 +1029,12 @@ public class code_swarm extends PApplet
 		*/
 		public void decay()
 		{
-			life += LIFE_DECREMENT;
-			if (life <= 0) {
-				life = 0;
-			}
+		  if (life > 0) {
+			  life += LIFE_DECREMENT;
+			  if (life < 0) {
+				  life = 0;
+			  }
+		  }
 		}
 
 		/**
@@ -1053,7 +1110,7 @@ public class code_swarm extends PApplet
 		*/
 		public void freshen()
 		{
-			life = 255;
+			life = FILE_LIFE_INIT;
 			touches++;
 		}
 	}
@@ -1146,9 +1203,12 @@ public class code_swarm extends PApplet
 		*/
 		public void decay()
 		{
-			life += LIFE_DECREMENT;
-			if ( life < 0 )
-				life = 0;
+		  if (life > 0) {
+			  life += LIFE_DECREMENT;
+			  if (life < 0) {
+				  life = 0;
+			  }
+		  }
 		}
 
 		/**
@@ -1176,7 +1236,9 @@ public class code_swarm extends PApplet
 		*/
 		public void freshen()
 		{
-			life = 255;
+			life = PERSON_LIFE_INIT;
+      x = random(0,width);
+      y = random(0,height);
 		}
 
 		public void addColor( int c )
