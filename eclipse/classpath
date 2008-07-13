@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry including="*.java" kind="src" path="trunk/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="trunk/lib/core.jar"/>
+	<classpathentry kind="lib" path="trunk/lib/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="trunk/lib/jogl-natives-linux-i586.jar"/>
+	<classpathentry kind="lib" path="trunk/lib/jogl-natives-macosx-ppc.jar"/>
+	<classpathentry kind="lib" path="trunk/lib/jogl-natives-macosx-universal.jar"/>
+	<classpathentry kind="lib" path="trunk/lib/jogl-natives-windows-i586.jar"/>
+	<classpathentry kind="lib" path="trunk/lib/jogl.jar"/>
+	<classpathentry kind="lib" path="trunk/lib/opengl.jar"/>
+	<classpathentry kind="lib" path="trunk/lib/xml.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
