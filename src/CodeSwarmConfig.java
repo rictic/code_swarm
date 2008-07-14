@@ -35,6 +35,9 @@ public class CodeSwarmConfig
 	public static final String SNAPSHOT_LOCATION_KEY = "SnapshotLocation";
 	public static final String EDGE_LENGTH_KEY = "EdgeLength";
 	public static final String SPRITE_FILE_KEY = "ParticleSpriteFile";
+	public static final String EDGE_LIFE_KEY = "EdgeLife";
+	public static final String FILE_LIFE_KEY = "FileLife";
+	public static final String PERSON_LIFE_KEY = "PersonLife";
 	public static String DEFAULT_COLOR_ASSIGN = "\"Misc\",\".*\",128,128,128,128,128,128";
 
 	private Properties p = null;
@@ -63,15 +66,29 @@ public class CodeSwarmConfig
 
 		return def;
 	}
+	public int getEdgeLife()
+	{
+		return Integer.valueOf(p.getProperty(EDGE_LIFE_KEY)).intValue();
+	}
+
+	public int getFileLife()
+	{
+		return Integer.valueOf(p.getProperty(FILE_LIFE_KEY)).intValue();
+	}
+	
+	public int getPersonLife()
+	{
+		return Integer.valueOf(p.getProperty(PERSON_LIFE_KEY)).intValue();
+	}
 
 	public int getWidth()
 	{
-		return Integer.valueOf(p.getProperty(WIDTH_KEY));
+		return Integer.valueOf(p.getProperty(WIDTH_KEY)).intValue();
 	}
 
 	public int getHeight()
 	{
-		return Integer.valueOf(p.getProperty(HEIGHT_KEY));
+		return Integer.valueOf(p.getProperty(HEIGHT_KEY)).intValue();
 	}
 
 	public String getInputFile()
@@ -81,7 +98,7 @@ public class CodeSwarmConfig
 
 	public long getMSecPerFrame()
 	{
-		return Long.valueOf(p.getProperty(MSEC_PER_FRAME_KEY));
+		return Long.valueOf(p.getProperty(MSEC_PER_FRAME_KEY)).longValue();
 	}
 
 	public Color getBackground()
@@ -93,12 +110,12 @@ public class CodeSwarmConfig
 
 	public boolean getTakeSnapshots()
 	{
-		return Boolean.valueOf(p.getProperty(TAKE_SNAPSHOTS_KEY));
+		return Boolean.valueOf(p.getProperty(TAKE_SNAPSHOTS_KEY)).booleanValue();
 	}
 
 	public boolean getBooleanProperty(String key, boolean defValue)
 	{
-		return Boolean.valueOf(p.getProperty(key, String.valueOf(defValue)));
+		return Boolean.valueOf(p.getProperty(key, String.valueOf(defValue))).booleanValue();
 	}
 
 	public String getStringProperty( String key )
