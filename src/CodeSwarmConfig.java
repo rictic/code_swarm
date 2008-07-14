@@ -62,7 +62,10 @@ public class CodeSwarmConfig
 		def.setProperty( SNAPSHOT_LOCATION_KEY, "frames/snap-#####.png" );
 		def.setProperty( EDGE_LENGTH_KEY, "25" );
 		def.setProperty( SPRITE_FILE_KEY, "particle.png" );
-        def.setProperty( COLOR_ASSIGN_KEY + "1" , DEFAULT_COLOR_ASSIGN );
+		def.setProperty( PERSON_LIFE_KEY, "255" );
+		def.setProperty( FILE_LIFE_KEY, "255" );
+		def.setProperty( EDGE_LIFE_KEY, "255" );
+    def.setProperty( COLOR_ASSIGN_KEY + "1" , DEFAULT_COLOR_ASSIGN );
 
 		return def;
 	}

@@ -115,16 +115,17 @@ public class code_swarm extends PApplet {
       showDate = false;
     }
     
+    // Ensure we have sane values.
     EDGE_LIFE_INIT = cfg.getEdgeLife();
-    if (EDGE_LIFE_INIT == 0) {
+    if (EDGE_LIFE_INIT <= 0) {
       EDGE_LIFE_INIT = 255;
     }
     FILE_LIFE_INIT = cfg.getFileLife();
-    if (FILE_LIFE_INIT == 0) {
+    if (FILE_LIFE_INIT <= 0) {
       FILE_LIFE_INIT = 255;
     }
     PERSON_LIFE_INIT = cfg.getPersonLife();
-    if (PERSON_LIFE_INIT == 0) {
+    if (PERSON_LIFE_INIT <= 0) {
       PERSON_LIFE_INIT = 255;
     }
     
