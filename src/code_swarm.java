@@ -72,6 +72,7 @@ public class code_swarm extends PApplet {
   boolean showHistogram = true;
   boolean showDate = true;
   boolean showLegend = false;
+  boolean showEdges = false;
   boolean showHelp = false;
   boolean takeSnapshots = false;
   boolean showDebug = false;
@@ -111,6 +112,8 @@ public class code_swarm extends PApplet {
     if (height <= 0) {
       height = 480;
     }
+    
+    /** @todo to place in the CodeSwarmConfig class ? */
     if (cfg.getBooleanProperty("UseOpenGL", false)) {
       size(width, height, OPENGL);
     } else {
@@ -119,7 +122,6 @@ public class code_swarm extends PApplet {
     
     if (cfg.getBooleanProperty("ShowLegend", false)) {
       showLegend = true;
-      showDebug = false;
     } else {
       showLegend = false;
     }
@@ -136,16 +138,22 @@ public class code_swarm extends PApplet {
       showDate = false;
     }
     
-    if (cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY,false)) {
-      takeSnapshots = true;
+    if (cfg.getBooleanProperty("ShowEdges", false)) {
+      showEdges = true;
     } else {
-      takeSnapshots = false;
+      showEdges = false;
     }
     
     if (cfg.getBooleanProperty("debug", false)) {
       showDebug = true;
     } else {
       showDebug = false;
+    }
+    
+    if (cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY,false)) {
+      takeSnapshots = true;
+    } else {
+      takeSnapshots = false;
     }
     
     if (cfg.getBooleanProperty("NameHalos", true)) {
@@ -203,7 +211,7 @@ public class code_swarm extends PApplet {
     });
     t.setDaemon(true);
     t.start();
-    //! @todo TODO: use adapter pattern to handle different data sources
+    /** @todo TODO: use adapter pattern to handle different data sources */
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
     EDGE_LEN = cfg.getIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY);
@@ -282,11 +290,15 @@ public class code_swarm extends PApplet {
 
     if (loading) {
       drawLoading();
-    } else {
+    }
+    else {
       this.update(); // update state to next frame
+      
       // Draw edges (for debugging only)
-      // for (Edge edge : edges)
-      // edge.draw();
+      if (showEdges) {
+          for (Edge edge : edges)
+            edge.draw();
+      }
 
       // Surround names with aura
       drawPeopleNodesBlur();
@@ -428,6 +440,7 @@ public class code_swarm extends PApplet {
     text("- h : show Histogram", 0, 20);
     text("- d : show Date", 0, 30);
     text("- l : show Legend", 0, 40);
+    text("- e : show Edges", 0, 40);
     text("- b : show deBug", 0, 50);
     text("- ? : show help", 0, 60);
     text("- q : Quit code_swarm", 0, 70);
@@ -695,8 +708,8 @@ public class code_swarm extends PApplet {
       // When the SVN repository is created, there is no author associated with the
       // commit, so for
       // now just log it as anonymous.
-      //! @todo FIXME: Should we ignored events with no author completely or log them
-      // a different way?
+      /** @todo FIXME: Should we ignored events with no author completely or log them
+                       a different way? */
       XMLElement author_node = xml.getChild("author");
       String author = "anonymous";
       if (author_node != null)
@@ -745,6 +758,9 @@ public class code_swarm extends PApplet {
       case 'l': {
         showLegend = !showLegend;
         break;
+      }
+      case 'e' : {
+        showEdges = !showEdges;
       }
       case 'b': {
         showDebug = !showDebug;
@@ -813,15 +829,15 @@ public class code_swarm extends PApplet {
   /**
    * @brief Base class for all drawable objects
    * 
-   *        List the features common to all drawable objects Edge and Node,
-   *        FileNode and PersonNode
+   *        Lists and implements features common to all drawable objects
+   *        Edge and Node, FileNode and PersonNode
    */
   abstract class Drawable {
     public int life;
     public int touches;
 
-    //! @tode those are variables used for physic calculation, but they need more
-    // appropriate names
+    /** @tode those are variables used for physic calculation, but they need more
+              appropriate names, or to be put down to the "Node" class */
     float dx, dy;
     float distx, disty;
 
@@ -867,7 +883,7 @@ public class code_swarm extends PApplet {
     }
     
     /**
-     * @brief 2) drawing the new state => done in derived class
+     * @brief 5) drawing the new state => done in derived class
      */
     public abstract void draw();
 
@@ -920,15 +936,22 @@ public class code_swarm extends PApplet {
      * @brief 2) calculating next frame state
      */
     public void relax() {
+      float distance;
+      float fakeForce;
+      // distance calculation
       distx = to.getX() - from.getX();
       disty = to.getY() - from.getY();
-      float d = mag(distx, disty);
-      if (d > 0) {
-        float f = (len - d) / (d * 3);
-        f = f * map(life, 0, 255, 0, 1.0f);
-        dx = f * distx;
-        dy = f * disty;
+      distance = mag(distx, disty);
+      if (distance > 0) {
+        // fake force calculation (increase when distance is different from targeted len")
+        fakeForce = (len - distance) / (distance * 3);
+        fakeForce = fakeForce * map(life, 0, 255, 0, 1.0f);
+        // fake force projection onto x and y axis
+        dx = fakeForce * distx;
+        dy = fakeForce * disty;
 
+        // transmit (applying) fake force projection to file and person nodes
+        /** @todo use (or permit to use) real forces, not only delta position (ie speed) modification */
         to.adjDX(dx);
         to.adjDY(dy);
         from.adjDX(-dx);
@@ -956,12 +979,13 @@ public class code_swarm extends PApplet {
     String name;
     float x, y;
 
-    //! @tode those are variables used for physic calculation,
-    //!        but they need more appropriate names
+    /** @tode those are variables used for physic calculation,
+              but they need more appropriate names */
     float ddx, ddy;
     float lensq, dlen;
 
     boolean fixed;
+    /** @todo add config */
     protected float maxSpeed = 7.0f;
 
     /**
@@ -969,6 +993,8 @@ public class code_swarm extends PApplet {
      */
     Node(int lifeInit, int lifeDecrement) {
       super(lifeInit, lifeDecrement);
+      /** @todo implement new sort of (random or not) arrival, "configurables"
+                => to permit things like "injection points", circular arrival, and so on */
       x = random(width);
       y = random(height);
     }
@@ -1062,7 +1088,7 @@ public class code_swarm extends PApplet {
           if (lensq == 0) {
             ddx += random(0.1f);
             ddy += random(0.1f);
-          } else if (lensq < 10000) {
+          } else if (lensq < 10000) {  /** @todo remove this not linear calculation */
             ddx += distx / lensq;
             ddy += disty / lensq;
           }
@@ -1080,8 +1106,10 @@ public class code_swarm extends PApplet {
      */
     public void draw() {
       if (life > 0) {
-        // @todo This should be in the config. Should allow a combination. Sharp and
-        // Jelly looks cool.
+        /** @todo This should be in the config. Should allow a combination.
+         *        Sharp and Jelly looks cool.
+         *  @todo We should use class and derivation to enable multi-behavioral drawing like multi-physics
+         */
         drawSharp();
         // drawFuzzy();
         drawJelly();
@@ -1143,6 +1171,7 @@ public class code_swarm extends PApplet {
     int colorCount = 1;
     int minBold;
 
+    /** @todo Not Used : to implements in physics */
     float mass = 10;
     float accel = 0.0f;
 
@@ -1154,6 +1183,7 @@ public class code_swarm extends PApplet {
       maxSpeed = 2.0f;
       name = n;
       fixed = false;
+      /** @todo add config */
       minBold = (int)(LIFE_INIT * 0.95);
     }
 
@@ -1182,7 +1212,7 @@ public class code_swarm extends PApplet {
           if (lensq == 0) {
             ddx += random(0.01f);
             ddy += random(0.01f);
-          } else if (lensq < 10000) {
+          } else if (lensq < 10000) {  /** @todo remove this not linear calculation */
             ddx += distx / lensq;
             ddy += disty / lensq;
           }
@@ -1207,6 +1237,8 @@ public class code_swarm extends PApplet {
 
       textAlign(CENTER, CENTER);
 
+      /** @todo proportional font size, or light intensity,
+                or some sort of thing to disable the flashing */
       if (life >= minBold)
         textFont(boldFont);
       else
