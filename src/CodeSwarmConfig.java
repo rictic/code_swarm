@@ -38,6 +38,7 @@ public class CodeSwarmConfig
 	public static final String EDGE_LIFE_KEY = "EdgeLife";
 	public static final String FILE_LIFE_KEY = "FileLife";
 	public static final String PERSON_LIFE_KEY = "PersonLife";
+	public static final String FRAMES_PER_DAY_KEY = "FramesPerDay";
 	public static String DEFAULT_COLOR_ASSIGN = "\"Misc\",\".*\",128,128,128,128,128,128";
 
 	private Properties p = null;
@@ -69,51 +70,12 @@ public class CodeSwarmConfig
 
 		return def;
 	}
-	public int getEdgeLife()
-	{
-		return Integer.valueOf(p.getProperty(EDGE_LIFE_KEY)).intValue();
-	}
-
-	public int getFileLife()
-	{
-		return Integer.valueOf(p.getProperty(FILE_LIFE_KEY)).intValue();
-	}
 	
-	public int getPersonLife()
-	{
-		return Integer.valueOf(p.getProperty(PERSON_LIFE_KEY)).intValue();
-	}
-
-	public int getWidth()
-	{
-		return Integer.valueOf(p.getProperty(WIDTH_KEY)).intValue();
-	}
-
-	public int getHeight()
-	{
-		return Integer.valueOf(p.getProperty(HEIGHT_KEY)).intValue();
-	}
-
-	public String getInputFile()
-	{
-		return p.getProperty(INPUT_FILE_KEY);
-	}
-
-	public long getMSecPerFrame()
-	{
-		return Long.valueOf(p.getProperty(MSEC_PER_FRAME_KEY)).longValue();
-	}
-
 	public Color getBackground()
 	{
 		if ( _background == null )
 			_background = stringToColor( p.getProperty(BACKGROUND_KEY) );
 		return _background;
-	}
-
-	public boolean getTakeSnapshots()
-	{
-		return Boolean.valueOf(p.getProperty(TAKE_SNAPSHOTS_KEY)).booleanValue();
 	}
 
 	public boolean getBooleanProperty(String key, boolean defValue)
@@ -135,7 +97,23 @@ public class CodeSwarmConfig
 	{
 		return Integer.parseInt( p.getProperty(key) );
 	}
-
+	
+	public int getIntProperty( String key, int defValue )
+	{
+		return Integer.parseInt( p.getProperty(key, String.valueOf(defValue)) );
+	}
+	
+	public long getLongProperty( String key )
+	{
+		return Long.parseLong( p.getProperty(key) );
+	}
+	
+	public long getLongProperty( String key, long defValue )
+	{
+		return Long.parseLong( p.getProperty(key, String.valueOf(defValue)) );
+	}
+	
+	
 	public String getColorAssignProperty( Integer index )
 	{
 		return p.getProperty( COLOR_ASSIGN_KEY + index.toString() );

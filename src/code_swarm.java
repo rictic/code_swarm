@@ -38,6 +38,7 @@ public class code_swarm extends PApplet {
   // User-defined variables
   CodeSwarmConfig config;
   int FRAME_RATE = 24;
+  long UPDATE_DELTA = 0;
   String SPRITE_FILE = "particle.png";
   String SCREENSHOT_FILE;
 
@@ -92,9 +93,9 @@ public class code_swarm extends PApplet {
   /* Initialization */
   public void setup() {
     if (cfg.getBooleanProperty("UseOpenGL", false)) {
-      size(cfg.getWidth(), cfg.getHeight(), OPENGL);
+      size(cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640), cfg.getIntProperty(CodeSwarmConfig.HEIGHT_KEY,480), OPENGL);
     } else {
-      size(cfg.getWidth(), cfg.getHeight());
+      size(cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640), cfg.getIntProperty(CodeSwarmConfig.HEIGHT_KEY,480));
     }
     
     if (cfg.getBooleanProperty("ShowLegend", false)) {
@@ -116,17 +117,26 @@ public class code_swarm extends PApplet {
     }
     
     // Ensure we have sane values.
-    EDGE_LIFE_INIT = cfg.getEdgeLife();
+    EDGE_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.EDGE_LIFE_KEY,255);
     if (EDGE_LIFE_INIT <= 0) {
       EDGE_LIFE_INIT = 255;
     }
-    FILE_LIFE_INIT = cfg.getFileLife();
+    FILE_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.FILE_LIFE_KEY,255);
     if (FILE_LIFE_INIT <= 0) {
       FILE_LIFE_INIT = 255;
     }
-    PERSON_LIFE_INIT = cfg.getPersonLife();
+    PERSON_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.PERSON_LIFE_KEY,255);
     if (PERSON_LIFE_INIT <= 0) {
       PERSON_LIFE_INIT = 255;
+    }
+    
+    UPDATE_DELTA = cfg.getIntProperty(CodeSwarmConfig.MSEC_PER_FRAME_KEY, -1);
+    if (UPDATE_DELTA == -1) {
+      UPDATE_DELTA = 86400000 / cfg.getIntProperty(CodeSwarmConfig.FRAMES_PER_DAY_KEY, 4);
+    }
+    if (UPDATE_DELTA <= 0) {
+        // Default to 4 frames per day.
+        UPDATE_DELTA = 21600000;
     }
     
     smooth();
@@ -147,7 +157,7 @@ public class code_swarm extends PApplet {
     // loadRepository( INPUT_FILE ); // repository formatted
     Thread t = new Thread(new Runnable() {
       public void run() {
-        loadRepEvents(cfg.getInputFile()); // event formatted (this will be standard)
+        loadRepEvents(cfg.getStringProperty(CodeSwarmConfig.INPUT_FILE_KEY)); // event formatted (this will be standard)
         prevDate = eventsQueue.peek().date;
       }
     });
@@ -225,6 +235,8 @@ public class code_swarm extends PApplet {
 
     if (loading) {
       drawLoading();
+      // reset the Frame Counter.
+      frameCount=0;
     } else {
       this.update(); // update state to next frame
       // Draw edges (for debugging only)
@@ -255,7 +267,7 @@ public class code_swarm extends PApplet {
       if (showDate)
         drawDate();
 
-      if (cfg.getTakeSnapshots())
+      if (cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY,false))
         dumpFrame();
 
       // Stop animation when we run out of data
@@ -363,7 +375,7 @@ public class code_swarm extends PApplet {
     ColorBins cb = new ColorBins();
     history.add(cb);
 
-    nextDate = new Date(prevDate.getTime() + cfg.getMSecPerFrame());
+    nextDate = new Date(prevDate.getTime() + UPDATE_DELTA);
     currentEvent = eventsQueue.peek();
 
     while (currentEvent != null && currentEvent.date.before(nextDate)) {
