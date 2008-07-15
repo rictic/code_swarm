@@ -41,6 +41,7 @@ public class code_swarm extends PApplet {
   long UPDATE_DELTA = 0;
   String SPRITE_FILE = "particle.png";
   String SCREENSHOT_FILE;
+  int background;
 
   // Data storage
   PriorityBlockingQueue<FileEvent> eventsQueue; // USE PROCESSING 0142 or higher
@@ -67,6 +68,9 @@ public class code_swarm extends PApplet {
   boolean showDate = true;
   boolean showLegend = false;
   boolean showHelp = false;
+  boolean takeSnapshots = false;
+  boolean debug = false;
+  boolean nameHalos = false;
 
   // Color mapper
   ColorAssigner colorAssigner;
@@ -124,6 +128,26 @@ public class code_swarm extends PApplet {
       showDate = false;
     }
     
+    if (cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY,false)) {
+      takeSnapshots = true;
+    } else {
+      takeSnapshots = false;
+    }
+    
+    if (cfg.getBooleanProperty("debug", false)) {
+      debug = true;
+    } else {
+      debug = false;
+    }
+    
+    if (cfg.getBooleanProperty("NameHalos", true)) {
+      nameHalos = true;
+    } else {
+      nameHalos = false;
+    }
+    
+    background = cfg.getBackground().getRGB();
+    
     // Ensure we have sane values.
     EDGE_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.EDGE_LIFE_KEY,255);
     if (EDGE_LIFE_INIT <= 0) {
@@ -143,8 +167,8 @@ public class code_swarm extends PApplet {
       UPDATE_DELTA = 86400000 / cfg.getIntProperty(CodeSwarmConfig.FRAMES_PER_DAY_KEY, 4);
     }
     if (UPDATE_DELTA <= 0) {
-        // Default to 4 frames per day.
-        UPDATE_DELTA = 21600000;
+      // Default to 4 frames per day.
+      UPDATE_DELTA = 21600000;
     }
     
     smooth();
@@ -242,7 +266,7 @@ public class code_swarm extends PApplet {
   /* Main loop */
   public void draw() {
     long start = System.currentTimeMillis();
-    background(cfg.getBackground().getRGB()); // clear screen with background color
+    background(background); // clear screen with background color
 
     if (loading) {
       drawLoading();
@@ -264,7 +288,7 @@ public class code_swarm extends PApplet {
 
       textFont(font);
 
-      if (cfg.getBooleanProperty("debug", false))
+      if (debug)
         drawDebugData();
 
       if (showHistogram)
@@ -276,7 +300,7 @@ public class code_swarm extends PApplet {
       if (showDate)
         drawDate();
 
-      if (cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY,false))
+      if (takeSnapshots)
         dumpFrame();
 
       // Stop animation when we run out of data
@@ -299,7 +323,7 @@ public class code_swarm extends PApplet {
     }
 
     // Then blur it
-    if (cfg.getBooleanProperty("NameHalos", true))
+    if (nameHalos)
       filter(BLUR, 3);
   }
 
