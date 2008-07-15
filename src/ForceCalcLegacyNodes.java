@@ -19,22 +19,22 @@
 
 
 /**
- * @brief Legacy force calculation between persons.
+ * @brief Legacy repulsive force calculation between two similar nodes (either files or persons).
  */
-public class ForceCalcLegacyPerson extends ForceCalc
+public class ForceCalcLegacyNodes extends ForceCalc
 {
   final private double randMultiplier;
   
   /**
    * Constructor for initializing parameters.
    */
-  ForceCalcLegacyPerson(double paramMultiplier)
+  ForceCalcLegacyNodes(double paramMultiplier)
   {
 	  randMultiplier = paramMultiplier;
   }
   
   /**
-   * Legacy method that calculate the force between to Person nodes.
+   * Legacy method that calculate the repulsive force between to nodes.
    * 
    * @param[in] NodeA
    * @param[in] NodeB

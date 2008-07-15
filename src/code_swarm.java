@@ -978,11 +978,6 @@ public class code_swarm extends PApplet {
     String name;
     float x, y;
 
-    /** @tode those are variables used for physic calculation,
-              but they need more appropriate names */
-    float ddx, ddy;
-    float lensq, dlen;
-
     boolean fixed;
     /** @todo add config */
     protected float maxSpeed = 7.0f;
@@ -1041,6 +1036,10 @@ public class code_swarm extends PApplet {
     int nodeHue;
     int minBold;
 
+    // The force calculation algorithm used
+    /** @todo use config to select the good one */
+    ForceCalcLegacyNodes ForceCalcBetweenFiles = new ForceCalcLegacyNodes(0.01f);
+
     /**
      * getting file node as a string
      */
@@ -1069,34 +1068,31 @@ public class code_swarm extends PApplet {
      *       => then it could be moved up
      */
     public void relax() {
+      ForceVector forceSummation = new ForceVector();
+      double      dlen;
+      
       if (life <= 0)
         return;
 
-      ddx = 0;
-      ddy = 0;
-
+      // Calculation of repulsive force between persons
       for (int j = 0; j < nodes.size(); j++) {
         FileNode n = (FileNode) nodes.get(j);
         if (n.life <= 0)
           continue;
 
         if (n != this) {
-          distx = x - n.getX();
-          disty = y - n.getY();
-          lensq = distx * distx + disty * disty;
-          if (lensq == 0) {
-            ddx += random(0.1f);
-            ddy += random(0.1f);
-          } else if (lensq < 10000) {  /** @todo remove this not linear calculation */
-            ddx += distx / lensq;
-            ddy += disty / lensq;
-          }
+          ForceVector forceBetween2Files = new ForceVector();
+          ForceCalcBetweenFiles.calculateForceBetween(this, n, forceBetween2Files);
+          forceSummation.add(forceBetween2Files);
         }
       }
-      dlen = mag(ddx, ddy) / 2;
+
+      // Apply repulsive force from other persons to this Node
+      /** @todo use same mechanism as the above "ForceCalc" to implement the "ForceApply */
+      dlen = forceSummation.norm() / 2;
       if (dlen > 0) {
-        dx += ddx / dlen;
-        dy += ddy / dlen;
+        dx += forceSummation.getX() / dlen;
+        dy += forceSummation.getY() / dlen;
       }
     }
 
@@ -1174,8 +1170,9 @@ public class code_swarm extends PApplet {
     float mass = 10;
     float accel = 0.0f;
     
-    /** @todo Work In Progress */
-    ForceCalcLegacyPerson ForceCalcBetweenPersons = new ForceCalcLegacyPerson(0.01f);
+    // The force calculation algortihm used
+    /** @todo use config to select the good one */
+    ForceCalcLegacyNodes ForceCalcBetweenPersons = new ForceCalcLegacyNodes(0.01f);
 
     /**
      * 1) constructor.
@@ -1196,11 +1193,13 @@ public class code_swarm extends PApplet {
      *       it could be moved up
      */
     public void relax() {
+      ForceVector forceSummation = new ForceVector();
+      double      dlen;
+
       if (life <= 0)
         return;
 
       // Calculation of repulsive force between persons
-      ForceVector forceSummation = new ForceVector();
       for (int j = 0; j < people.size(); j++) {
         Node n = (Node) people.get(j);
         if (n.life <= 0)
@@ -1214,8 +1213,8 @@ public class code_swarm extends PApplet {
       }
       
       // Apply repulsive force from other persons to this Node
-      /** @todo use same mechanism as the above "ForceCalc" */
-      dlen = (float)forceSummation.norm() / 2;
+      /** @todo use same mechanism as the above "ForceCalc" to implement the "ForceApply */
+      dlen = forceSummation.norm() / 2;
       if (dlen > 0) {
         dx += forceSummation.getX() / dlen;
         dy += forceSummation.getY() / dlen;
