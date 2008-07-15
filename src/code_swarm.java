@@ -69,7 +69,7 @@ public class code_swarm extends PApplet {
   boolean showLegend = false;
   boolean showHelp = false;
   boolean takeSnapshots = false;
-  boolean debug = false;
+  boolean showDebug = false;
   boolean nameHalos = false;
 
   // Color mapper
@@ -112,6 +112,7 @@ public class code_swarm extends PApplet {
     
     if (cfg.getBooleanProperty("ShowLegend", false)) {
       showLegend = true;
+      showDebug = false;
     } else {
       showLegend = false;
     }
@@ -134,10 +135,12 @@ public class code_swarm extends PApplet {
       takeSnapshots = false;
     }
     
+    // Debug overrides the Legend.
     if (cfg.getBooleanProperty("debug", false)) {
-      debug = true;
+      showDebug = true;
+      showLegend = false;
     } else {
-      debug = false;
+      showDebug = false;
     }
     
     if (cfg.getBooleanProperty("NameHalos", true)) {
@@ -288,7 +291,7 @@ public class code_swarm extends PApplet {
 
       textFont(font);
 
-      if (debug)
+      if (showDebug)
         drawDebugData();
 
       if (showHistogram)
@@ -675,8 +678,15 @@ public class code_swarm extends PApplet {
       case 'd':
         showDate = !showDate;
         break;
-      case 'l':
+      case 'l': {
         showLegend = !showLegend;
+        showDebug = false;
+      }
+        break;
+      case 'b': {
+        showDebug = !showDebug;
+        showLegend = false;
+      }
         break;
       case '?':
         showHelp = !showHelp; // ! @todo not implemented yet
