@@ -15,11 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
- *
- *
- * @file code_swarm.java
- *
- * @brief Definition of the code_swarm Application
  */
 
 import processing.core.PApplet;
@@ -37,6 +32,9 @@ import java.util.LinkedList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
 
+/**
+ * Definition of the code_swarm Application.
+ */
 public class code_swarm extends PApplet {
 
   public static final long serialVersionUID = 0;
@@ -47,7 +45,7 @@ public class code_swarm extends PApplet {
   String SPRITE_FILE = "particle.png";
   String SCREENSHOT_FILE;
   int background;
-
+ 
   // Data storage
   PriorityBlockingQueue<FileEvent> eventsQueue; // USE PROCESSING 0142 or higher
   CopyOnWriteArrayList<FileNode> nodes;
@@ -101,7 +99,7 @@ public class code_swarm extends PApplet {
   private String loadingMessage = "Reading input file";
 
   /**
-   * @brief Initialization
+   * Initialization
    */
   public void setup() {
     int width=cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
@@ -233,7 +231,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief Load a colormap
+   * Load a colormap
    */
   public void initColors() {
     colorAssigner = new ColorAssigner();
@@ -282,7 +280,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief Main loop
+   * Main loop
    */
   public void draw() {
     long start = System.currentTimeMillis();
@@ -345,7 +343,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief Surround names with aura
+   * Surround names with aura
    */
   public void drawPeopleNodesBlur() {
     colorMode(HSB);
@@ -362,7 +360,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief Draw person's name
+   * Draw person's name
    */
   public void drawPeopleNodesSharp() {
     colorMode(RGB);
@@ -374,7 +372,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief Draw date in lower-right corner
+   * Draw date in lower-right corner
    */
   public void drawDate() {
     fill(255);
@@ -385,7 +383,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief  Draw histogram in lower-left
+   *  Draw histogram in lower-left
    */
   public void drawHistory() {
     Iterator<ColorBins> itr = history.iterator();
@@ -412,7 +410,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief  Show color codings
+   *  Show color codings
    */
   public void drawLegend() {
     noStroke();
@@ -428,25 +426,26 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief  Show short help on avaible commands
+   *  Show short help on avaible commands
    */
   public void drawHelp() {
+    int line = 0;
     noStroke();
     textFont(font);
     textAlign(LEFT, TOP);
     fill(255, 200);
-    text("Help on Keyboard commands:", 0, 0);
-    text("- space bar : pause", 0, 10);
-    text("- h : show Histogram", 0, 20);
-    text("- d : show Date", 0, 30);
-    text("- l : show Legend", 0, 40);
-    text("- e : show Edges", 0, 40);
-    text("- b : show deBug", 0, 50);
-    text("- ? : show help", 0, 60);
-    text("- q : Quit code_swarm", 0, 70);
+    text("Help on Keyboard commands:", 0, 10*line++);
+    text("- space bar : pause", 0, 10*line++);
+    text("- h : show Histogram", 0, 10*line++);
+    text("- d : show Date", 0, 10*line++);
+    text("- l : show Legend", 0, 10*line++);
+    text("- e : show Edges", 0, 10*line++);
+    text("- b : show deBug", 0, 10*line++);
+    text("- ? : show help", 0, 10*line++);
+    text("- q : Quit code_swarm", 0, 10*line++);
   }
   /**
-   * @brief  Show debug information about all drawable objects
+   *  Show debug information about all drawable objects
    */
   public void drawDebugData() {
     noStroke();
@@ -460,7 +459,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief  Take screenshot
+   *  Take screenshot
    */
   public void dumpFrame() {
     if (frameCount < 100000)
@@ -468,7 +467,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief  Update the particle positions
+   *  Update the particle positions
    */
   public void update() {
     // Create a new histogram line
@@ -625,7 +624,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief  Head function for loadRecurse
+   *  Head function for loadRecurse
    */
   public void loadRepository(String filename) {
     XMLElement doc = new XMLElement(this, filename);
@@ -634,7 +633,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief  Load repository-formatted file
+   *  Load repository-formatted file
    */
   public void loadRepository(XMLElement xml, String path, String filename) {
     String tag = xml.getName();
@@ -662,7 +661,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief  Load event-formatted file
+   *  Load event-formatted file
    */
   public void loadRepEvents(String filename1) {
     XMLElement doc = new XMLElement(this, filename1);
@@ -685,7 +684,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief  Load SVN log formatted file
+   *  Load SVN log formatted file
    * @deprecated
    */
   public void loadSVNRepository(XMLElement doc) {
@@ -739,7 +738,7 @@ public class code_swarm extends PApplet {
    */
 
   /**
-   * @brief Keystroke callback function
+   * Keystroke callback function
    */
   public void keyPressed() {
     switch (key) {
@@ -778,7 +777,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief  Toggle pause
+   *  Toggle pause
    */
   public void pauseButton() {
     if (looping)
@@ -789,7 +788,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief Describe an event on a file
+   * Describe an event on a file
    */
   class FileEvent implements Comparable<Object> {
     Date date;
@@ -800,14 +799,14 @@ public class code_swarm extends PApplet {
     int linesremoved;
 
     /**
-     * @brief short constructor with base data
+     * short constructor with base data
      */
     FileEvent(long datenum, String author, String path, String filename) {
       this(datenum, author, path, filename, 0, 0);
     }
 
     /**
-     * @brief constructor with number of modified lines
+     * constructor with number of modified lines
      */
     FileEvent(long datenum, String author, String path, String filename, int linesadded, int linesremoved) {
       this.date = new Date(datenum);
@@ -819,7 +818,7 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * @brief Comparing two events by date (Not Used)
+     * Comparing two events by date (Not Used)
      */
     public int compareTo(Object o) {
       return date.compareTo(((FileEvent) o).date);
@@ -827,7 +826,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief Base class for all drawable objects
+   * Base class for all drawable objects
    * 
    *        Lists and implements features common to all drawable objects
    *        Edge and Node, FileNode and PersonNode
@@ -845,7 +844,7 @@ public class code_swarm extends PApplet {
     final public int LIFE_DECREMENT;
 
     /**
-     * @brief 1) constructor(s)
+     * 1) constructor(s)
      * 
      * Init jobs common to all objects
      */
@@ -859,19 +858,19 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * @brief 2) calculating next frame state => done in derived class
+     * 2) calculating next frame state => done in derived class
      */
     public abstract void relax();
 
     /**
-     * @brief 3) applying next frame state
+     * 3) applying next frame state
      */
     public void update() {
       decay();
     }
     
     /**
-     * @brief 4) shortening life
+     *  4) shortening life.
      */
     public void decay() {
       if (life > 0) {
@@ -883,12 +882,12 @@ public class code_swarm extends PApplet {
     }
     
     /**
-     * @brief 5) drawing the new state => done in derived class
+     * 5) drawing the new state => done in derived class.
      */
     public abstract void draw();
 
     /**
-     * @brief 6) reseting life as if new
+     * 6) reseting life as if new.
      */
     public void freshen() {
       life = LIFE_INIT;
@@ -915,7 +914,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief An Edge link two nodes together : a File to a Person
+   * An Edge link two nodes together : a File to a Person.
    */
   class Edge extends Drawable {
     Node   from;
@@ -923,7 +922,7 @@ public class code_swarm extends PApplet {
     float len;
 
     /**
-     * @brief 1) constructor
+     * 1) constructor.
      */
     Edge(Node from, Node to) {
       super(EDGE_LIFE_INIT, EDGE_LIFE_DECREMENT); // 255, -2
@@ -933,7 +932,7 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * @brief 2) calculating next frame state
+     * 2) calculating next frame state.
      */
     public void relax() {
       float distance;
@@ -960,7 +959,7 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * @brief 5) drawing the new state
+     * 5) drawing the new state.
      */
     public void draw() {
       if (life > 240) {
@@ -973,9 +972,9 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief A node is an abstraction for a File or a Person
+   * A node is an abstraction for a File or a Person.
    */
-  abstract class Node extends Drawable {
+  public abstract class Node extends Drawable {
     String name;
     float x, y;
 
@@ -989,7 +988,7 @@ public class code_swarm extends PApplet {
     protected float maxSpeed = 7.0f;
 
     /**
-     * @brief 1) constructor
+     * 1) constructor.
      */
     Node(int lifeInit, int lifeDecrement) {
       super(lifeInit, lifeDecrement);
@@ -1000,7 +999,7 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * @brief 3) applying next frame state
+     * 3) applying next frame state.
      *
      * This is a surdefinition of the Drawable update() method
      */
@@ -1036,21 +1035,21 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief A node describing a file, which is repulsed by other files
+   * A node describing a file, which is repulsed by other files.
    */
   class FileNode extends Node {
     int nodeHue;
     int minBold;
 
     /**
-     * @brief getting file node as a string
+     * getting file node as a string
      */
     public String toString() {
       return "FileNode{" + "name='" + name + '\'' + ", nodeHue=" + nodeHue + ", touches=" + touches + '}';
     }
 
     /**
-     * @brief 1) constructor
+     * 1) constructor.
      */
     FileNode(FileEvent fe) {
       super(FILE_LIFE_INIT, FILE_LIFE_DECREMENT); // 255, -2
@@ -1064,7 +1063,7 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * @brief 2) calculating next frame state
+     * 2) calculating next frame state.
      * 
      * @todo this physic job should be uniformed between file a person nodes
      *       => then it could be moved up
@@ -1102,7 +1101,7 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * @brief 5) drawing the new state
+     * 5) drawing the new state.
      */
     public void draw() {
       if (life > 0) {
@@ -1164,7 +1163,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief A node describing a person, which is repulsed by other persons
+   * A node describing a person, which is repulsed by other persons.
    */
   class PersonNode extends Node {
     int flavor = color(0);
@@ -1174,9 +1173,12 @@ public class code_swarm extends PApplet {
     /** @todo Not Used : to implements in physics */
     float mass = 10;
     float accel = 0.0f;
+    
+    /** @todo Work In Progress */
+    ForceCalcLegacyPerson ForceCalcBetweenPersons = new ForceCalcLegacyPerson(0.01f);
 
     /**
-     * @brief 1) constructor
+     * 1) constructor.
      */
     PersonNode(String n) {
       super(PERSON_LIFE_INIT, PERSON_LIFE_DECREMENT); // -1
@@ -1188,7 +1190,7 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * @brief 2) calculating next frame state
+     * 2) calculating next frame state.
      * 
      * @todo this physic job should be uniformed between file a person nodes => then
      *       it could be moved up
@@ -1197,39 +1199,33 @@ public class code_swarm extends PApplet {
       if (life <= 0)
         return;
 
-      ddx = 0;
-      ddy = 0;
-
+      // Calculation of repulsive force between persons
+      ForceVector forceSummation = new ForceVector();
       for (int j = 0; j < people.size(); j++) {
         Node n = (Node) people.get(j);
         if (n.life <= 0)
           continue;
 
         if (n != this) {
-          distx = x - n.getX();
-          disty = y - n.getY();
-          lensq = distx * distx + disty * disty;
-          if (lensq == 0) {
-            ddx += random(0.01f);
-            ddy += random(0.01f);
-          } else if (lensq < 10000) {  /** @todo remove this not linear calculation */
-            ddx += distx / lensq;
-            ddy += disty / lensq;
-          }
+          ForceVector forceBetween2Persons = new ForceVector();
+          ForceCalcBetweenPersons.calculateForceBetween(this, n, forceBetween2Persons);
+          forceSummation.add(forceBetween2Persons);
         }
       }
-      dlen = mag(ddx, ddy) / 2;
+      
+      // Apply repulsive force from other persons to this Node
+      /** @todo use same mechanism as the above "ForceCalc" */
+      dlen = (float)forceSummation.norm() / 2;
       if (dlen > 0) {
-        dx += ddx / dlen;
-        dy += ddy / dlen;
+        dx += forceSummation.getX() / dlen;
+        dy += forceSummation.getY() / dlen;
       }
-
       dx /= 12;
       dy /= 12;
     }
 
     /**
-     * @brief 5) drawing the new state
+     * 5) drawing the new state.
      */
     public void draw() {
       if (life <= 0)
@@ -1255,7 +1251,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * code_swarm Entry point
+   * code_swarm Entry point.
    */
   static public void main(String args[]) {
     try {
