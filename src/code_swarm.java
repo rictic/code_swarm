@@ -1,20 +1,25 @@
-/*
-	 Copyright 2008 Michael Ogawa
-
-	 This file is part of code_swarm.
-
-	 code_swarm is free software: you can redistribute it and/or modify
-	 it under the terms of the GNU General Public License as published by
-	 the Free Software Foundation, either version 3 of the License, or
-	 (at your option) any later version.
-
-	 code_swarm is distributed in the hope that it will be useful,
-	 but WITHOUT ANY WARRANTY; without even the implied warranty of
-	 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	 GNU General Public License for more details.
-
-	 You should have received a copy of the GNU General Public License
-	 along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Copyright 2008 Michael Ogawa
+ *
+ * This file is part of code_swarm.
+ *
+ * code_swarm is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * code_swarm is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * @file code_swarm.java
+ *
+ * @brief Definition of the code_swarm Application
  */
 
 import processing.core.PApplet;
@@ -94,7 +99,9 @@ public class code_swarm extends PApplet {
   private boolean loading = true;
   private String loadingMessage = "Reading input file";
 
-  /* Initialization */
+  /**
+   * @brief Initialization
+   */
   public void setup() {
     int width=cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
     if (width <= 0) {
@@ -135,10 +142,8 @@ public class code_swarm extends PApplet {
       takeSnapshots = false;
     }
     
-    // Debug overrides the Legend.
     if (cfg.getBooleanProperty("debug", false)) {
       showDebug = true;
-      showLegend = false;
     } else {
       showDebug = false;
     }
@@ -198,7 +203,7 @@ public class code_swarm extends PApplet {
     });
     t.setDaemon(true);
     t.start();
-    // ! @todo TODO: use adapter pattern to handle different data sources
+    //! @todo TODO: use adapter pattern to handle different data sources
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
     EDGE_LEN = cfg.getIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY);
@@ -219,7 +224,9 @@ public class code_swarm extends PApplet {
 
   }
 
-  /* Load a colormap */
+  /**
+   * @brief Load a colormap
+   */
   public void initColors() {
     colorAssigner = new ColorAssigner();
     int i = 1;
@@ -266,7 +273,9 @@ public class code_swarm extends PApplet {
     colorAssigner.addRule("Images", ".*\\.gif|.*\\.jpg", color(120, 255, 255), color(135, 255, 255));
   }
 
-  /* Main loop */
+  /**
+   * @brief Main loop
+   */
   public void draw() {
     long start = System.currentTimeMillis();
     background(background); // clear screen with background color
@@ -291,14 +300,22 @@ public class code_swarm extends PApplet {
 
       textFont(font);
 
-      if (showDebug)
+      // help, legend and debug information are exclusive
+      if (showHelp) {
+        // help override legend and debug information
+        drawHelp();
+      }
+      else if (showDebug) {
+        // debug override legend information
         drawDebugData();
+      }
+      else if (showLegend) {
+        // legend only if nothing "more important"
+        drawLegend();
+      }
 
       if (showHistogram)
         drawHistory();
-
-      if (showLegend)
-        drawLegend();
 
       if (showDate)
         drawDate();
@@ -315,7 +332,9 @@ public class code_swarm extends PApplet {
     lastDrawDuration = end - start;
   }
 
-  /* Surround names with aura */
+  /**
+   * @brief Surround names with aura
+   */
   public void drawPeopleNodesBlur() {
     colorMode(HSB);
     // First draw the name
@@ -330,7 +349,9 @@ public class code_swarm extends PApplet {
       filter(BLUR, 3);
   }
 
-  /* Draw person's name */
+  /**
+   * @brief Draw person's name
+   */
   public void drawPeopleNodesSharp() {
     colorMode(RGB);
     for (int i = 0; i < people.size(); i++) {
@@ -340,7 +361,9 @@ public class code_swarm extends PApplet {
     }
   }
 
-  /* Draw date in lower-right corner */
+  /**
+   * @brief Draw date in lower-right corner
+   */
   public void drawDate() {
     fill(255);
     String dateText = formatter.format(prevDate);
@@ -349,7 +372,9 @@ public class code_swarm extends PApplet {
     text(dateText, width - 1, height - textDescent());
   }
 
-  /* Draw histogram in lower-left */
+  /**
+   * @brief  Draw histogram in lower-left
+   */
   public void drawHistory() {
     Iterator<ColorBins> itr = history.iterator();
     int counter = 0;
@@ -374,7 +399,9 @@ public class code_swarm extends PApplet {
     text(loadingMessage, 0, 0);
   }
 
-  /* Show color codings */
+  /**
+   * @brief  Show color codings
+   */
   public void drawLegend() {
     noStroke();
     textFont(font);
@@ -388,6 +415,26 @@ public class code_swarm extends PApplet {
     }
   }
 
+  /**
+   * @brief  Show short help on avaible commands
+   */
+  public void drawHelp() {
+    noStroke();
+    textFont(font);
+    textAlign(LEFT, TOP);
+    fill(255, 200);
+    text("Help on Keyboard commands:", 0, 0);
+    text("- space bar : pause", 0, 10);
+    text("- h : show Histogram", 0, 20);
+    text("- d : show Date", 0, 30);
+    text("- l : show Legend", 0, 40);
+    text("- b : show deBug", 0, 50);
+    text("- ? : show help", 0, 60);
+    text("- q : Quit code_swarm", 0, 70);
+  }
+  /**
+   * @brief  Show debug information about all drawable objects
+   */
   public void drawDebugData() {
     noStroke();
     textFont(font);
@@ -399,13 +446,17 @@ public class code_swarm extends PApplet {
     text("Last render time: " + lastDrawDuration, 0, 30);
   }
 
-  /* Take screenshot */
+  /**
+   * @brief  Take screenshot
+   */
   public void dumpFrame() {
     if (frameCount < 100000)
       saveFrame(SCREENSHOT_FILE);
   }
 
-  /* Update the particle positions */
+  /**
+   * @brief  Update the particle positions
+   */
   public void update() {
     // Create a new histogram line
     ColorBins cb = new ColorBins();
@@ -560,14 +611,18 @@ public class code_swarm extends PApplet {
     return null;
   }
 
-  /* Head function for loadRecurse */
+  /**
+   * @brief  Head function for loadRecurse
+   */
   public void loadRepository(String filename) {
     XMLElement doc = new XMLElement(this, filename);
     loadRepository(doc, "", "");
     doc = null;
   }
 
-  /* Load repository-formatted file */
+  /**
+   * @brief  Load repository-formatted file
+   */
   public void loadRepository(XMLElement xml, String path, String filename) {
     String tag = xml.getName();
     if (tag.equals("event")) {
@@ -593,7 +648,9 @@ public class code_swarm extends PApplet {
     }
   }
 
-  /* Load event-formatted file */
+  /**
+   * @brief  Load event-formatted file
+   */
   public void loadRepEvents(String filename1) {
     XMLElement doc = new XMLElement(this, filename1);
     for (int i = 0; i < doc.getChildCount(); i++) {
@@ -614,8 +671,10 @@ public class code_swarm extends PApplet {
     frameCount = 0;
   }
 
-  /* Load SVN log formatted file */
-  /* DEPRECATED */
+  /**
+   * @brief  Load SVN log formatted file
+   * @deprecated
+   */
   public void loadSVNRepository(XMLElement doc) {
     // Iterate over commit nodes.
     for (int i = 0; i < doc.getChildCount(); i++) {
@@ -636,7 +695,7 @@ public class code_swarm extends PApplet {
       // When the SVN repository is created, there is no author associated with the
       // commit, so for
       // now just log it as anonymous.
-      // ! @todo FIXME: Should we ignored events with no author completely or log them
+      //! @todo FIXME: Should we ignored events with no author completely or log them
       // a different way?
       XMLElement author_node = xml.getChild("author");
       String author = "anonymous";
@@ -666,38 +725,45 @@ public class code_swarm extends PApplet {
    * println( fe.date ); } }
    */
 
-  /* Keystroke callback function */
+  /**
+   * @brief Keystroke callback function
+   */
   public void keyPressed() {
     switch (key) {
-      case ' ':
+      case ' ': {
         pauseButton();
         break;
-      case 'h':
+      }
+      case 'h': {
         showHistogram = !showHistogram;
         break;
-      case 'd':
+      }
+      case 'd': {
         showDate = !showDate;
         break;
+      }
       case 'l': {
         showLegend = !showLegend;
-        showDebug = false;
-      }
         break;
+      }
       case 'b': {
         showDebug = !showDebug;
-        showLegend = false;
+        break;
       }
+      case '?': {
+        showHelp = !showHelp;
         break;
-      case '?':
-        showHelp = !showHelp; // ! @todo not implemented yet
-        break;
-      case 'q':
+      }
+      case 'q': {
         exit();
         break;
+      }
     }
   }
 
-  /* Toggle pause */
+  /**
+   * @brief  Toggle pause
+   */
   public void pauseButton() {
     if (looping)
       noLoop();
@@ -745,27 +811,75 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @brief Abstract base class for all drawable objects
+   * @brief Base class for all drawable objects
    * 
    *        List the features common to all drawable objects Edge and Node,
    *        FileNode and PersonNode
    */
   abstract class Drawable {
     public int life;
+    public int touches;
 
-    // ! @tode those are variables used for physic calculation, but they need more
+    //! @tode those are variables used for physic calculation, but they need more
     // appropriate names
     float dx, dy;
     float distx, disty;
 
+    final public int LIFE_INIT;
     final public int LIFE_DECREMENT;
 
-    // 1) constructor(s)
-    // ! @todo This is in preparation for the (hypotetic) displacement of update()
-    // and decay()
-    Drawable(int lifeDecrement) {
+    /**
+     * @brief 1) constructor(s)
+     * 
+     * Init jobs common to all objects
+     */
+    Drawable(int lifeInit, int lifeDecrement) {
+      // save config vars
+      LIFE_INIT      = lifeInit;
       LIFE_DECREMENT = lifeDecrement;
+      // init life relative vars
+      life           = LIFE_INIT;
+      touches        = 1;
     }
+
+    /**
+     * @brief 2) calculating next frame state => done in derived class
+     */
+    public abstract void relax();
+
+    /**
+     * @brief 3) applying next frame state
+     */
+    public void update() {
+      decay();
+    }
+    
+    /**
+     * @brief 4) shortening life
+     */
+    public void decay() {
+      if (life > 0) {
+        life += LIFE_DECREMENT;
+        if (life < 0) {
+          life = 0;
+        }
+      }
+    }
+    
+    /**
+     * @brief 2) drawing the new state => done in derived class
+     */
+    public abstract void draw();
+
+    /**
+     * @brief 6) reseting life as if new
+     */
+    public void freshen() {
+      life = LIFE_INIT;
+      touches++;
+    }
+
+    // getters and setters
 
     public float getDX() {
       return dx;
@@ -782,35 +896,28 @@ public class code_swarm extends PApplet {
     public void adjDY(float amt) {
       dy += amt;
     }
-
-    public abstract void relax(); // 2) calculating next frame state
-    public abstract void update(); // 3) applying next frame state
-    public abstract void decay(); // 4) shortening life
-    public abstract void draw(); // 5) drawing the new state
-    public abstract void freshen(); // 6) reseting life as if new
   }
 
   /**
    * @brief An Edge link two nodes together : a File to a Person
    */
   class Edge extends Drawable {
-    Node from;
-    Node to;
+    Node   from;
+    Node   to;
     float len;
 
     /**
-     * 1) constructor
+     * @brief 1) constructor
      */
     Edge(Node from, Node to) {
-      super(EDGE_LIFE_DECREMENT); // -2
+      super(EDGE_LIFE_INIT, EDGE_LIFE_DECREMENT); // 255, -2
       this.from = from;
-      this.to = to;
-      this.len = EDGE_LEN; // 25
-      this.life = EDGE_LIFE_INIT; // 255
+      this.to   = to;
+      this.len  = EDGE_LEN;  // 25
     }
 
     /**
-     * 2) calculating next frame state
+     * @brief 2) calculating next frame state
      */
     public void relax() {
       distx = to.getX() - from.getX();
@@ -830,32 +937,7 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * 3) applying next frame state
-     * 
-     * @todo shouln'd it be moved directly in Drawable ?
-     */
-    public void update() {
-      // super.update(); // @todo would be more homogeneous (then update() could be in
-      // Drawable)
-      decay();
-    }
-
-    /**
-     * 4) shortening life
-     * 
-     * @todo shouln'd it be moved directly in Drawable ?
-     */
-    public void decay() {
-      if (life > 0) {
-        life += LIFE_DECREMENT;
-        if (life < 0) {
-          life = 0;
-        }
-      }
-    }
-
-    /**
-     * 5) drawing the new state
+     * @brief 5) drawing the new state
      */
     public void draw() {
       if (life > 240) {
@@ -865,25 +947,17 @@ public class code_swarm extends PApplet {
       }
     }
 
-    /**
-     * 6) reseting life as if new
-     */
-    public void freshen() {
-      life = EDGE_LIFE_INIT;
-    }
   }
 
   /**
    * @brief A node is an abstraction for a File or a Person
-   * 
-   * @todo Should not be called "abstract" if there is code inside...
    */
   abstract class Node extends Drawable {
     String name;
     float x, y;
 
-    // ! @tode those are variables used for physic calculation, but they need more
-    // appropriate names
+    //! @tode those are variables used for physic calculation,
+    //!        but they need more appropriate names
     float ddx, ddy;
     float lensq, dlen;
 
@@ -891,16 +965,18 @@ public class code_swarm extends PApplet {
     protected float maxSpeed = 7.0f;
 
     /**
-     * 1) constructor
+     * @brief 1) constructor
      */
-    Node(int lifeDecrement) {
-      super(lifeDecrement);
+    Node(int lifeInit, int lifeDecrement) {
+      super(lifeInit, lifeDecrement);
       x = random(width);
       y = random(height);
     }
 
     /**
-     * 3) applying next frame state
+     * @brief 3) applying next frame state
+     *
+     * This is a surdefinition of the Drawable update() method
      */
     public void update() {
       if (!fixed) {
@@ -919,6 +995,9 @@ public class code_swarm extends PApplet {
       // Apply drag
       dx /= 2;
       dy /= 2;
+
+      // shortening life
+      decay();
     }
 
     public float getX() {
@@ -935,36 +1014,34 @@ public class code_swarm extends PApplet {
    */
   class FileNode extends Node {
     int nodeHue;
-    int touches;
     int minBold;
 
     /**
-     * getting file node as a string
+     * @brief getting file node as a string
      */
     public String toString() {
       return "FileNode{" + "name='" + name + '\'' + ", nodeHue=" + nodeHue + ", touches=" + touches + '}';
     }
 
     /**
-     * 1) constructor
+     * @brief 1) constructor
      */
     FileNode(FileEvent fe) {
-      super(FILE_LIFE_DECREMENT); // -2
+      super(FILE_LIFE_INIT, FILE_LIFE_DECREMENT); // 255, -2
       name = fe.path + fe.filename;
       fixed = false;
-      life = FILE_LIFE_INIT;
-      touches = 1;
+      life = LIFE_INIT;
       colorMode(RGB);
-      minBold = (int)(FILE_LIFE_INIT * 0.95);
+      minBold = (int)(LIFE_INIT * 0.95);
 
       nodeHue = colorAssigner.getColor(name);
     }
 
     /**
-     * 2) calculating next frame state
+     * @brief 2) calculating next frame state
      * 
-     * @todo this physic job should be uniformed between file a person nodes => then
-     *       it could be moved up
+     * @todo this physic job should be uniformed between file a person nodes
+     *       => then it could be moved up
      */
     public void relax() {
       if (life <= 0)
@@ -999,31 +1076,7 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * 3) applying next frame state
-     * 
-     * @todo shouln'd it be moved direcly in Node ?
-     */
-    public void update() {
-      super.update();
-      decay();
-    }
-
-    /**
-     * 4) shortening life
-     * 
-     * @todo shouln'd it be moved directly in Drawable ?
-     */
-    public void decay() {
-      if (life > 0) {
-        life += LIFE_DECREMENT;
-        if (life < 0) {
-          life = 0;
-        }
-      }
-    }
-
-    /**
-     * 5) drawing the new state
+     * @brief 5) drawing the new state
      */
     public void draw() {
       if (life > 0) {
@@ -1080,13 +1133,6 @@ public class code_swarm extends PApplet {
       ellipse(x, y, w, w);
     }
 
-    /**
-     * 6) reseting life as if new
-     */
-    public void freshen() {
-      life = FILE_LIFE_INIT;
-      touches++;
-    }
   }
 
   /**
@@ -1101,19 +1147,18 @@ public class code_swarm extends PApplet {
     float accel = 0.0f;
 
     /**
-     * 1) constructor
+     * @brief 1) constructor
      */
     PersonNode(String n) {
-      super(PERSON_LIFE_DECREMENT); // -1
+      super(PERSON_LIFE_INIT, PERSON_LIFE_DECREMENT); // -1
       maxSpeed = 2.0f;
       name = n;
       fixed = false;
-      life = PERSON_LIFE_INIT;
-      minBold = (int)(PERSON_LIFE_INIT * 0.95);
+      minBold = (int)(LIFE_INIT * 0.95);
     }
 
     /**
-     * 2) calculating next frame state
+     * @brief 2) calculating next frame state
      * 
      * @todo this physic job should be uniformed between file a person nodes => then
      *       it could be moved up
@@ -1154,31 +1199,7 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * 3) applying next frame state
-     * 
-     * @todo shouln'd it be moved direcly in Node ?
-     */
-    public void update() {
-      super.update();
-      decay();
-    }
-
-    /**
-     * 4) shortening life
-     * 
-     * @todo shouln'd it be moved directly in Drawable ?
-     */
-    public void decay() {
-      if (life > 0) {
-        life += LIFE_DECREMENT;
-        if (life < 0) {
-          life = 0;
-        }
-      }
-    }
-
-    /**
-     * 5) drawing the new state
+     * @brief 5) drawing the new state
      */
     public void draw() {
       if (life <= 0)
@@ -1192,16 +1213,6 @@ public class code_swarm extends PApplet {
         textFont(font);
 
       text(name, x, y);
-    }
-
-    /**
-     * 6) reseting life as if new
-     * 
-     * @todo shouln'd it be moved direcly in Node ? (with a "touches++" stuff like
-     *       in FileNode)
-     */
-    public void freshen() {
-      life = PERSON_LIFE_INIT;
     }
 
     public void addColor(int c) {
