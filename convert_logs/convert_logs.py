@@ -5,6 +5,7 @@ from optparse import OptionParser
 import os
 import sys
 import time
+from xml.sax.saxutils import escape as h
 
 # Some global variables
 svn_sep = "------------------------------------------------------------------------"
@@ -266,7 +267,7 @@ def create_event_xml(events, base_log, output_log=None):
     for event in events:
         try:
             xml_handle.write('<event filename="%s" date="%s" author="%s" />\n' % \
-                (event.filename, event.date, event.author))
+                (h(event.filename), event.date, h(event.author)))
         except:
                 print "Error when writing this file: " + str(event)
     xml_handle.write('</file_events>\n')
@@ -275,6 +276,4 @@ def create_event_xml(events, base_log, output_log=None):
 if __name__ == "__main__":
     """ Main entry point."""
     main()
-
-
     
