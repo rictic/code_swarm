@@ -1036,9 +1036,10 @@ public class code_swarm extends PApplet {
     int nodeHue;
     int minBold;
 
-    // The force calculation algorithm used
+    // The force calculation/applications algorithms used
     /** @todo use config to select the good one */
-    ForceCalcLegacyNodes ForceCalcBetweenFiles = new ForceCalcLegacyNodes(0.01f);
+    ForceCalcLegacyNodes  ForceCalcBetweenFiles  = new ForceCalcLegacyNodes(0.01f);
+    ForceApplyLegacyNodes ForceApplyBetweenFiles = new ForceApplyLegacyNodes(12);
 
     /**
      * getting file node as a string
@@ -1069,7 +1070,6 @@ public class code_swarm extends PApplet {
      */
     public void relax() {
       ForceVector forceSummation = new ForceVector();
-      double      dlen;
       
       if (life <= 0)
         return;
@@ -1087,13 +1087,8 @@ public class code_swarm extends PApplet {
         }
       }
 
-      // Apply repulsive force from other persons to this Node
-      /** @todo use same mechanism as the above "ForceCalc" to implement the "ForceApply */
-      dlen = forceSummation.norm() / 2;
-      if (dlen > 0) {
-        dx += forceSummation.getX() / dlen;
-        dy += forceSummation.getY() / dlen;
-      }
+      // Apply repulsive force from other files to this Node
+      ForceApplyBetweenFiles.applyForceTo(this, forceSummation);
     }
 
     /**
@@ -1166,13 +1161,15 @@ public class code_swarm extends PApplet {
     int colorCount = 1;
     int minBold;
 
-    /** @todo Not Used : to implements in physics */
+    /** @todo Not Used : needed to implements in physics
     float mass = 10;
     float accel = 0.0f;
+    */
     
-    // The force calculation algortihm used
+    // The force calculation/applications algorthims used
     /** @todo use config to select the good one */
-    ForceCalcLegacyNodes ForceCalcBetweenPersons = new ForceCalcLegacyNodes(0.01f);
+    ForceCalcLegacyNodes  ForceCalcBetweenPersons  = new ForceCalcLegacyNodes(0.01f);
+    ForceApplyLegacyNodes ForceApplyBetweenPersons = new ForceApplyLegacyNodes(12);
 
     /**
      * 1) constructor.
@@ -1194,7 +1191,6 @@ public class code_swarm extends PApplet {
      */
     public void relax() {
       ForceVector forceSummation = new ForceVector();
-      double      dlen;
 
       if (life <= 0)
         return;
@@ -1213,14 +1209,7 @@ public class code_swarm extends PApplet {
       }
       
       // Apply repulsive force from other persons to this Node
-      /** @todo use same mechanism as the above "ForceCalc" to implement the "ForceApply */
-      dlen = forceSummation.norm() / 2;
-      if (dlen > 0) {
-        dx += forceSummation.getX() / dlen;
-        dy += forceSummation.getY() / dlen;
-      }
-      dx /= 12;
-      dy /= 12;
+      ForceApplyBetweenPersons.applyForceTo(this, forceSummation);
     }
 
     /**

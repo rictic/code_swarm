@@ -19,21 +19,18 @@
 
 
 /**
- * Abstract base of any force calculation in code_swarm.
+ * Abstract base of any force application in code_swarm.
  *
- * Need to be derived to define calculation of a type of forces between to Nodes
+ * Need to be derived to define application of a type of forces between to Nodes
  */
-abstract class ForceCalc
+abstract class ForceApply
 {
   /**
-   * Method that calculate the force between to nodes.
+   * Method that apply a force to a node.
    * 
-   * @param NodeA
-   * @param NodeB
-   * @param force
-   * 
-   * @return a forceVector representing the force between to nodes
+   * @param Node the node to which the force apply
+   * @param force a forceVector representing the force on a node
    */
-  abstract void calculateForceBetween( code_swarm.Node NodeA, code_swarm.Node NodeB, ForceVector force );
+  abstract void applyForceTo( code_swarm.Node Node, ForceVector force );
 }
 
