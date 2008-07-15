@@ -76,7 +76,7 @@ public class code_swarm extends PApplet {
   private int EDGE_LEN = 25;
   // Drawable object life decrement
   private int EDGE_LIFE_INIT = 255;
-  private int FILE_LIFE_INIT = 50;
+  private int FILE_LIFE_INIT = 255;
   private int PERSON_LIFE_INIT = 255;
   private final int EDGE_LIFE_DECREMENT = -2;
   private final int FILE_LIFE_DECREMENT = -2;
@@ -175,6 +175,9 @@ public class code_swarm extends PApplet {
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
     EDGE_LEN = cfg.getIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY);
+    if (EDGE_LEN <= 0) {
+      EDGE_LEN = 25;
+    }
 
     // Create fonts
     font = createFont("SansSerif", 10);
@@ -243,8 +246,6 @@ public class code_swarm extends PApplet {
 
     if (loading) {
       drawLoading();
-      // reset the Frame Counter.
-      frameCount=0;
     } else {
       this.update(); // update state to next frame
       // Draw edges (for debugging only)
@@ -582,6 +583,8 @@ public class code_swarm extends PApplet {
         loadingMessage = "Creating events: " + eventsQueue.size();
     }
     loading = false;
+    // reset the Frame Counter.
+    frameCount = 0;
   }
 
   /* Load SVN log formatted file */
@@ -899,6 +902,7 @@ public class code_swarm extends PApplet {
   class FileNode extends Node {
     int nodeHue;
     int touches;
+    int minBold;
 
     /**
      * getting file node as a string
@@ -917,6 +921,7 @@ public class code_swarm extends PApplet {
       life = FILE_LIFE_INIT;
       touches = 1;
       colorMode(RGB);
+      minBold = (int)(FILE_LIFE_INIT * 0.95);
 
       nodeHue = colorAssigner.getColor(name);
     }
@@ -1006,7 +1011,7 @@ public class code_swarm extends PApplet {
       fill(nodeHue, life);
       float w = 3;
 
-      if (life >= 244) {
+      if (life >= minBold) {
         stroke(255, 128);
         w *= 2;
       } else
@@ -1021,7 +1026,7 @@ public class code_swarm extends PApplet {
       float w = 8 + sqrt(touches) * 4;
       // not used float dubw = w * 2;
       float halfw = w / 2;
-      if (life >= 244) {
+      if (life >= minBold) {
         colorMode(HSB);
         tint(hue(nodeHue), saturation(nodeHue) - 192, 255, life);
         // image( sprite, x - w, y - w, dubw, dubw );
@@ -1032,7 +1037,7 @@ public class code_swarm extends PApplet {
 
     public void drawJelly() {
       noFill();
-      if (life >= 244)
+      if (life >= minBold)
         stroke(255);
       else
         stroke(nodeHue, life);
@@ -1056,6 +1061,7 @@ public class code_swarm extends PApplet {
   class PersonNode extends Node {
     int flavor = color(0);
     int colorCount = 1;
+    int minBold;
 
     float mass = 10;
     float accel = 0.0f;
@@ -1069,6 +1075,7 @@ public class code_swarm extends PApplet {
       name = n;
       fixed = false;
       life = PERSON_LIFE_INIT;
+      minBold = (int)(PERSON_LIFE_INIT * 0.95);
     }
 
     /**
@@ -1145,7 +1152,7 @@ public class code_swarm extends PApplet {
 
       textAlign(CENTER, CENTER);
 
-      if (life >= 250)
+      if (life >= minBold)
         textFont(boldFont);
       else
         textFont(font);
