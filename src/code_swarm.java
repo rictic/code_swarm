@@ -92,10 +92,18 @@ public class code_swarm extends PApplet {
 
   /* Initialization */
   public void setup() {
+    int width=cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
+    if (width <= 0) {
+      width = 640;
+    }
+    int height=cfg.getIntProperty(CodeSwarmConfig.HEIGHT_KEY,480);
+    if (height <= 0) {
+      height = 480;
+    }
     if (cfg.getBooleanProperty("UseOpenGL", false)) {
-      size(cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640), cfg.getIntProperty(CodeSwarmConfig.HEIGHT_KEY,480), OPENGL);
+      size(width, height, OPENGL);
     } else {
-      size(cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640), cfg.getIntProperty(CodeSwarmConfig.HEIGHT_KEY,480));
+      size(width, height);
     }
     
     if (cfg.getBooleanProperty("ShowLegend", false)) {
