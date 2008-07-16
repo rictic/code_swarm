@@ -72,7 +72,7 @@ public class code_swarm extends PApplet {
   boolean showHelp = false;
   boolean takeSnapshots = false;
   boolean showDebug = false;
-  boolean nameHalos = false;
+  boolean drawNameHalos = false;
 
   // Color mapper
   ColorAssigner colorAssigner;
@@ -152,10 +152,10 @@ public class code_swarm extends PApplet {
       takeSnapshots = false;
     }
     
-    if (cfg.getBooleanProperty("NameHalos", true)) {
-      nameHalos = true;
+    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAME_HALOS, true)) {
+      drawNameHalos = true;
     } else {
-      nameHalos = false;
+      drawNameHalos = false;
     }
     
     background = cfg.getBackground().getRGB();
@@ -367,7 +367,7 @@ public class code_swarm extends PApplet {
     }
 
     // Then blur it
-    if (nameHalos)
+    if (drawNameHalos)
       filter(BLUR, 3);
   }
 
