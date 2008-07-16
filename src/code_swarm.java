@@ -25,7 +25,6 @@ import processing.xml.XMLElement;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -50,7 +49,6 @@ public class code_swarm extends PApplet {
   PriorityBlockingQueue<FileEvent> eventsQueue; // USE PROCESSING 0142 or higher
   CopyOnWriteArrayList<FileNode> nodes;
   CopyOnWriteArrayList<Edge> edges;
-  CopyOnWriteArrayList<Edge> pedges; // Edges between people.
   CopyOnWriteArrayList<PersonNode> people;
   LinkedList<ColorBins> history;
 
@@ -178,7 +176,10 @@ public class code_swarm extends PApplet {
     
     UPDATE_DELTA = cfg.getIntProperty(CodeSwarmConfig.MSEC_PER_FRAME_KEY, -1);
     if (UPDATE_DELTA == -1) {
-      UPDATE_DELTA = 86400000 / cfg.getIntProperty(CodeSwarmConfig.FRAMES_PER_DAY_KEY, 4);
+      int framesperday = cfg.getIntProperty(CodeSwarmConfig.FRAMES_PER_DAY_KEY, 4);
+      if (framesperday > 0) {
+        UPDATE_DELTA = (long) (86400000 / framesperday);
+      }
     }
     if (UPDATE_DELTA <= 0) {
       // Default to 4 frames per day.
@@ -192,7 +193,6 @@ public class code_swarm extends PApplet {
     eventsQueue = new PriorityBlockingQueue<FileEvent>();
     nodes = new CopyOnWriteArrayList<FileNode>();
     edges = new CopyOnWriteArrayList<Edge>();
-    pedges = new CopyOnWriteArrayList<Edge>();
     people = new CopyOnWriteArrayList<PersonNode>();
     history = new LinkedList<ColorBins>();
 
@@ -249,14 +249,20 @@ public class code_swarm extends PApplet {
     colorAssigner.addRule(ct);
   }
 
-  /* DEPRECATED, kept for reference */
+  /**
+   *  kept for reference
+   *  @deprecated
+   */
   public void apacheColors() {
     colorAssigner.addRule("Source", "/src.*", color(0, 255, 255), color(15, 255, 255));
     colorAssigner.addRule("Docs", "/doc.*", color(150, 255, 255), color(170, 255, 255));
     colorAssigner.addRule("Modules", "/mod.*|/contrib.*", color(25, 255, 255), color(40, 255, 255));
   }
 
-  /* DEPRECATED, kept for reference */
+  /**
+   *  kept for reference
+   *  @deprecated
+   */
   public void pythonColors() {
     colorAssigner.addRule("Text", ".*\\.tex|.*\\.txt", color(150, 255, 255), color( 170, 255, 255));
     colorAssigner.addRule("Modules", ".*/Modules/.*", color(25, 255, 255), color( 40, 255, 255));
@@ -264,14 +270,20 @@ public class code_swarm extends PApplet {
     colorAssigner.addRule("Docs", ".*/Doc/.*", color(150, 255, 255), color(170, 255, 255));
   }
 
-  /* DEPRECATED, kept for reference */
+  /**
+   *  kept for reference
+   *  @deprecated
+   */
   public void javaColors() {
     colorAssigner.addRule("Source", ".*\\.java|.*/src/.*", color(0, 255, 255), color(15, 255, 255));
     colorAssigner.addRule("Docs", ".*/docs/.*|.*/xdocs/.*", color(150, 255, 255), color(170, 255, 255));
     colorAssigner.addRule("Libs", ".*/lib/.*", color(25, 255, 255), color(40, 255, 255));
   }
 
-  /* DEPRECATED, kept for reference */
+  /**
+   *  kept for reference
+   *  @deprecated
+   */
   public void eclipseColors() {
     colorAssigner.addRule("Source", ".*\\.java|.*/src/.*", color(0, 255, 255), color(15, 255, 255));
     colorAssigner.addRule("Docs", ".*/doc/.*|.*/xdocs/.*", color(150, 255, 255), color(170, 255, 255));
@@ -509,22 +521,6 @@ public class code_swarm extends PApplet {
       } else
         ped.freshen();
 
-      // Intent here is to add an edge between the current
-      // owner and the previous owners of this file.
-      // Helps keep the people separated.
-      ArrayList<Node> al = findEdgeTo(edges, n);
-      int i = 0;
-      while (i < al.size()) {
-        Edge ted = findEdge(p, al.get(i));
-        if (ted == null) {
-          ted = new Edge(p, al.get(i));
-          pedges.add(ted);
-        } else {
-          ted.freshen();
-        }
-        i++;
-      }
-
       /*
        * if ( currentEvent.date.equals( prevDate ) ) { Edge e = findEdge( n, prevNode
        * ); if ( e == null ) { e = new Edge( n, prevNode ); edges.add( e ); } else {
@@ -549,10 +545,6 @@ public class code_swarm extends PApplet {
       edge.relax();
     }
 
-    for (Edge edge : pedges) {
-      edge.relax();
-    }
-
     for (FileNode node : nodes) {
       node.relax();
     }
@@ -562,10 +554,6 @@ public class code_swarm extends PApplet {
     }
 
     for (Edge edge : edges) {
-      edge.update();
-    }
-
-    for (Edge edge : pedges) {
       edge.update();
     }
 
@@ -597,24 +585,6 @@ public class code_swarm extends PApplet {
     return null;
   }
 
-  public ArrayList<Node> findEdgeFrom(CopyOnWriteArrayList<Edge> al, Node n1) {
-    ArrayList<Node> a = new ArrayList<Node>();
-    for (Edge edge : al) {
-      if (edge.from == n1)
-        a.add(edge.from);
-    }
-    return a;
-  }
-
-  public ArrayList<Node> findEdgeTo(CopyOnWriteArrayList<Edge> al, Node n1) {
-    ArrayList<Node> a = new ArrayList<Node>();
-    for (Edge edge : al) {
-      if (edge.to == n1)
-        a.add(edge.to);
-    }
-    return a;
-  }
-
   public PersonNode findPerson(String name) {
     for (PersonNode p : people) {
       if (p.name.equals(name))
@@ -625,6 +595,7 @@ public class code_swarm extends PApplet {
 
   /**
    *  Head function for loadRecurse
+   * @deprecated
    */
   public void loadRepository(String filename) {
     XMLElement doc = new XMLElement(this, filename);
@@ -634,6 +605,7 @@ public class code_swarm extends PApplet {
 
   /**
    *  Load repository-formatted file
+   * @deprecated
    */
   public void loadRepository(XMLElement xml, String path, String filename) {
     String tag = xml.getName();
@@ -760,6 +732,7 @@ public class code_swarm extends PApplet {
       }
       case 'e' : {
         showEdges = !showEdges;
+        break;
       }
       case 'b': {
         showDebug = !showDebug;
@@ -951,10 +924,10 @@ public class code_swarm extends PApplet {
 
         // transmit (applying) fake force projection to file and person nodes
         /** @todo use (or permit to use) real forces, not only delta position (ie speed) modification */
-        to.adjDX(dx);
-        to.adjDY(dy);
-        from.adjDX(-dx);
-        from.adjDY(-dy);
+        to.adjDX(dx); // Person
+        to.adjDY(dy); // Person
+        from.adjDX(-dx); // File
+        from.adjDY(-dy); // File
       }
     }
 
