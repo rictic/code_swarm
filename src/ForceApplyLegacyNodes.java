@@ -43,7 +43,7 @@ public class ForceApplyLegacyNodes extends ForceApply
   {
     double dlen;
 
-    /** @todo comment this algorithm */
+    /** TODO: comment this algorithm */
     dlen = force.norm() / 2;
     if (dlen > 0) {
       Node.addDX( (float)( force.getX() / dlen ) );

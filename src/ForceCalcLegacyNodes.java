@@ -47,7 +47,7 @@ public class ForceCalcLegacyNodes extends ForceCalc
     float distx, disty;
     float lensq;
     
-    /** @todo comment this algorithm */
+    /** TODO: comment this algorithm */
     distx = NodeA.x - NodeB.getX();
     disty = NodeA.y - NodeB.getY();
     lensq = distx * distx + disty * disty;

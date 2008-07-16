@@ -110,7 +110,7 @@ class ForceVector
    * 
    * @param multiplier
    * 
-   * @todo transform to an operator redefinition  
+   * TODO: transform to an operator redefinition  
    */
   void multiply(double multiplier)
   {

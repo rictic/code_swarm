@@ -35,8 +35,9 @@ import java.util.concurrent.PriorityBlockingQueue;
  * Definition of the code_swarm Application.
  */
 public class code_swarm extends PApplet {
-
+  /** @remark needed for any serializable class */ 
   public static final long serialVersionUID = 0;
+	
   // User-defined variables
   CodeSwarmConfig config;
   int FRAME_RATE = 24;
@@ -78,7 +79,7 @@ public class code_swarm extends PApplet {
   ColorAssigner colorAssigner;
   int currentColor;
 
-  // Edge Len
+  // Edge Length
   private int EDGE_LEN = 25;
   // Drawable object life decrement
   private int EDGE_LIFE_INIT = 255;
@@ -87,7 +88,19 @@ public class code_swarm extends PApplet {
   private final int EDGE_LIFE_DECREMENT = -2;
   private final int FILE_LIFE_DECREMENT = -2;
   private final int PERSON_LIFE_DECREMENT = -1;
+  // Physical engine configuration
+  String BetweenPersonsAndFilesForceCalculation;
+  String BetweenPersonsForceCalculation;
+  public String BetweenFilesForceCalculation;
+  String OnPersonsForceApplication;
+  String OnFilesForceApplication;
 
+  // Physical algorithms names
+  static final String FORCE_CALCULATION_LEGACY_NODES = "ForceCalcLegacyNodes";
+  static final String FORCE_CALCULATION_DEFAULT = FORCE_CALCULATION_LEGACY_NODES;
+  static final String FORCE_APPLICATION_LEGACY_NODES = "ForceApplyLegacyNodes";
+  static final String FORCE_APPLICATION_DEFAULT = FORCE_APPLICATION_LEGACY_NODES;
+  
   // Formats the date string nicely
   DateFormat formatter = DateFormat.getDateInstance();
 
@@ -109,38 +122,37 @@ public class code_swarm extends PApplet {
       height = 480;
     }
     
-    /** @todo to place in the CodeSwarmConfig class ? */
-    if (cfg.getBooleanProperty("UseOpenGL", false)) {
+    if (cfg.getBooleanProperty(CodeSwarmConfig.USE_OPEN_GL, false)) {
       size(width, height, OPENGL);
     } else {
       size(width, height);
     }
     
-    if (cfg.getBooleanProperty("ShowLegend", false)) {
+    if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND, false)) {
       showLegend = true;
     } else {
       showLegend = false;
     }
 
-    if (cfg.getBooleanProperty("ShowHistory", false)) {
+    if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY, false)) {
       showHistogram = true;
     } else {
       showHistogram = false;
     }
     
-    if (cfg.getBooleanProperty("ShowDate", false)) {
+    if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DATE, false)) {
       showDate = true;
     } else {
       showDate = false;
     }
     
-    if (cfg.getBooleanProperty("ShowEdges", false)) {
+    if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_EDGES, false)) {
       showEdges = true;
     } else {
       showEdges = false;
     }
     
-    if (cfg.getBooleanProperty("debug", false)) {
+    if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DEBUG, false)) {
       showDebug = true;
     } else {
       showDebug = false;
@@ -185,6 +197,13 @@ public class code_swarm extends PApplet {
       // Default to 4 frames per day.
       UPDATE_DELTA = 21600000;
     }
+
+    // Physical engine configuration
+    BetweenPersonsAndFilesForceCalculation  = cfg.getStringProperty(CodeSwarmConfig.BETWEEN_PERSONS_AND_FILES_FORCE_CALCULATION, FORCE_CALCULATION_DEFAULT );
+    BetweenPersonsForceCalculation          = cfg.getStringProperty(CodeSwarmConfig.BETWEEN_PERSONS_FORCE_CALCULATION, FORCE_CALCULATION_DEFAULT );
+    BetweenFilesForceCalculation            = cfg.getStringProperty(CodeSwarmConfig.BETWEEN_FILES_FORCE_CALCULATION, FORCE_CALCULATION_DEFAULT );
+    OnPersonsForceApplication               = cfg.getStringProperty(CodeSwarmConfig.ON_PERSONS_FORCE_APPLICATION, FORCE_APPLICATION_DEFAULT );
+    OnFilesForceApplication                 = cfg.getStringProperty(CodeSwarmConfig.ON_FILES_FORCE_APPLICATION, FORCE_APPLICATION_DEFAULT );
     
     smooth();
     frameRate(FRAME_RATE);
@@ -209,7 +228,7 @@ public class code_swarm extends PApplet {
     });
     t.setDaemon(true);
     t.start();
-    /** @todo TODO: use adapter pattern to handle different data sources */
+    /** TODO: use adapter pattern to handle different data sources */
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
     EDGE_LEN = cfg.getIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY);
@@ -228,6 +247,7 @@ public class code_swarm extends PApplet {
     // Add translucency (using itself in this case)
     sprite.mask(sprite);
 
+    
   }
 
   /**
@@ -311,14 +331,18 @@ public class code_swarm extends PApplet {
       }
 
       // Surround names with aura
-      drawPeopleNodesBlur();
+      // Then blur it
+      if (drawNameHalos) {
+   	    drawPeopleNodesBlur();
+      }
+      
+      // Then draw names again, but sharp
+      drawPeopleNodesSharp();
 
       // Draw file particles
-      for (FileNode node : nodes)
+      for (FileNode node : nodes) {
         node.draw();
-
-      // Draw names
-      drawPeopleNodesSharp();
+      }
 
       textFont(font);
 
@@ -367,8 +391,7 @@ public class code_swarm extends PApplet {
     }
 
     // Then blur it
-    if (drawNameHalos)
-      filter(BLUR, 3);
+    filter(BLUR, 3);
   }
 
   /**
@@ -679,7 +702,7 @@ public class code_swarm extends PApplet {
       // When the SVN repository is created, there is no author associated with the
       // commit, so for
       // now just log it as anonymous.
-      /** @todo FIXME: Should we ignored events with no author completely or log them
+      /** FIXME: Should we ignored events with no author completely or log them
                        a different way? */
       XMLElement author_node = xml.getChild("author");
       String author = "anonymous";
@@ -916,6 +939,7 @@ public class code_swarm extends PApplet {
      * 2) calculating next frame state.
      */
     public void relax() {
+      // TODO: use a force calculation class 
       float distance;
       float fakeForce;
       // distance calculation
@@ -931,7 +955,7 @@ public class code_swarm extends PApplet {
         dy = fakeForce * disty;
 
         // transmit (applying) fake force projection to file and person nodes
-        /** @todo use (or permit to use) real forces, not only delta position (ie speed) modification */
+        /** TODO: use (or permit to use) real forces, not only delta position (ie speed) modification */
         to.addDX(dx); // Person
         to.addDY(dy); // Person
         from.addDX(-dx); // File
@@ -957,24 +981,22 @@ public class code_swarm extends PApplet {
    */
   public abstract class Node extends Drawable {
     String name;
-    /** @todo We SHOULD use vector for position, speed and accel, not using x and y everywhere */
+    /** TODO: We SHOULD use vector for position, speed and accel, not using x and y everywhere */
     float x, y;
-    /** @todo Not Used : need to be implemented in physics */
+    /** TODO: Not Used : need to be implemented in physics */
     float mass = 10;
     float accel = 0.0f;
 
     boolean fixed;
-    /** @todo add config */
+    /** TODO: add config */
     protected float maxSpeed = 7.0f;
 
-    
-    
     /**
      * 1) constructor.
      */
     Node(int lifeInit, int lifeDecrement) {
       super(lifeInit, lifeDecrement);
-      /** @todo implement new sort of (random or not) arrival, "configurables"
+      /** TODO: implement new sort of (random or not) arrival, "configurables"
                 => to permit things like "injection points", circular arrival, and so on */
       x = random(width);
       y = random(height);
@@ -1022,11 +1044,8 @@ public class code_swarm extends PApplet {
   class FileNode extends Node {
     int nodeHue;
     int minBold;
-
-    // The force calculation/applications algorithms used
-    /** @todo use config to select the good one */
-    ForceCalcLegacyNodes  ForceCalcBetweenFiles  = new ForceCalcLegacyNodes(0.01f); // default random
-    ForceApplyLegacyNodes ForceApplyBetweenFiles = new ForceApplyLegacyNodes(1);    // force divider
+    ForceCalcLegacyNodes  ForceCalcBetweenFiles  = null;
+    ForceApplyLegacyNodes ForceApplyToFiles      = null;
 
     /**
      * getting file node as a string
@@ -1045,14 +1064,30 @@ public class code_swarm extends PApplet {
       life = LIFE_INIT;
       colorMode(RGB);
       minBold = (int)(LIFE_INIT * 0.95);
-
       nodeHue = colorAssigner.getColor(name);
+
+      // Force calculation algorithm selection and instantiation
+      // TODO: use a better initialization method 
+      if ( BetweenFilesForceCalculation.equals( FORCE_CALCULATION_LEGACY_NODES ) ) {
+        ForceCalcBetweenFiles  = new ForceCalcLegacyNodes(0.01f); // 0.01 is default random
+      }
+      else /* BetweenFilesForceCalculation.equals( FORCE_CALCULATION_DEFAULT ) */ {
+        // legacy is current default
+        ForceCalcBetweenFiles  = new ForceCalcLegacyNodes(0.01f); // 0.01 is default random
+      }
+      if ( OnFilesForceApplication.equals( FORCE_APPLICATION_LEGACY_NODES ) ) {
+        ForceApplyToFiles = new ForceApplyLegacyNodes(1);    // 1 is force divider
+      }
+      else /* BetweenFilesForceCalculation.equals( FORCE_CALCULATION_DEFAULT ) */ {
+        // legacy is current default
+        ForceApplyToFiles  = new ForceApplyLegacyNodes(1);   // 1 is force divider
+      }
     }
 
     /**
      * 2) calculating next frame state.
      * 
-     * @todo this physic job should be uniformed between file a person nodes
+     * TODO: this physic job should be uniformed between file a person nodes
      *       => then it could be moved up
      */
     public void relax() {
@@ -1075,7 +1110,7 @@ public class code_swarm extends PApplet {
       }
 
       // Apply repulsive force from other files to this Node
-      ForceApplyBetweenFiles.applyForceTo(this, forceSummation);
+      ForceApplyToFiles.applyForceTo(this, forceSummation);
     }
 
     /**
@@ -1083,9 +1118,9 @@ public class code_swarm extends PApplet {
      */
     public void draw() {
       if (life > 0) {
-        /** @todo This should be in the config. Should allow a combination.
+        /** TODO: This should be in the config. Should allow a combination.
          *        Sharp and Jelly looks cool.
-         *  @todo We should use class and derivation to enable multi-behavioral drawing like multi-physics
+         *  TODO: We should use class and derivation to enable multi-behavioral drawing like multi-physics
          */
         drawSharp();
         // drawFuzzy();
@@ -1147,12 +1182,8 @@ public class code_swarm extends PApplet {
     int flavor = color(0);
     int colorCount = 1;
     int minBold;
-
-    
-    // The force calculation/applications algorthims used
-    /** @todo use config to select the good one */
-    ForceCalcLegacyNodes  ForceCalcBetweenPersons  = new ForceCalcLegacyNodes(0.01f);  // default random
-    ForceApplyLegacyNodes ForceApplyBetweenPersons = new ForceApplyLegacyNodes(12);    // force divider
+    ForceCalcLegacyNodes  ForceCalcBetweenPersons = null;
+    ForceApplyLegacyNodes ForceApplyToPersons     = null;
 
     /**
      * 1) constructor.
@@ -1162,14 +1193,31 @@ public class code_swarm extends PApplet {
       maxSpeed = 2.0f;
       name = n;
       fixed = false;
-      /** @todo add config */
+      /** TODO: add config */
       minBold = (int)(LIFE_INIT * 0.95);
+      
+      // Force calculation algorithm selection and instantiation
+      // TODO: use a better initialization method 
+      if ( BetweenPersonsForceCalculation.equals( FORCE_CALCULATION_LEGACY_NODES ) ) {
+        ForceCalcBetweenPersons = new ForceCalcLegacyNodes(0.01f); // 0.01 is default random
+      }
+      else /* BetweenFilesForceCalculation.equals( FORCE_CALCULATION_DEFAULT ) */ {
+        // legacy is current default
+        ForceCalcBetweenPersons = new ForceCalcLegacyNodes(0.01f); // 0.01 is default random
+      }
+      if ( OnPersonsForceApplication.equals( FORCE_APPLICATION_LEGACY_NODES ) ) {
+        ForceApplyToPersons = new ForceApplyLegacyNodes(12);    // 12 is force divider
+      }
+      else /* BetweenFilesForceCalculation.equals( FORCE_CALCULATION_DEFAULT ) */ {
+        // legacy is current default
+        ForceApplyToPersons = new ForceApplyLegacyNodes(12);   // 12 is force divider
+      }
     }
 
     /**
      * 2) calculating next frame state.
      * 
-     * @todo this physic job should be uniformed between file a person nodes => then
+     * TODO: this physic job should be uniformed between file a person nodes => then
      *       it could be moved up
      */
     public void relax() {
@@ -1192,7 +1240,7 @@ public class code_swarm extends PApplet {
       }
       
       // Apply repulsive force from other persons to this Node
-      ForceApplyBetweenPersons.applyForceTo(this, forceSummation);
+      ForceApplyToPersons.applyForceTo(this, forceSummation);
     }
 
     /**
@@ -1204,7 +1252,7 @@ public class code_swarm extends PApplet {
 
       textAlign(CENTER, CENTER);
 
-      /** @todo proportional font size, or light intensity,
+      /** TODO: proportional font size, or light intensity,
                 or some sort of thing to disable the flashing */
       if (life >= minBold)
         textFont(boldFont);
