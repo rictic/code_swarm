@@ -23,19 +23,14 @@
  */
 public class ForceApplyLegacyNodes extends ForceApply
 {
-  final private int divider;
+  final private int multiplier;
   
   /**
    * Constructor for initializing parameters.
    */
-  ForceApplyLegacyNodes(int paramDivider)
+  ForceApplyLegacyNodes(int paramMultiplier)
   {
-    if ( paramDivider != 0 ) {
-      divider = paramDivider;
-    }
-    else {
-      divider = 1;
-    }
+    multiplier = paramMultiplier;
   }
 	  
   /**
@@ -51,11 +46,11 @@ public class ForceApplyLegacyNodes extends ForceApply
     /** @todo comment this algorithm */
     dlen = force.norm() / 2;
     if (dlen > 0) {
-      Node.adjDX( (float)( Node.getDX() + force.getX() / dlen ) );
-      Node.adjDY( (float)( Node.getDY() + force.getY() / dlen ) );
+      Node.addDX( (float)( force.getX() / dlen ) );
+      Node.addDY( (float)( force.getY() / dlen ) );
     }
-    Node.adjDX( Node.getDX() / divider );
-    Node.adjDY( Node.getDY() / divider );
+    Node.mulDX( multiplier );
+    Node.mulDY( multiplier );
   }
 }
 

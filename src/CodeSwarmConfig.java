@@ -39,6 +39,13 @@ public class CodeSwarmConfig
 	public static final String FILE_LIFE_KEY = "FileLife";
 	public static final String PERSON_LIFE_KEY = "PersonLife";
 	public static final String FRAMES_PER_DAY_KEY = "FramesPerDay";
+	public static final String USE_OPEN_GL = "UseOpenGL";
+	public static final String SHOW_LEGEND = "ShowLegend";
+	public static final String SHOW_HISTORY = "ShowHistory";
+	public static final String SHOW_DATE = "ShowDate";
+	public static final String SHOW_EDGES = "ShowEdges";
+	public static final String SHOW_DEBUG = "ShowDebug";
+	public static final String DRAW_NAME_HALOS = "DrawNameHalos";
 	public static String DEFAULT_COLOR_ASSIGN = "\"Misc\",\".*\",128,128,128,128,128,128";
 
 	private Properties p = null;

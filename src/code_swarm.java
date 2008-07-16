@@ -877,12 +877,20 @@ public class code_swarm extends PApplet {
       return dy;
     }
 
-    public void adjDX(float amt) {
+    public void addDX(float amt) {
       dx += amt;
     }
 
-    public void adjDY(float amt) {
+    public void addDY(float amt) {
       dy += amt;
+    }
+
+    public void mulDX(float amt) {
+      dx *= amt;
+    }
+
+    public void mulDY(float amt) {
+      dy *= amt;
     }
   }
 
@@ -924,10 +932,10 @@ public class code_swarm extends PApplet {
 
         // transmit (applying) fake force projection to file and person nodes
         /** @todo use (or permit to use) real forces, not only delta position (ie speed) modification */
-        to.adjDX(dx); // Person
-        to.adjDY(dy); // Person
-        from.adjDX(-dx); // File
-        from.adjDY(-dy); // File
+        to.addDX(dx); // Person
+        to.addDY(dy); // Person
+        from.addDX(-dx); // File
+        from.addDY(-dy); // File
       }
     }
 
@@ -949,12 +957,18 @@ public class code_swarm extends PApplet {
    */
   public abstract class Node extends Drawable {
     String name;
+    /** @todo We SHOULD use vector for position, speed and accel, not using x and y everywhere */
     float x, y;
+    /** @todo Not Used : need to be implemented in physics */
+    float mass = 10;
+    float accel = 0.0f;
 
     boolean fixed;
     /** @todo add config */
     protected float maxSpeed = 7.0f;
 
+    
+    
     /**
      * 1) constructor.
      */
@@ -1011,8 +1025,8 @@ public class code_swarm extends PApplet {
 
     // The force calculation/applications algorithms used
     /** @todo use config to select the good one */
-    ForceCalcLegacyNodes  ForceCalcBetweenFiles  = new ForceCalcLegacyNodes(0.01f);
-    ForceApplyLegacyNodes ForceApplyBetweenFiles = new ForceApplyLegacyNodes(12);
+    ForceCalcLegacyNodes  ForceCalcBetweenFiles  = new ForceCalcLegacyNodes(0.01f); // default random
+    ForceApplyLegacyNodes ForceApplyBetweenFiles = new ForceApplyLegacyNodes(1);    // force divider
 
     /**
      * getting file node as a string
@@ -1134,15 +1148,11 @@ public class code_swarm extends PApplet {
     int colorCount = 1;
     int minBold;
 
-    /** @todo Not Used : needed to implements in physics
-    float mass = 10;
-    float accel = 0.0f;
-    */
     
     // The force calculation/applications algorthims used
     /** @todo use config to select the good one */
-    ForceCalcLegacyNodes  ForceCalcBetweenPersons  = new ForceCalcLegacyNodes(0.01f);
-    ForceApplyLegacyNodes ForceApplyBetweenPersons = new ForceApplyLegacyNodes(12);
+    ForceCalcLegacyNodes  ForceCalcBetweenPersons  = new ForceCalcLegacyNodes(0.01f);  // default random
+    ForceApplyLegacyNodes ForceApplyBetweenPersons = new ForceApplyLegacyNodes(12);    // force divider
 
     /**
      * 1) constructor.
