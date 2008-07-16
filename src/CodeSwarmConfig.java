@@ -45,7 +45,12 @@ public class CodeSwarmConfig
   public static final String SHOW_DATE = "ShowDate";
   public static final String SHOW_EDGES = "ShowEdges";
   public static final String SHOW_DEBUG = "ShowDebug";
-  public static final String DRAW_NAME_HALOS = "DrawNameHalos";
+  public static final String DRAW_NAMES_SHARP = "DrawNamesSharp";
+  public static final String DRAW_NAMES_HALOS = "DrawNamesHalos";
+  public static final String DRAW_FILES_SHARP = "DrawFilesSharp";
+  public static final String DRAW_FILES_FUZZY = "DrawFilesFuzzy";
+  public static final String DRAW_FILES_JELLY = "DrawFilesJelly";
+
   public static String DEFAULT_COLOR_ASSIGN = "\"Misc\",\".*\",128,128,128,128,128,128";
   // Physical engine configuration
   public static final String BETWEEN_PERSONS_AND_FILES_FORCE_CALCULATION = "BetweenPersonsAndFilesForceCalculation";

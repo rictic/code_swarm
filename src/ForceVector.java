@@ -24,6 +24,8 @@
  * Used by physical classes
  * 
  * @remark currently 2D, but one day, 3D would be great
+ * 
+ * TODO: certainly need to be renamed to "Vector"
  */
 class ForceVector
 {

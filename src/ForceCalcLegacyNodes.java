@@ -48,8 +48,8 @@ public class ForceCalcLegacyNodes extends ForceCalc
     float lensq;
     
     /** TODO: comment this algorithm */
-    distx = NodeA.x - NodeB.getX();
-    disty = NodeA.y - NodeB.getY();
+    distx = NodeA.getX() - NodeB.getX();
+    disty = NodeA.getY() - NodeB.getY();
     lensq = distx * distx + disty * disty;
     if (lensq == 0) {
       force.set( Math.random()*randMultiplier, Math.random()*randMultiplier );

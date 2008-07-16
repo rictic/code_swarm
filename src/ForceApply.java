@@ -19,14 +19,14 @@
 
 
 /**
- * Abstract base of any force application in code_swarm.
+ * Abstract base of any force application (ie. conversion to speed) in code_swarm.
  *
  * Need to be derived to define application of a type of forces between to Nodes
  */
 abstract class ForceApply
 {
   /**
-   * Method that apply a force to a node.
+   * Method that apply a force to a node, converting acceleration to speed.
    * 
    * @param Node the node to which the force apply
    * @param force a forceVector representing the force on a node

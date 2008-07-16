@@ -19,7 +19,7 @@
 
 
 /**
- * Legacy force application on nodes (either files or persons).
+ * Legacy force application (ie. conversion to speed) on nodes (either files or persons).
  */
 public class ForceApplyLegacyNodes extends ForceApply
 {
@@ -34,7 +34,7 @@ public class ForceApplyLegacyNodes extends ForceApply
   }
 	  
   /**
-   * Method that apply a force to a node.
+   * Method that apply a force to a node, converting acceleration to speed.
    * 
    * @param Node the node to which the force apply
    * @param force a forceVector representing the force on a node

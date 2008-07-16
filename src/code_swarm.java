@@ -73,7 +73,11 @@ public class code_swarm extends PApplet {
   boolean showHelp = false;
   boolean takeSnapshots = false;
   boolean showDebug = false;
-  boolean drawNameHalos = false;
+  boolean drawNamesSharp = false;
+  boolean drawNamesHalos = false;
+  boolean drawFilesSharp = false;
+  boolean drawFilesFuzzy = false;
+  boolean drawFilesJelly = false;
 
   // Color mapper
   ColorAssigner colorAssigner;
@@ -164,11 +168,32 @@ public class code_swarm extends PApplet {
       takeSnapshots = false;
     }
     
-    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAME_HALOS, true)) {
-      drawNameHalos = true;
+    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_SHARP, true)) {
+      drawNamesSharp = true;
     } else {
-      drawNameHalos = false;
+      drawNamesSharp = false;
+    }   
+    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS, true)) {
+      drawNamesHalos = true;
+    } else {
+      drawNamesHalos = false;
     }
+
+    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_SHARP, true)) {
+      drawFilesSharp = true;
+    } else {
+      drawFilesSharp = false;
+    }   
+    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_FUZZY, true)) {
+      drawFilesFuzzy = true;
+    } else {
+      drawFilesFuzzy = false;
+    }   
+    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY, true)) {
+      drawFilesJelly = true;
+    } else {
+      drawFilesJelly = false;
+    }   
     
     background = cfg.getBackground().getRGB();
     
@@ -332,12 +357,14 @@ public class code_swarm extends PApplet {
 
       // Surround names with aura
       // Then blur it
-      if (drawNameHalos) {
+      if (drawNamesHalos) {
    	    drawPeopleNodesBlur();
       }
       
       // Then draw names again, but sharp
-      drawPeopleNodesSharp();
+      if (drawNamesSharp) {
+        drawPeopleNodesSharp();
+      }
 
       // Draw file particles
       for (FileNode node : nodes) {
@@ -1008,7 +1035,11 @@ public class code_swarm extends PApplet {
      * This is a surdefinition of the Drawable update() method
      */
     public void update() {
+      // TODO : fixed always true ! To remove ?
       if (!fixed) {
+
+        // TODO : This is the place to use a third kind of physical algorithm for conversion from Speed to Position 
+
         // This block enforces a maximum absolute velocity.
         if (mag(dx, dy) > maxSpeed) {
           float div = mag(dx / maxSpeed, dy / maxSpeed);
@@ -1021,10 +1052,11 @@ public class code_swarm extends PApplet {
         x = constrain(x, 0, width);
         y = constrain(y, 0, height);
       }
-      // Apply drag
+      // Apply drag (reduce speed for next frame calculation)
       dx /= 2;
       dy /= 2;
-
+      
+      
       // shortening life
       decay();
     }
@@ -1091,7 +1123,8 @@ public class code_swarm extends PApplet {
      *       => then it could be moved up
      */
     public void relax() {
-      ForceVector forceSummation = new ForceVector();
+      ForceVector forceBetween2Files = new ForceVector();
+      ForceVector forceSummation     = new ForceVector();
       
       if (life <= 0)
         return;
@@ -1103,7 +1136,7 @@ public class code_swarm extends PApplet {
           continue;
 
         if (n != this) {
-          ForceVector forceBetween2Files = new ForceVector();
+          // elemental force calculation, and summation
           ForceCalcBetweenFiles.calculateForceBetween(this, n, forceBetween2Files);
           forceSummation.add(forceBetween2Files);
         }
@@ -1118,15 +1151,17 @@ public class code_swarm extends PApplet {
      */
     public void draw() {
       if (life > 0) {
-        /** TODO: This should be in the config. Should allow a combination.
-         *        Sharp and Jelly looks cool.
-         *  TODO: We should use class and derivation to enable multi-behavioral drawing like multi-physics
-         */
-        drawSharp();
-        // drawFuzzy();
-        drawJelly();
-
-        /*
+        if (drawFilesSharp) {
+          drawSharp();
+        }
+        if (drawFilesFuzzy) {
+          drawFuzzy();
+        }
+        if (drawFilesJelly) {
+          drawJelly();
+        }
+        
+        /** TODO : this would become interesting on some special event, or for special materials
          * // label colorMode( RGB ); fill( 0, life ); textAlign( CENTER, CENTER );
          * text( name, x, y );
          */
@@ -1221,7 +1256,8 @@ public class code_swarm extends PApplet {
      *       it could be moved up
      */
     public void relax() {
-      ForceVector forceSummation = new ForceVector();
+      ForceVector forceBetween2Persons = new ForceVector();
+      ForceVector forceSummation       = new ForceVector();
 
       if (life <= 0)
         return;
@@ -1233,7 +1269,7 @@ public class code_swarm extends PApplet {
           continue;
 
         if (n != this) {
-          ForceVector forceBetween2Persons = new ForceVector();
+          // elemental force calculation, and summation
           ForceCalcBetweenPersons.calculateForceBetween(this, n, forceBetween2Persons);
           forceSummation.add(forceBetween2Persons);
         }
