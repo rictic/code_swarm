@@ -34,6 +34,6 @@ abstract class ForceCalc
    * 
    * @return a forceVector representing the force between to nodes
    */
-  abstract void calculateForceBetween( code_swarm.Node NodeA, code_swarm.Node NodeB, ForceVector force );
+  abstract void calculateForceBetween( code_swarm.Node NodeA, code_swarm.Node NodeB, Vector force );
 }
 

@@ -21,21 +21,19 @@
 /**
  * A small object to manipulate multidimensional force vector (2D).
  *
- * Used by physical classes
+ * Used by physical engine classes, ie. ForceCalculation, ForceApplication and PositionUpdate
  * 
  * @remark currently 2D, but one day, 3D would be great
- * 
- * TODO: certainly need to be renamed to "Vector"
  */
-class ForceVector
+class Vector
 {
   protected double x, y; 
   protected double norm; 
   
-  ForceVector()
+  Vector()
   {
-	 x = 0;
-	 y = 0;
+   x = 0;
+   y = 0;
   }
   /**
    * Constructor, init the vector and calculate its norm.
@@ -43,7 +41,7 @@ class ForceVector
    * @param x x-axis component of the force
    * @param y y-axis component of the force
    */
-  ForceVector(double x, double y)
+  Vector(double x, double y)
   {
     this.x = x;
     this.x = x;
@@ -65,7 +63,7 @@ class ForceVector
     this.y = y;
   }
   
-  public void set(ForceVector force)
+  public void set(Vector force)
   {
     this.x = force.getX();
     this.y = force.getY();
@@ -77,7 +75,7 @@ class ForceVector
     this.y += y;
   }
   
-  public void add(ForceVector force)
+  public void add(Vector force)
   {
     this.x += force.getX();
     this.y += force.getY();
@@ -116,9 +114,9 @@ class ForceVector
    */
   void multiply(double multiplier)
   {
-	  x    *= multiplier;
-	  y    *= multiplier;
-	  norm *= multiplier;
+    x    *= multiplier;
+    y    *= multiplier;
+    norm *= multiplier;
   }
   
 }

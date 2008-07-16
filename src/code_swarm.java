@@ -37,7 +37,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 public class code_swarm extends PApplet {
   /** @remark needed for any serializable class */ 
   public static final long serialVersionUID = 0;
-	
+  
   // User-defined variables
   CodeSwarmConfig config;
   int FRAME_RATE = 24;
@@ -351,14 +351,15 @@ public class code_swarm extends PApplet {
       
       // Draw edges (for debugging only)
       if (showEdges) {
-          for (Edge edge : edges)
-            edge.draw();
+        for (Edge edge : edges) {
+          edge.draw();
+        }
       }
 
       // Surround names with aura
       // Then blur it
       if (drawNamesHalos) {
-   	    drawPeopleNodesBlur();
+        drawPeopleNodesBlur();
       }
       
       // Then draw names again, but sharp
@@ -387,19 +388,23 @@ public class code_swarm extends PApplet {
         drawLegend();
       }
 
-      if (showHistogram)
+      if (showHistogram) {
         drawHistory();
+      }
 
-      if (showDate)
+      if (showDate) {
         drawDate();
+      }
 
-      if (takeSnapshots)
+      if (takeSnapshots) {
         dumpFrame();
+      }
 
       // Stop animation when we run out of data
-      if (eventsQueue.isEmpty())
+      if (eventsQueue.isEmpty()) {
+        // noLoop();
         exit();
-        //noLoop();
+      }
     }
     long end = System.currentTimeMillis();
     lastDrawDuration = end - start;
@@ -1011,8 +1016,7 @@ public class code_swarm extends PApplet {
     /** TODO: We SHOULD use vector for position, speed and accel, not using x and y everywhere */
     float x, y;
     /** TODO: Not Used : need to be implemented in physics */
-    float mass = 10;
-    float accel = 0.0f;
+    float mass  = 10;   // mass would serve for "force to speed" conversion, and could be function of "life" or of node's "importance" (commit size, or touches...) 
 
     boolean fixed;
     /** TODO: add config */
@@ -1046,15 +1050,17 @@ public class code_swarm extends PApplet {
           dx = dx / div;
           dy = dy / div;
         }
-
+        
+        // This block convert Speed to Position
         x += dx;
         y += dy;
         x = constrain(x, 0, width);
         y = constrain(y, 0, height);
       }
-      // Apply drag (reduce speed for next frame calculation)
+      // Apply drag (reduce Speed for next frame calculation)
       dx /= 2;
       dy /= 2;
+      
       
       
       // shortening life
@@ -1123,8 +1129,8 @@ public class code_swarm extends PApplet {
      *       => then it could be moved up
      */
     public void relax() {
-      ForceVector forceBetween2Files = new ForceVector();
-      ForceVector forceSummation     = new ForceVector();
+      Vector forceBetween2Files = new Vector();
+      Vector forceSummation     = new Vector();
       
       if (life <= 0)
         return;
@@ -1256,8 +1262,8 @@ public class code_swarm extends PApplet {
      *       it could be moved up
      */
     public void relax() {
-      ForceVector forceBetween2Persons = new ForceVector();
-      ForceVector forceSummation       = new ForceVector();
+      Vector forceBetween2Persons = new Vector();
+      Vector forceSummation       = new Vector();
 
       if (life <= 0)
         return;

@@ -22,6 +22,8 @@
  * Abstract base of any force application (ie. conversion to speed) in code_swarm.
  *
  * Need to be derived to define application of a type of forces between to Nodes
+ * 
+ * TODO: rename this to something like "ForceToSpeed", then the third class would be "SpeedToPosition"
  */
 abstract class ForceApply
 {
@@ -31,6 +33,6 @@ abstract class ForceApply
    * @param Node the node to which the force apply
    * @param force a forceVector representing the force on a node
    */
-  abstract void applyForceTo( code_swarm.Node Node, ForceVector force );
+  abstract void applyForceTo( code_swarm.Node Node, Vector force );
 }
 

@@ -32,14 +32,14 @@ public class ForceApplyLegacyNodes extends ForceApply
   {
     multiplier = paramMultiplier;
   }
-	  
+    
   /**
    * Method that apply a force to a node, converting acceleration to speed.
    * 
    * @param Node the node to which the force apply
    * @param force a forceVector representing the force on a node
    */
-  public void applyForceTo( code_swarm.Node Node, ForceVector force )
+  public void applyForceTo( code_swarm.Node Node, Vector force )
   {
     double dlen;
 

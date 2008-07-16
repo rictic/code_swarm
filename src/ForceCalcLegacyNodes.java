@@ -30,7 +30,7 @@ public class ForceCalcLegacyNodes extends ForceCalc
    */
   ForceCalcLegacyNodes(double paramMultiplier)
   {
-	  randMultiplier = paramMultiplier;
+    randMultiplier = paramMultiplier;
   }
   
   /**
@@ -42,7 +42,7 @@ public class ForceCalcLegacyNodes extends ForceCalc
    * 
    * @return a forceVector representing the force between to nodes
    */
-  public void calculateForceBetween( code_swarm.Node NodeA, code_swarm.Node NodeB, ForceVector force )
+  public void calculateForceBetween( code_swarm.Node NodeA, code_swarm.Node NodeB, Vector force )
   {
     float distx, disty;
     float lensq;
