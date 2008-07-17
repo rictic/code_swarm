@@ -41,7 +41,7 @@ public class code_swarm extends PApplet {
   // User-defined variables
   CodeSwarmConfig config;
   int FRAME_RATE = 24;
-  long UPDATE_DELTA = 0;
+  long UPDATE_DELTA = -1;
   String SPRITE_FILE = "particle.png";
   String SCREENSHOT_FILE;
   int background;
@@ -95,15 +95,15 @@ public class code_swarm extends PApplet {
   // Physical engine configuration
   String BetweenPersonsAndFilesForceCalculation;
   String BetweenPersonsForceCalculation;
-  public String BetweenFilesForceCalculation;
-  String OnPersonsForceApplication;
-  String OnFilesForceApplication;
+  String BetweenFilesForceCalculation;
+  String OnPersonsForceToSpeed;
+  String OnFilesForceToSpeed;
+  String OnNodesSpeedToPosition;
 
   // Physical algorithms names
-  static final String FORCE_CALCULATION_LEGACY_NODES = "ForceCalcLegacyNodes";
-  static final String FORCE_CALCULATION_DEFAULT = FORCE_CALCULATION_LEGACY_NODES;
-  static final String FORCE_APPLICATION_LEGACY_NODES = "ForceApplyLegacyNodes";
-  static final String FORCE_APPLICATION_DEFAULT = FORCE_APPLICATION_LEGACY_NODES;
+  static final String FORCE_CALCULATION_LEGACY_NODES  = "ForceCalcLegacyNodes";
+  static final String FORCE_TO_SPEED_LEGACY_NODES     = "ForceToSpeedLegacyNodes";
+  static final String SPEED_TO_POSITION_LEGACY_NODES  = "SpeedToPositionLegacyNodes";
   
   // Formats the date string nicely
   DateFormat formatter = DateFormat.getDateInstance();
@@ -211,7 +211,7 @@ public class code_swarm extends PApplet {
       PERSON_LIFE_INIT = 255;
     }
     
-    UPDATE_DELTA = cfg.getIntProperty(CodeSwarmConfig.MSEC_PER_FRAME_KEY, -1);
+    UPDATE_DELTA = cfg.getIntProperty("testsets"/*CodeSwarmConfig.MSEC_PER_FRAME_KEY*/, -1);
     if (UPDATE_DELTA == -1) {
       int framesperday = cfg.getIntProperty(CodeSwarmConfig.FRAMES_PER_DAY_KEY, 4);
       if (framesperday > 0) {
@@ -224,21 +224,22 @@ public class code_swarm extends PApplet {
     }
 
     // Physical engine configuration
-    BetweenPersonsAndFilesForceCalculation  = cfg.getStringProperty(CodeSwarmConfig.BETWEEN_PERSONS_AND_FILES_FORCE_CALCULATION, FORCE_CALCULATION_DEFAULT );
-    BetweenPersonsForceCalculation          = cfg.getStringProperty(CodeSwarmConfig.BETWEEN_PERSONS_FORCE_CALCULATION, FORCE_CALCULATION_DEFAULT );
-    BetweenFilesForceCalculation            = cfg.getStringProperty(CodeSwarmConfig.BETWEEN_FILES_FORCE_CALCULATION, FORCE_CALCULATION_DEFAULT );
-    OnPersonsForceApplication               = cfg.getStringProperty(CodeSwarmConfig.ON_PERSONS_FORCE_APPLICATION, FORCE_APPLICATION_DEFAULT );
-    OnFilesForceApplication                 = cfg.getStringProperty(CodeSwarmConfig.ON_FILES_FORCE_APPLICATION, FORCE_APPLICATION_DEFAULT );
+    BetweenPersonsAndFilesForceCalculation  = cfg.getStringProperty(CodeSwarmConfig.BETWEEN_PERSONS_AND_FILES_FORCE_CALCULATION,  FORCE_CALCULATION_LEGACY_NODES );
+    BetweenPersonsForceCalculation          = cfg.getStringProperty(CodeSwarmConfig.BETWEEN_PERSONS_FORCE_CALCULATION,            FORCE_CALCULATION_LEGACY_NODES );
+    BetweenFilesForceCalculation            = cfg.getStringProperty(CodeSwarmConfig.BETWEEN_FILES_FORCE_CALCULATION,              FORCE_CALCULATION_LEGACY_NODES );
+    OnPersonsForceToSpeed                   = cfg.getStringProperty(CodeSwarmConfig.ON_PERSONS_FORCE_TO_SPEED,                    FORCE_TO_SPEED_LEGACY_NODES );
+    OnFilesForceToSpeed                     = cfg.getStringProperty(CodeSwarmConfig.ON_FILES_FORCE_TO_SPEED,                      FORCE_TO_SPEED_LEGACY_NODES );
+    OnNodesSpeedToPosition                  = cfg.getStringProperty(CodeSwarmConfig.ON_NODES_SPEED_TO_POSITION,                   SPEED_TO_POSITION_LEGACY_NODES );
     
     smooth();
     frameRate(FRAME_RATE);
 
     // init data structures
     eventsQueue = new PriorityBlockingQueue<FileEvent>();
-    nodes = new CopyOnWriteArrayList<FileNode>();
-    edges = new CopyOnWriteArrayList<Edge>();
-    people = new CopyOnWriteArrayList<PersonNode>();
-    history = new LinkedList<ColorBins>();
+    nodes       = new CopyOnWriteArrayList<FileNode>();
+    edges       = new CopyOnWriteArrayList<Edge>();
+    people      = new CopyOnWriteArrayList<PersonNode>();
+    history     = new LinkedList<ColorBins>();
 
     // Init color map
     initColors();
@@ -863,11 +864,6 @@ public class code_swarm extends PApplet {
     public int life;
     public int touches;
 
-    /** @tode those are variables used for physic calculation, but they need more
-              appropriate names, or to be put down to the "Node" class */
-    float dx, dy;
-    float distx, disty;
-
     final public int LIFE_INIT;
     final public int LIFE_DECREMENT;
 
@@ -921,32 +917,6 @@ public class code_swarm extends PApplet {
       life = LIFE_INIT;
       touches++;
     }
-
-    // getters and setters
-
-    public float getDX() {
-      return dx;
-    }
-
-    public float getDY() {
-      return dy;
-    }
-
-    public void addDX(float amt) {
-      dx += amt;
-    }
-
-    public void addDY(float amt) {
-      dy += amt;
-    }
-
-    public void mulDX(float amt) {
-      dx *= amt;
-    }
-
-    public void mulDY(float amt) {
-      dy *= amt;
-    }
   }
 
   /**
@@ -974,6 +944,9 @@ public class code_swarm extends PApplet {
       // TODO: use a force calculation class 
       float distance;
       float fakeForce;
+      float distx, disty;
+      float dx, dy;
+      
       // distance calculation
       distx = to.getX() - from.getX();
       disty = to.getY() - from.getY();
@@ -1013,15 +986,22 @@ public class code_swarm extends PApplet {
    */
   public abstract class Node extends Drawable {
     String name;
-    /** TODO: We SHOULD use vector for position, speed and accel, not using x and y everywhere */
     float x, y;
+    float dx, dy;
+    /** TODO: We SHOULD use vector for position, speed and accel, not using x and y everywhere
+    private Vector mPosition;
+    private Vector mSpeed;
+    */
+    
     /** TODO: Not Used : need to be implemented in physics */
     float mass  = 10;   // mass would serve for "force to speed" conversion, and could be function of "life" or of node's "importance" (commit size, or touches...) 
 
-    boolean fixed;
     /** TODO: add config */
     protected float maxSpeed = 7.0f;
 
+    SpeedToPositionLegacyNodes SpeedToPosition = null;
+    
+    
     /**
      * 1) constructor.
      */
@@ -1031,48 +1011,80 @@ public class code_swarm extends PApplet {
                 => to permit things like "injection points", circular arrival, and so on */
       x = random(width);
       y = random(height);
+      
+      // Force calculation algorithm selection and instantiation
+      // TODO: use a better initialization method 
+      if ( OnNodesSpeedToPosition.equals( SPEED_TO_POSITION_LEGACY_NODES ) ) {
+        SpeedToPosition = new SpeedToPositionLegacyNodes(0.5f); // 0.5 is the speed divider
+      }
+      else {
+        // legacy is current default
+        SpeedToPosition = new SpeedToPositionLegacyNodes(0.5f); // 0.5 is the speed divider
+      }
     }
 
     /**
      * 3) applying next frame state.
      *
-     * This is a surdefinition of the Drawable update() method
+     * This is a redefinition of the Drawable update() method
      */
     public void update() {
-      // TODO : fixed always true ! To remove ?
-      if (!fixed) {
 
-        // TODO : This is the place to use a third kind of physical algorithm for conversion from Speed to Position 
+      // Apply Speed to Position on nodes
+      SpeedToPosition.applySpeedTo(this);
+      
+      // ensure coherent resulting position
+      x = constrain(x, 0, width);
+      y = constrain(y, 0, height);
 
-        // This block enforces a maximum absolute velocity.
-        if (mag(dx, dy) > maxSpeed) {
-          float div = mag(dx / maxSpeed, dy / maxSpeed);
-          dx = dx / div;
-          dy = dy / div;
-        }
-        
-        // This block convert Speed to Position
-        x += dx;
-        y += dy;
-        x = constrain(x, 0, width);
-        y = constrain(y, 0, height);
-      }
-      // Apply drag (reduce Speed for next frame calculation)
-      dx /= 2;
-      dy /= 2;
-      
-      
-      
       // shortening life
       decay();
     }
 
+    // getters and setters
     public float getX() {
-      return x;
+      return this.x;
     }
 
     public float getY() {
-      return y;
+      return this.y;
+    }
+
+    public void addX(float dx) {
+      this.x += dx;
+    }
+
+    public void addY(float dy) {
+      this.y += dy;
+    }
+
+    public float getDX() {
+      return this.dx;
+    }
+
+    public float getDY() {
+      return this.dy;
+    }
+
+    public float getSpeed() {
+      Vector speed = new Vector(dx, dy);  /** TODO: use mSpeed vector */
+      return speed.norm();
+    }
+
+    public void addDX(float ddx) {
+      this.dx += ddx;
+    }
+
+    public void addDY(float ddx) {
+      this.dy += ddx;
+    }
+
+    public void mulDX(float coef) {
+      this.dx *= coef;
+    }
+
+    public void mulDY(float coef) {
+      this.dy *= coef;
     }
   }
 
@@ -1082,8 +1094,8 @@ public class code_swarm extends PApplet {
   class FileNode extends Node {
     int nodeHue;
     int minBold;
-    ForceCalcLegacyNodes  ForceCalcBetweenFiles  = null;
-    ForceApplyLegacyNodes ForceApplyToFiles      = null;
+    ForceCalcLegacyNodes    ForceCalcBetweenFiles  = null;
+    ForceToSpeedLegacyNodes ForceToSpeedFiles      = null;
 
     /**
      * getting file node as a string
@@ -1098,7 +1110,6 @@ public class code_swarm extends PApplet {
     FileNode(FileEvent fe) {
       super(FILE_LIFE_INIT, FILE_LIFE_DECREMENT); // 255, -2
       name = fe.path + fe.filename;
-      fixed = false;
       life = LIFE_INIT;
       colorMode(RGB);
       minBold = (int)(LIFE_INIT * 0.95);
@@ -1107,18 +1118,18 @@ public class code_swarm extends PApplet {
       // Force calculation algorithm selection and instantiation
       // TODO: use a better initialization method 
       if ( BetweenFilesForceCalculation.equals( FORCE_CALCULATION_LEGACY_NODES ) ) {
-        ForceCalcBetweenFiles  = new ForceCalcLegacyNodes(0.01f); // 0.01 is default random
+        ForceCalcBetweenFiles = new ForceCalcLegacyNodes(0.01f); // 0.01 is default random
       }
-      else /* BetweenFilesForceCalculation.equals( FORCE_CALCULATION_DEFAULT ) */ {
+      else {
         // legacy is current default
-        ForceCalcBetweenFiles  = new ForceCalcLegacyNodes(0.01f); // 0.01 is default random
+        ForceCalcBetweenFiles = new ForceCalcLegacyNodes(0.01f); // 0.01 is default random
       }
-      if ( OnFilesForceApplication.equals( FORCE_APPLICATION_LEGACY_NODES ) ) {
-        ForceApplyToFiles = new ForceApplyLegacyNodes(1);    // 1 is force divider
+      if ( OnFilesForceToSpeed.equals( FORCE_TO_SPEED_LEGACY_NODES ) ) {
+        ForceToSpeedFiles = new ForceToSpeedLegacyNodes(1);    // 1 is force divider
       }
-      else /* BetweenFilesForceCalculation.equals( FORCE_CALCULATION_DEFAULT ) */ {
+      else {
         // legacy is current default
-        ForceApplyToFiles  = new ForceApplyLegacyNodes(1);   // 1 is force divider
+        ForceToSpeedFiles = new ForceToSpeedLegacyNodes(1);   // 1 is force divider
       }
     }
 
@@ -1149,7 +1160,7 @@ public class code_swarm extends PApplet {
       }
 
       // Apply repulsive force from other files to this Node
-      ForceApplyToFiles.applyForceTo(this, forceSummation);
+      ForceToSpeedFiles.applyForceTo(this, forceSummation);
     }
 
     /**
@@ -1223,8 +1234,8 @@ public class code_swarm extends PApplet {
     int flavor = color(0);
     int colorCount = 1;
     int minBold;
-    ForceCalcLegacyNodes  ForceCalcBetweenPersons = null;
-    ForceApplyLegacyNodes ForceApplyToPersons     = null;
+    ForceCalcLegacyNodes    ForceCalcBetweenPersons = null;
+    ForceToSpeedLegacyNodes ForceToSpeedOnPersons     = null;
 
     /**
      * 1) constructor.
@@ -1233,25 +1244,24 @@ public class code_swarm extends PApplet {
       super(PERSON_LIFE_INIT, PERSON_LIFE_DECREMENT); // -1
       maxSpeed = 2.0f;
       name = n;
-      fixed = false;
       /** TODO: add config */
-      minBold = (int)(LIFE_INIT * 0.95);
+      minBold = (int)(LIFE_INIT * 0.95f);
       
       // Force calculation algorithm selection and instantiation
       // TODO: use a better initialization method 
       if ( BetweenPersonsForceCalculation.equals( FORCE_CALCULATION_LEGACY_NODES ) ) {
-        ForceCalcBetweenPersons = new ForceCalcLegacyNodes(0.01f); // 0.01 is default random
+        ForceCalcBetweenPersons = new ForceCalcLegacyNodes(0.01f);     // 0.01 is default random
       }
-      else /* BetweenFilesForceCalculation.equals( FORCE_CALCULATION_DEFAULT ) */ {
+      else {
         // legacy is current default
-        ForceCalcBetweenPersons = new ForceCalcLegacyNodes(0.01f); // 0.01 is default random
+        ForceCalcBetweenPersons = new ForceCalcLegacyNodes(0.01f);     // 0.01 is default random
       }
-      if ( OnPersonsForceApplication.equals( FORCE_APPLICATION_LEGACY_NODES ) ) {
-        ForceApplyToPersons = new ForceApplyLegacyNodes(12);    // 12 is force divider
+      if ( OnPersonsForceToSpeed.equals( FORCE_TO_SPEED_LEGACY_NODES ) ) {
+        ForceToSpeedOnPersons = new ForceToSpeedLegacyNodes(1/12.0f); // 12 is the force divider
       }
-      else /* BetweenFilesForceCalculation.equals( FORCE_CALCULATION_DEFAULT ) */ {
+      else {
         // legacy is current default
-        ForceApplyToPersons = new ForceApplyLegacyNodes(12);   // 12 is force divider
+        ForceToSpeedOnPersons = new ForceToSpeedLegacyNodes(1/12.0f); // 12 is the force divider
       }
     }
 
@@ -1282,7 +1292,7 @@ public class code_swarm extends PApplet {
       }
       
       // Apply repulsive force from other persons to this Node
-      ForceApplyToPersons.applyForceTo(this, forceSummation);
+      ForceToSpeedOnPersons.applyForceTo(this, forceSummation);
     }
 
     /**

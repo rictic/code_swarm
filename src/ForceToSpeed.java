@@ -19,20 +19,20 @@
 
 
 /**
- * Abstract base of any force application (ie. conversion to speed) in code_swarm.
+ * Abstract base of any force application (ie. conversion to acceleration, then speed) in code_swarm.
  *
  * Need to be derived to define application of a type of forces between to Nodes
  * 
- * TODO: rename this to something like "ForceToSpeed", then the third class would be "SpeedToPosition"
- */
-abstract class ForceApply
+ * @Note Standard physics is "Speed Variation = Force x Mass / Duration" with a convention of "Duration=1" between to frames
+*/
+abstract class ForceToSpeed
 {
   /**
-   * Method that apply a force to a node, converting acceleration to speed.
+   * Method that apply a force to a node, converting force to acceleration, that in turn modify speed.
    * 
    * @param Node the node to which the force apply
-   * @param force a forceVector representing the force on a node
+   * @param force a force Vector representing the force on a node
    */
-  abstract void applyForceTo( code_swarm.Node Node, Vector force );
+  abstract void applyForceTo( code_swarm.Node node, Vector force );
 }
 

@@ -28,6 +28,7 @@ public class CodeSwarmConfig
   public static final String HEIGHT_KEY = "Height";
   public static final String INPUT_FILE_KEY = "InputFile";
   public static final String MSEC_PER_FRAME_KEY = "MillisecondsPerFrame";
+  public static final String FRAMES_PER_DAY_KEY = "FramesPerDay";
   public static final String TAKE_SNAPSHOTS_KEY = "TakeSnapshots";
   public static final String NAME_HALOS_KEY = "NameHalos";
   public static final String BACKGROUND_KEY = "Background";
@@ -38,7 +39,6 @@ public class CodeSwarmConfig
   public static final String EDGE_LIFE_KEY = "EdgeLife";
   public static final String FILE_LIFE_KEY = "FileLife";
   public static final String PERSON_LIFE_KEY = "PersonLife";
-  public static final String FRAMES_PER_DAY_KEY = "FramesPerDay";
   public static final String USE_OPEN_GL = "UseOpenGL";
   public static final String SHOW_LEGEND = "ShowLegend";
   public static final String SHOW_HISTORY = "ShowHistory";
@@ -56,8 +56,9 @@ public class CodeSwarmConfig
   public static final String BETWEEN_PERSONS_AND_FILES_FORCE_CALCULATION = "BetweenPersonsAndFilesForceCalculation";
   public static final String BETWEEN_PERSONS_FORCE_CALCULATION = "BetweenPersonsForceCalculation";
   public static final String BETWEEN_FILES_FORCE_CALCULATION = "BetweenFilesForceCalculation";
-  public static final String ON_PERSONS_FORCE_APPLICATION = "OnPersonsForceApplication";
-  public static final String ON_FILES_FORCE_APPLICATION = "OnFilesForceApplication";
+  public static final String ON_PERSONS_FORCE_TO_SPEED  = "OnPersonsForceToSpeed";
+  public static final String ON_FILES_FORCE_TO_SPEED    = "OnFilesForceToSpeed";
+  public static final String ON_NODES_SPEED_TO_POSITION = "OnNodesSpeedToPosition";
 
   private Properties p = null;
 
@@ -75,7 +76,7 @@ public class CodeSwarmConfig
     def.setProperty( WIDTH_KEY, "640" );
     def.setProperty( HEIGHT_KEY, "480");
     def.setProperty( INPUT_FILE_KEY, "data/sample-repevents.xml");
-    def.setProperty( MSEC_PER_FRAME_KEY, "21600000");
+  /*def.setProperty( MSEC_PER_FRAME_KEY, "21600000"); default is forbiden because it is the only way to specify a FRAMES_PER_DAY_KEY */
     def.setProperty( BACKGROUND_KEY, "0,0,0" );
     def.setProperty( TAKE_SNAPSHOTS_KEY, "false");
     def.setProperty( SNAPSHOT_LOCATION_KEY, "frames/snap-#####.png" );

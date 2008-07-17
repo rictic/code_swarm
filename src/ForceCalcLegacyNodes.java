@@ -23,12 +23,12 @@
  */
 public class ForceCalcLegacyNodes extends ForceCalc
 {
-  final private double randMultiplier;
+  final private float randMultiplier;
   
   /**
    * Constructor for initializing parameters.
    */
-  ForceCalcLegacyNodes(double paramMultiplier)
+  ForceCalcLegacyNodes(float paramMultiplier)
   {
     randMultiplier = paramMultiplier;
   }
@@ -40,7 +40,7 @@ public class ForceCalcLegacyNodes extends ForceCalc
    * @param[in] NodeB
    * @param[out] force
    * 
-   * @return a forceVector representing the force between to nodes
+   * @return a force Vector representing the force between to nodes
    */
   public void calculateForceBetween( code_swarm.Node NodeA, code_swarm.Node NodeB, Vector force )
   {
@@ -52,7 +52,7 @@ public class ForceCalcLegacyNodes extends ForceCalc
     disty = NodeA.getY() - NodeB.getY();
     lensq = distx * distx + disty * disty;
     if (lensq == 0) {
-      force.set( Math.random()*randMultiplier, Math.random()*randMultiplier );
+      force.set( (float)Math.random()*randMultiplier, (float)Math.random()*randMultiplier );
     } else if (lensq < 10000) {
       force.set( distx / lensq, disty / lensq );
     }

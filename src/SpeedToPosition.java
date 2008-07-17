@@ -19,21 +19,19 @@
 
 
 /**
- * Abstract base of any force calculation in code_swarm.
+ * Abstract base of speed conversion to position.
  *
- * Need to be derived to define calculation of a type of forces between to Nodes
+ * Need to be derived to define application of a type of forces between to Nodes
+ *
+ * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
  */
-abstract class ForceCalc
+abstract class SpeedToPosition
 {
   /**
-   * Method that calculate the force between to nodes.
+   * Method that apply a force to a node, converting acceleration (ie. force) to speed.
    * 
-   * @param NodeA
-   * @param NodeB
-   * @param force
-   * 
-   * @return a force Vector representing the force between to nodes
+   * @param node the node to which the force apply
    */
-  abstract void calculateForceBetween( code_swarm.Node NodeA, code_swarm.Node NodeB, Vector force );
+  abstract void applySpeedTo( code_swarm.Node node );
 }
 

@@ -21,14 +21,14 @@
 /**
  * Legacy force application (ie. conversion to speed) on nodes (either files or persons).
  */
-public class ForceApplyLegacyNodes extends ForceApply
+public class ForceToSpeedLegacyNodes extends ForceToSpeed
 {
-  final private int multiplier;
+  final private float multiplier;
   
   /**
    * Constructor for initializing parameters.
    */
-  ForceApplyLegacyNodes(int paramMultiplier)
+  ForceToSpeedLegacyNodes(float paramMultiplier)
   {
     multiplier = paramMultiplier;
   }
@@ -37,17 +37,17 @@ public class ForceApplyLegacyNodes extends ForceApply
    * Method that apply a force to a node, converting acceleration to speed.
    * 
    * @param Node the node to which the force apply
-   * @param force a forceVector representing the force on a node
+   * @param force a force Vector representing the force on a node
    */
   public void applyForceTo( code_swarm.Node Node, Vector force )
   {
-    double dlen;
+    float dlen;
 
     /** TODO: comment this algorithm */
     dlen = force.norm() / 2;
     if (dlen > 0) {
-      Node.addDX( (float)( force.getX() / dlen ) );
-      Node.addDY( (float)( force.getY() / dlen ) );
+      Node.addDX( force.getX() / dlen );
+      Node.addDY( force.getY() / dlen );
     }
     Node.mulDX( multiplier );
     Node.mulDY( multiplier );

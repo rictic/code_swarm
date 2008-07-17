@@ -27,8 +27,8 @@
  */
 class Vector
 {
-  protected double x, y; 
-  protected double norm; 
+  protected float x, y; 
+  protected float norm; 
   
   Vector()
   {
@@ -41,23 +41,23 @@ class Vector
    * @param x x-axis component of the force
    * @param y y-axis component of the force
    */
-  Vector(double x, double y)
+  Vector(float x, float y)
   {
     this.x = x;
     this.x = x;
   }
 
-  public void setX(double x)
+  public void setX(float x)
   {
     this.x = x;
   }
   
-  public void setY(double y)
+  public void setY(float y)
   {
     this.y = y;
   }
   
-  public void set(double x, double y)
+  public void set(float x, float y)
   {
     this.x = x;
     this.y = y;
@@ -69,7 +69,7 @@ class Vector
     this.y = force.getY();
   }
   
-  public void add(double x, double y)
+  public void add(float x, float y)
   {
     this.x += x;
     this.y += y;
@@ -84,7 +84,7 @@ class Vector
   /**
    * @return xx x-axis component of the force.
    */
-  public double getX()
+  public float getX()
   {
     return x;
   }
@@ -92,7 +92,7 @@ class Vector
   /**
    * @return y-axis component of the force.
    */
-  public double getY()
+  public float getY()
   {
     return y;
   }
@@ -100,9 +100,9 @@ class Vector
   /**
    * @return calculated norm of the vector (ie. its length).
    */
-  public double norm()
+  public float norm()
   {
-    return Math.sqrt(x*x + y*y);
+    return (float)Math.sqrt(x*x + y*y);
   }
   
   /**
@@ -112,7 +112,7 @@ class Vector
    * 
    * TODO: transform to an operator redefinition  
    */
-  void multiply(double multiplier)
+  void multiply(float multiplier)
   {
     x    *= multiplier;
     y    *= multiplier;
