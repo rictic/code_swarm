@@ -19,20 +19,40 @@
 
 
 /**
- * Abstract base of any force application (ie. conversion to acceleration, then speed) in code_swarm.
+ * Abstract class describing interface of any code_swarm physical engine.
  *
- * Need to be derived to define application of a type of forces between to Nodes
- * 
- * @Note Standard physics is "Speed Variation = Force x Mass / Duration" with a convention of "Duration=1" between to frames
-*/
-abstract class ForceToSpeed
+ * Need to be derived to define force calculation algorithms between Nodes
+ */
+abstract class PhysicalEngine
 {
+  /**
+   * Method that calculate the force between to nodes.
+   * 
+   * @param NodeA
+   * @param NodeB
+   * @param force
+   * 
+   * @return a force Vector representing the force between to nodes
+   */
+  abstract void calculateForceBetween( code_swarm.Node NodeA, code_swarm.Node NodeB, Vector force );
+
   /**
    * Method that apply a force to a node, converting force to acceleration, that in turn modify speed.
    * 
    * @param Node the node to which the force apply
    * @param force a force Vector representing the force on a node
+   * 
+   * @Note Standard physics is "Speed Variation = Force x Mass / Duration" with a convention of "Duration=1" between to frames
    */
   abstract void applyForceTo( code_swarm.Node node, Vector force );
+
+  /**
+   * Method that manage speed conversion to position.
+   * 
+   * @param node the node to which the force apply
+   * 
+   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
+   */
+  abstract void applySpeedTo( code_swarm.Node node );
 }
 

@@ -50,15 +50,8 @@ public class CodeSwarmConfig
   public static final String DRAW_FILES_SHARP = "DrawFilesSharp";
   public static final String DRAW_FILES_FUZZY = "DrawFilesFuzzy";
   public static final String DRAW_FILES_JELLY = "DrawFilesJelly";
-
+  public static final String PHYSICAL_ENGINE_SELECTION = "PhysicalEngineSelection";
   public static String DEFAULT_COLOR_ASSIGN = "\"Misc\",\".*\",128,128,128,128,128,128";
-  // Physical engine configuration
-  public static final String BETWEEN_PERSONS_AND_FILES_FORCE_CALCULATION = "BetweenPersonsAndFilesForceCalculation";
-  public static final String BETWEEN_PERSONS_FORCE_CALCULATION = "BetweenPersonsForceCalculation";
-  public static final String BETWEEN_FILES_FORCE_CALCULATION = "BetweenFilesForceCalculation";
-  public static final String ON_PERSONS_FORCE_TO_SPEED  = "OnPersonsForceToSpeed";
-  public static final String ON_FILES_FORCE_TO_SPEED    = "OnFilesForceToSpeed";
-  public static final String ON_NODES_SPEED_TO_POSITION = "OnNodesSpeedToPosition";
 
   private Properties p = null;
 
