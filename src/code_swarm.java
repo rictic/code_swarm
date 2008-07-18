@@ -28,6 +28,8 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -58,6 +60,7 @@ public class code_swarm extends PApplet {
   Date nextDate;
   Date prevDate;
   FileNode prevNode;
+  int maxTouches;
 
   // Graphics objects
   PFont font;
@@ -69,6 +72,7 @@ public class code_swarm extends PApplet {
   boolean showHistogram = true;
   boolean showDate = true;
   boolean showLegend = false;
+  boolean showPopular = false;
   boolean showEdges = false;
   boolean showHelp = false;
   boolean takeSnapshots = false;
@@ -121,6 +125,7 @@ public class code_swarm extends PApplet {
     if (width <= 0) {
       width = 640;
     }
+    
     int height=cfg.getIntProperty(CodeSwarmConfig.HEIGHT_KEY,480);
     if (height <= 0) {
       height = 480;
@@ -173,23 +178,26 @@ public class code_swarm extends PApplet {
     } else {
       drawNamesSharp = false;
     }   
-    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS, true)) {
+    
+    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS, false)) {
       drawNamesHalos = true;
     } else {
       drawNamesHalos = false;
     }
 
-    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_SHARP, true)) {
+    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_SHARP, false)) {
       drawFilesSharp = true;
     } else {
       drawFilesSharp = false;
     }   
+    
     if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_FUZZY, true)) {
       drawFilesFuzzy = true;
     } else {
       drawFilesFuzzy = false;
     }   
-    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY, true)) {
+    
+    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY, false)) {
       drawFilesJelly = true;
     } else {
       drawFilesJelly = false;
@@ -202,10 +210,12 @@ public class code_swarm extends PApplet {
     if (EDGE_LIFE_INIT <= 0) {
       EDGE_LIFE_INIT = 255;
     }
+    
     FILE_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.FILE_LIFE_KEY,255);
     if (FILE_LIFE_INIT <= 0) {
       FILE_LIFE_INIT = 255;
     }
+    
     PERSON_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.PERSON_LIFE_KEY,255);
     if (PERSON_LIFE_INIT <= 0) {
       PERSON_LIFE_INIT = 255;
@@ -244,16 +254,19 @@ public class code_swarm extends PApplet {
     // Init color map
     initColors();
 
-    // Load data
-    // loadRepository( INPUT_FILE ); // repository formatted
-    Thread t = new Thread(new Runnable() {
-      public void run() {
-        loadRepEvents(cfg.getStringProperty(CodeSwarmConfig.INPUT_FILE_KEY)); // event formatted (this will be standard)
+    /**
+     * @todo Fix this Thread code.  It is broken somehow.
+     * @todo It causes valid setups to exit with no message.
+     * @todo Only after several attempts will it eventually work.
+     */
+//    Thread t = new Thread(new Runnable() {
+//      public void run() {
+        loadRepEvents(cfg.getStringProperty(CodeSwarmConfig.INPUT_FILE_KEY)); // event formatted (this is the standard)
         prevDate = eventsQueue.peek().date;
-      }
-    });
-    t.setDaemon(true);
-    t.start();
+//      }
+//    });
+//    t.setDaemon(true);
+//    t.start();
     /** TODO: use adapter pattern to handle different data sources */
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
@@ -263,6 +276,9 @@ public class code_swarm extends PApplet {
     }
 
     // Create fonts
+    /**
+     * @todo Put this in the config.
+     */
     font = createFont("SansSerif", 10);
     boldFont = createFont("SansSerif.bold", 14);
     textFont(font);
@@ -272,8 +288,6 @@ public class code_swarm extends PApplet {
     sprite = loadImage(SPRITE_FILE);
     // Add translucency (using itself in this case)
     sprite.mask(sprite);
-
-    
   }
 
   /**
@@ -387,6 +401,10 @@ public class code_swarm extends PApplet {
       else if (showLegend) {
         // legend only if nothing "more important"
         drawLegend();
+      }
+      
+      if (showPopular) {
+        drawPopular();
       }
 
       if (showHistogram) {
@@ -509,6 +527,7 @@ public class code_swarm extends PApplet {
     text("- l : show Legend", 0, 10*line++);
     text("- e : show Edges", 0, 10*line++);
     text("- b : show deBug", 0, 10*line++);
+    text("- p : show Popular", 0, 10*line++);
     text("- ? : show help", 0, 10*line++);
     text("- q : Quit code_swarm", 0, 10*line++);
   }
@@ -524,6 +543,36 @@ public class code_swarm extends PApplet {
     text("People: " + people.size(), 0, 10);
     text("Queue: " + eventsQueue.size(), 0, 20);
     text("Last render time: " + lastDrawDuration, 0, 30);
+  }
+
+  /**
+   * @todo This could be made to look a lot better.
+   */
+  public void drawPopular() {
+    SortedSet <FileNode> al=new TreeSet<FileNode>();
+    noStroke();
+    textFont(font);
+    textAlign(RIGHT, TOP);
+    fill(255, 200);
+    text("Popular Nodes (touches):", width-120, 0);
+    for (int i = 0; i < nodes.size(); i++) {
+      FileNode fn = (FileNode) nodes.get(i);
+      if (fn.qualifies()) {
+        al.add(fn);
+      }
+    }
+    
+    int i = 1;
+    Iterator<FileNode> it = al.iterator();
+    while (it.hasNext()) {
+      FileNode n = it.next();
+      // Limit to the top 10.
+      if (i <= 10) {
+        text(n.name + "  (" + n.touches + ")", width-100, 10 * i++);
+      } else if (i > 10) {
+        break;
+      }
+    }
   }
 
   /**
@@ -794,6 +843,10 @@ public class code_swarm extends PApplet {
         showDebug = !showDebug;
         break;
       }
+      case 'p': {
+        showPopular = !showPopular;
+        break;
+      }
       case '?': {
         showHelp = !showHelp;
         break;
@@ -862,7 +915,6 @@ public class code_swarm extends PApplet {
    */
   abstract class Drawable {
     public int life;
-    public int touches;
 
     final public int LIFE_INIT;
     final public int LIFE_DECREMENT;
@@ -878,7 +930,6 @@ public class code_swarm extends PApplet {
       LIFE_DECREMENT = lifeDecrement;
       // init life relative vars
       life           = LIFE_INIT;
-      touches        = 1;
     }
 
     /**
@@ -915,7 +966,6 @@ public class code_swarm extends PApplet {
      */
     public void freshen() {
       life = LIFE_INIT;
-      touches++;
     }
   }
 
@@ -978,7 +1028,6 @@ public class code_swarm extends PApplet {
         line(from.x, from.y, to.x, to.y);
       }
     }
-
   }
 
   /**
@@ -1029,7 +1078,6 @@ public class code_swarm extends PApplet {
      * This is a redefinition of the Drawable update() method
      */
     public void update() {
-
       // Apply Speed to Position on nodes
       SpeedToPosition.applySpeedTo(this);
       
@@ -1091,10 +1139,11 @@ public class code_swarm extends PApplet {
   /**
    * A node describing a file, which is repulsed by other files.
    */
-  class FileNode extends Node {
+  class FileNode extends Node implements Comparable<FileNode> {
     int nodeHue;
     int minBold;
-    ForceCalcLegacyNodes    ForceCalcBetweenFiles  = null;
+    int touches;
+    ForceCalcLegacyNodes  ForceCalcBetweenFiles  = null;
     ForceToSpeedLegacyNodes ForceToSpeedFiles      = null;
 
     /**
@@ -1110,6 +1159,7 @@ public class code_swarm extends PApplet {
     FileNode(FileEvent fe) {
       super(FILE_LIFE_INIT, FILE_LIFE_DECREMENT); // 255, -2
       name = fe.path + fe.filename;
+      touches = 1;
       life = LIFE_INIT;
       colorMode(RGB);
       minBold = (int)(LIFE_INIT * 0.95);
@@ -1179,10 +1229,44 @@ public class code_swarm extends PApplet {
         }
         
         /** TODO : this would become interesting on some special event, or for special materials
-         * // label colorMode( RGB ); fill( 0, life ); textAlign( CENTER, CENTER );
-         * text( name, x, y );
+         * colorMode( RGB ); fill( 0, life ); textAlign( CENTER, CENTER ); text( name, x, y );
+         * Example below:
          */
+        if (showPopular) {
+          textAlign( CENTER, CENTER );
+          if (this.qualifies()) {
+            text(touches, x, y - (8 + (int)sqrt(touches)));
+          }
+        }
       }
+    }
+    
+    /**
+     * 6) reseting life as if new.
+     */
+    public void freshen() {
+      life = FILE_LIFE_INIT;
+      if (++touches > maxTouches) {
+        maxTouches = touches;
+      }
+    }
+    
+    public boolean qualifies() {
+      if (this.touches >= maxTouches * 0.5) {
+        return true;
+      }
+      return false;
+    }
+    
+    // Yes, I know this is backwards.
+    public int compareTo(FileNode fn) {
+      int retval = 0;
+      if (this.touches < fn.touches) {
+        retval = 1;
+      } else if (this.touches > fn.touches) {
+        retval = -1;
+      }
+      return retval;
     }
 
     public void drawSharp() {
@@ -1224,7 +1308,6 @@ public class code_swarm extends PApplet {
       ellipseMode(CENTER);
       ellipse(x, y, w, w);
     }
-
   }
 
   /**
