@@ -32,19 +32,19 @@ abstract class PhysicalEngine
   /**
    * Method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
    * 
-   * @param edge [in] the link between a person and one of its file 
-   * @param force [out] force calculated between those two nodes
+   * @param edge the link between a person and one of its file 
+   * @return force force calculated between those two nodes
    */
-  abstract public void calculateForceAlongAnEdge( code_swarm.Edge edge, Vector2f force );
+  abstract public Vector2f calculateForceAlongAnEdge( code_swarm.Edge edge );
 
   /**
    * Method that calculate the force between to nodes.
    * 
    * @param nodeA [in]
    * @param nodeB [in]
-   * @param force [out] force calculated between those two nodes
+   * @return force force calculated between those two nodes
    */
-  abstract void calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB, Vector2f force );
+  abstract Vector2f calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB );
 
   /**
    * Method that apply a force to a node, converting force to acceleration, that in turn modify speed.

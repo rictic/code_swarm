@@ -255,9 +255,9 @@ public class code_swarm extends PApplet {
     initColors();
 
     /**
-     * @todo Fix this Thread code.  It is broken somehow.
-     * @todo It causes valid setups to exit with no message.
-     * @todo Only after several attempts will it eventually work.
+     * TODO Fix this Thread code.  It is broken somehow.
+     * TODO It causes valid setups to exit with no message.
+     * TODO Only after several attempts will it eventually work.
      */
 //    Thread t = new Thread(new Runnable() {
 //      public void run() {
@@ -277,7 +277,7 @@ public class code_swarm extends PApplet {
 
     // Create fonts
     /**
-     * @todo Put this in the config.
+     * TODO Put this in the config.
      */
     font = createFont("SansSerif", 10);
     boldFont = createFont("SansSerif.bold", 14);
@@ -555,7 +555,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * @todo This could be made to look a lot better.
+   * TODO This could be made to look a lot better.
    */
   public void drawPopular() {
     SortedSet <FileNode> al=new TreeSet<FileNode>();
@@ -1044,21 +1044,12 @@ public class code_swarm extends PApplet {
       Vector2f force    = new Vector2f();
 
       // Calculate force between the node "from" and the node "to"
-      mPhysicalEngine.calculateForceAlongAnEdge(this, force);
+      force = mPhysicalEngine.calculateForceAlongAnEdge(this);
 
       // transmit (applying) fake force projection to file and person nodes
-      /** TODO: remove */
-      nodeTo.addDX(force.getX()); // Person
-      nodeTo.addDY(force.getY()); // Person
-      nodeFrom.addDX(-force.getX()); // File
-      nodeFrom.addDY(-force.getY()); // File
-      /**/
-      // transmit (applying) fake force projection to file and person nodes
-      /** TODO: use this instead of above
       mPhysicalEngine.applyForceTo(nodeTo, force);
-      Vector2f forceInv = new Vector2f( -force.getX(), -force.getY()); // force is inverted for the other end of the edge
-      mPhysicalEngine.applyForceTo(nodeFrom, forceInv);
-      */
+      force.negate(); // force is inverted for the other end of the edge
+      mPhysicalEngine.applyForceTo(nodeFrom, force);
      }
 
     /**
@@ -1100,7 +1091,7 @@ public class code_swarm extends PApplet {
     protected Vector2f mSpeed;
     */
     
-    // TODO: mass would serve for "force to speed" conversion, and could be function of "life" or of node's "importance" (commit size, or touches...)
+    /** TODO: mass would serve for "force to speed" conversion, and could be function of "life" or of node's "importance" (commit size, or touches...) */
     protected float mass; 
     
     /** TODO: add configuration for max speed */
@@ -1115,7 +1106,6 @@ public class code_swarm extends PApplet {
                 => to permit things like "injection points", circular arrival, and so on */
       x = random(width);
       y = random(height);
-      mass = 10.0f; // bigger mass to person then to node, to stabilize them
     }
 
     /**
@@ -1268,7 +1258,7 @@ public class code_swarm extends PApplet {
      *       => then it could be moved up
      */
     public void relax() {
-      Vector2f forceBetween2Files = new Vector2f();
+      Vector2f forceBetweenFiles = new Vector2f();
       Vector2f forceSummation     = new Vector2f();
       
       if (life <= 0)
@@ -1282,11 +1272,10 @@ public class code_swarm extends PApplet {
 
         if (n != this) {
           // elemental force calculation, and summation
-          mPhysicalEngine.calculateForceBetweenNodes(this, n, forceBetween2Files);
-          forceSummation.add(forceBetween2Files);
+          forceBetweenFiles = mPhysicalEngine.calculateForceBetweenNodes(this, n);
+          forceSummation.add(forceBetweenFiles);
         }
       }
-
       // Apply repulsive force from other files to this Node
       mPhysicalEngine.applyForceTo(this, forceSummation);
     }
@@ -1405,6 +1394,7 @@ public class code_swarm extends PApplet {
       name = n;
       /** TODO: add config */
       minBold = (int)(LIFE_INIT * 0.95f);
+      mass = 10.0f; // bigger mass to person then to node, to stabilize them
     }
 
     /**
@@ -1414,7 +1404,7 @@ public class code_swarm extends PApplet {
      *       it could be moved up
      */
     public void relax() {
-      Vector2f forceBetween2Persons = new Vector2f();
+      Vector2f forceBetweenPersons = new Vector2f();
       Vector2f forceSummation       = new Vector2f();
 
       if (life <= 0)
@@ -1428,8 +1418,8 @@ public class code_swarm extends PApplet {
 
         if (n != this) {
           // elemental force calculation, and summation
-          mPhysicalEngine.calculateForceBetweenNodes(this, n, forceBetween2Persons);
-          forceSummation.add(forceBetween2Persons);
+          forceBetweenPersons = mPhysicalEngine.calculateForceBetweenNodes(this, n);
+          forceSummation.add(forceBetweenPersons);
         }
       }
       

@@ -46,13 +46,14 @@ public class PhysicalEngineLegacy extends PhysicalEngine
   /**
    * Legacy method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
    * 
-   * @param edge [in] the link between a person and one of its file 
-   * @param force [out] force calculated between those two nodes
+   * @param edge the link between a person and one of its file 
+   * @return force force calculated between those two nodes
    */
-  public void calculateForceAlongAnEdge( code_swarm.Edge edge, Vector2f force )
+  public Vector2f calculateForceAlongAnEdge( code_swarm.Edge edge )
   {
     float distance;
     float fakeForce;
+    Vector2f force = new Vector2f();
     
     // distance calculation
     force.set( edge.getNodeTo().getX() - edge.getNodeFrom().getX(), edge.getNodeTo().getY() - edge.getNodeFrom().getY() );
@@ -65,6 +66,8 @@ public class PhysicalEngineLegacy extends PhysicalEngine
       // fake force projection onto x and y axis
       force.scale( fakeForce * FORCE_EDGE_MULTIPLIER );
     }
+    
+    return force;
   }
   
   /**
@@ -72,12 +75,13 @@ public class PhysicalEngineLegacy extends PhysicalEngine
    * 
    * @param nodeA [in]
    * @param nodeB [in]
-   * @param force [out] force calculated between those two nodes
+   * @return force force calculated between those two nodes
    */
-  public void calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB, Vector2f force )
+  public Vector2f calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB )
   {
     float distx, disty;
     float lensq;
+    Vector2f force = new Vector2f();
     
     /** TODO: add comment to this algorithm */
     distx = nodeA.getX() - nodeB.getX();
@@ -88,6 +92,8 @@ public class PhysicalEngineLegacy extends PhysicalEngine
     } else if (lensq < 10000) {
       force.set( distx / lensq, disty / lensq );
     }
+    
+    return force;
   }
   
   /**
@@ -105,8 +111,8 @@ public class PhysicalEngineLegacy extends PhysicalEngine
     /** TODO: add comment to this algorithm */
     dlen = force.length();
     if ( (dlen > 0) && (node.getMass() > 0)) {
-      node.addDX( force.getX() / node.getMass() / dlen * FORCE_TO_SPEED_MULTIPLIER );
-      node.addDY( force.getY() / node.getMass() / dlen * FORCE_TO_SPEED_MULTIPLIER );
+      node.addDX( (force.getX() / (node.getMass() / dlen)) * FORCE_TO_SPEED_MULTIPLIER );
+      node.addDY( (force.getY() / (node.getMass() / dlen)) * FORCE_TO_SPEED_MULTIPLIER );
     }
   }
 
