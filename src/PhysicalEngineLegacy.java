@@ -42,22 +42,42 @@ public class PhysicalEngineLegacy extends PhysicalEngine
   }
   
   /**
+   * Legacy method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
+   * 
+   * @param[in] edge the link between a person and one of its file 
+   * @param[out] force calculated between those two nodes
+   */
+  public void calculateForceAlongAnEdge( code_swarm.Edge edge, Vector force )
+  {
+    float distance;
+    float fakeForce;
+    
+    // distance calculation
+    force.set( edge.getNodeTo().getX() - edge.getNodeFrom().getX(), edge.getNodeTo().getY() - edge.getNodeFrom().getY() );
+    distance = force.getNorm();
+    if (distance > 0) {
+      // fake force calculation (increase when distance is different from targeted len")
+      fakeForce = (edge.getLen() - distance) / (distance * 3);
+      // force ponderation using a re-mapping life from 0-255 scale to 0-1.0 range
+      fakeForce = fakeForce * (edge.life * 1.0f) / 255;
+      // fake force projection onto x and y axis
+      force.multiply( fakeForce );
+    }
+  }
+  
+  /**
    * Legacy method that calculate the repulsive force between two similar nodes (either files or persons).
    * 
    * @param[in] nodeA
    * @param[in] nodeB
-   * @param[out] force
-   * 
-   * @return a force Vector representing the force between to nodes
-   * 
-   * TODO: force should be return
+   * @param[out] force calculated between those two nodes
    */
-  public void calculateForceBetween( code_swarm.Node nodeA, code_swarm.Node nodeB, Vector force )
+  public void calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB, Vector force )
   {
     float distx, disty;
     float lensq;
     
-    /** TODO: comment this algorithm */
+    /** TODO: add comment to this algorithm */
     distx = nodeA.getX() - nodeB.getX();
     disty = nodeA.getY() - nodeB.getY();
     lensq = distx * distx + disty * disty;
@@ -71,17 +91,17 @@ public class PhysicalEngineLegacy extends PhysicalEngine
   /**
    * Legacy method that apply a force to a node, converting acceleration to speed.
    * 
-   * @param Node the node to which the force apply
-   * @param force a force Vector representing the force on a node
+   * @param[in]  Node the node to which the force apply
+   * @param[in]  force a force Vector representing the force on a node
    * 
-   * TODO: force should be a property of the node (or not?)
+   * TODO: does force should be a property of the node (or not?)
    */
   public void applyForceTo( code_swarm.Node node, Vector force )
   {
     float dlen;
 
-    /** TODO: comment this algorithm */
-    dlen = force.norm() / 2;
+    /** TODO: add comment to this algorithm */
+    dlen = force.getNorm() / 2;
     if (dlen > 0) {
       node.addDX( force.getX() / dlen );
       node.addDY( force.getY() / dlen );
@@ -101,7 +121,7 @@ public class PhysicalEngineLegacy extends PhysicalEngine
     // This block enforces a maximum absolute velocity.
     if (node.getSpeed() > node.maxSpeed) {
       Vector mag = new Vector(node.getDX() / node.maxSpeed, node.getDY() / node.maxSpeed);
-      div = mag.norm();
+      div = mag.getNorm();
       node.mulDX( 1/div );
       node.mulDY( 1/div );
     }

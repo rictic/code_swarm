@@ -97,8 +97,8 @@ public class code_swarm extends PApplet {
   private final int FILE_LIFE_DECREMENT = -2;
   private final int PERSON_LIFE_DECREMENT = -1;
   // Physical engine configuration
-  String                physicalEngineSelection;
-  PhysicalEngineLegacy  mpPhysicalEngine = null;
+  String          physicalEngineSelection;
+  PhysicalEngine  mPhysicalEngine = null;
 
   // Physical algorithms (class) names
   // TODO: to complete with more physical engines
@@ -233,11 +233,11 @@ public class code_swarm extends PApplet {
     
     // TODO: to complete with more physical engines
     if ( physicalEngineSelection.equals( PHYSICAL_ENGINE_LEGACY ) ) {
-      mpPhysicalEngine = new PhysicalEngineLegacy(0.01f, 1.0f, 1/12.0f); // (forceCalculationRandomizer, forceToSpeedMultiplier, speedToPositionMultiplier)
+      mPhysicalEngine = new PhysicalEngineLegacy(0.01f, 1.0f, 1/12.0f); // (forceCalculationRandomizer, forceToSpeedMultiplier, speedToPositionMultiplier)
     }
     else {
       // legacy is current default
-      mpPhysicalEngine = new PhysicalEngineLegacy(0.01f, 1.0f, 1/12.0f); // (forceCalculationRandomizer, forceToSpeedMultiplier, speedToPositionMultiplier)
+      mPhysicalEngine = new PhysicalEngineLegacy(0.01f, 1.0f, 1/12.0f); // (forceCalculationRandomizer, forceToSpeedMultiplier, speedToPositionMultiplier)
     }
     
     smooth();
@@ -680,10 +680,10 @@ public class code_swarm extends PApplet {
 
   public Edge findEdge(Node n1, Node n2) {
     for (Edge edge : edges) {
-      if (edge.from == n1 && edge.to == n2)
+      if (edge.nodeFrom == n1 && edge.nodeTo == n2)
         return edge;
       // Shouldn't need this.
-      // if (edge.from == n2 && edge.to == n1)
+      // if (edge.nodeFrom == n2 && edge.nodeTo == n1)
       // return edge;
     }
     return null;
@@ -972,18 +972,18 @@ public class code_swarm extends PApplet {
    * An Edge link two nodes together : a File to a Person.
    */
   class Edge extends Drawable {
-    Node   from;
-    Node   to;
-    float len;
+    private Node  nodeFrom;
+    private Node  nodeTo;
+    private float len;
 
     /**
      * 1) constructor.
      */
     Edge(Node from, Node to) {
       super(EDGE_LIFE_INIT, EDGE_LIFE_DECREMENT); // 255, -2
-      this.from = from;
-      this.to   = to;
-      this.len  = EDGE_LEN;  // 25
+      this.nodeFrom = from;
+      this.nodeTo   = to;
+      this.len      = EDGE_LEN;  // 25
     }
 
     /**
@@ -991,31 +991,16 @@ public class code_swarm extends PApplet {
      */
     public void relax() {
       // TODO: use a force calculation class 
-      float distance;
-      float fakeForce;
-      float distx, disty;
-      float dx, dy;
+      Vector force = new Vector();
+      mPhysicalEngine.calculateForceAlongAnEdge(this, force);
       
-      // distance calculation
-      distx = to.getX() - from.getX();
-      disty = to.getY() - from.getY();
-      distance = mag(distx, disty);
-      if (distance > 0) {
-        // fake force calculation (increase when distance is different from targeted len")
-        fakeForce = (len - distance) / (distance * 3);
-        fakeForce = fakeForce * map(life, 0, 255, 0, 1.0f);
-        // fake force projection onto x and y axis
-        dx = fakeForce * distx;
-        dy = fakeForce * disty;
-
         // transmit (applying) fake force projection to file and person nodes
         /** TODO: use (or permit to use) real forces, not only delta position (ie speed) modification */
-        to.addDX(dx); // Person
-        to.addDY(dy); // Person
-        from.addDX(-dx); // File
-        from.addDY(-dy); // File
-      }
-    }
+        nodeTo.addDX(force.getX()); // Person
+        nodeTo.addDY(force.getY()); // Person
+        nodeFrom.addDX(-force.getX()); // File
+        nodeFrom.addDY(-force.getY()); // File
+     }
 
     /**
      * 5) drawing the new state.
@@ -1024,8 +1009,23 @@ public class code_swarm extends PApplet {
       if (life > 240) {
         stroke(255, life);
         strokeWeight(0.35f);
-        line(from.x, from.y, to.x, to.y);
+        line(nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y);
       }
+    }
+    
+    public Node getNodeFrom()
+    {
+      return nodeFrom;
+    }
+    
+    public Node getNodeTo()
+    {
+      return nodeTo;
+    }
+    
+    public float getLen()
+    {
+      return len;
     }
   }
 
@@ -1065,7 +1065,7 @@ public class code_swarm extends PApplet {
      */
     public void update() {
       // Apply Speed to Position on nodes
-      mpPhysicalEngine.applySpeedTo(this);
+      mPhysicalEngine.applySpeedTo(this);
       
       // ensure coherent resulting position
       x = constrain(x, 0, width);
@@ -1102,7 +1102,7 @@ public class code_swarm extends PApplet {
 
     public float getSpeed() {
       Vector speed = new Vector(dx, dy);  /** TODO: use mSpeed vector */
-      return speed.norm();
+      return speed.getNorm();
     }
 
     public void addDX(float ddx) {
@@ -1172,13 +1172,13 @@ public class code_swarm extends PApplet {
 
         if (n != this) {
           // elemental force calculation, and summation
-          mpPhysicalEngine.calculateForceBetween(this, n, forceBetween2Files);
+          mPhysicalEngine.calculateForceBetweenNodes(this, n, forceBetween2Files);
           forceSummation.add(forceBetween2Files);
         }
       }
 
       // Apply repulsive force from other files to this Node
-      mpPhysicalEngine.applyForceTo(this, forceSummation);
+      mPhysicalEngine.applyForceTo(this, forceSummation);
     }
 
     /**
@@ -1318,13 +1318,13 @@ public class code_swarm extends PApplet {
 
         if (n != this) {
           // elemental force calculation, and summation
-          mpPhysicalEngine.calculateForceBetween(this, n, forceBetween2Persons);
+          mPhysicalEngine.calculateForceBetweenNodes(this, n, forceBetween2Persons);
           forceSummation.add(forceBetween2Persons);
         }
       }
       
       // Apply repulsive force from other persons to this Node
-      mpPhysicalEngine.applyForceTo(this, forceSummation);
+      mPhysicalEngine.applyForceTo(this, forceSummation);
     }
 
     /**

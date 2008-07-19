@@ -21,26 +21,33 @@
 /**
  * Abstract class describing interface of any code_swarm physical engine.
  *
- * Need to be derived to define force calculation algorithms between Nodes
+ * @note Need to be derived to define force calculation algorithms between Nodes
+ * @note For portability, no Processing library should be use there, only standard Java packages
  */
 abstract class PhysicalEngine
 {
   /**
+   * Method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
+   * 
+   * @param[in]  edge the link between a person and one of its file 
+   * @param[out] force calculated between those two nodes
+   */
+  abstract public void calculateForceAlongAnEdge( code_swarm.Edge edge, Vector force );
+
+  /**
    * Method that calculate the force between to nodes.
    * 
-   * @param NodeA
-   * @param NodeB
-   * @param force
-   * 
-   * @return a force Vector representing the force between to nodes
+   * @param[in]  nodeA
+   * @param[in]  nodeB
+   * @param[out] force calculated between those two nodes
    */
-  abstract void calculateForceBetween( code_swarm.Node NodeA, code_swarm.Node NodeB, Vector force );
+  abstract void calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB, Vector force );
 
   /**
    * Method that apply a force to a node, converting force to acceleration, that in turn modify speed.
    * 
-   * @param Node the node to which the force apply
-   * @param force a force Vector representing the force on a node
+   * @param[in]  Node the node to which the force apply
+   * @param[in]  force a force Vector representing the force on a node
    * 
    * @Note Standard physics is "Speed Variation = Force x Mass / Duration" with a convention of "Duration=1" between to frames
    */
@@ -49,7 +56,7 @@ abstract class PhysicalEngine
   /**
    * Method that manage speed conversion to position.
    * 
-   * @param node the node to which the force apply
+   * @param[in] node the node to which the force apply
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */

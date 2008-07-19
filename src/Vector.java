@@ -28,13 +28,16 @@
 class Vector
 {
   protected float x, y; 
-  protected float norm; 
   
+  /**
+   * Default constructor, null vector.
+   */
   Vector()
   {
    x = 0;
    y = 0;
   }
+  
   /**
    * Constructor, init the vector and calculate its norm.
    * 
@@ -100,7 +103,7 @@ class Vector
   /**
    * @return calculated norm of the vector (ie. its length).
    */
-  public float norm()
+  public float getNorm()
   {
     return (float)Math.sqrt(x*x + y*y);
   }
@@ -110,13 +113,12 @@ class Vector
    * 
    * @param multiplier
    * 
-   * TODO: transform to an operator redefinition  
+   * TODO: transform to/add a '*' operator redefinition  
    */
   void multiply(float multiplier)
   {
     x    *= multiplier;
     y    *= multiplier;
-    norm *= multiplier;
   }
   
 }
