@@ -17,6 +17,7 @@
  * along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import javax.vecmath.Vector2f;
 
 /**
  * @brief Legacy algorithms describing all physicals interactions between nodes (files and persons)
@@ -49,21 +50,21 @@ public class PhysicalEngineLegacy extends PhysicalEngine
    * @param[in] edge the link between a person and one of its file 
    * @param[out] force calculated between those two nodes
    */
-  public void calculateForceAlongAnEdge( code_swarm.Edge edge, Vector force )
+  public void calculateForceAlongAnEdge( code_swarm.Edge edge, Vector2f force )
   {
     float distance;
     float fakeForce;
     
     // distance calculation
     force.set( edge.getNodeTo().getX() - edge.getNodeFrom().getX(), edge.getNodeTo().getY() - edge.getNodeFrom().getY() );
-    distance = force.getNorm();
+    distance = force.length();
     if (distance > 0) {
       // fake force calculation (increase when distance is different from targeted len")
       fakeForce = (edge.getLen() - distance) / (distance * 3);
       // force ponderation using a re-mapping life from 0-255 scale to 0-1.0 range
       fakeForce = fakeForce * (edge.life * 1.0f) / 255;
       // fake force projection onto x and y axis
-      force.multiply( fakeForce * FORCE_EDGE_MULTIPLIER );
+      force.scale( fakeForce * FORCE_EDGE_MULTIPLIER );
     }
   }
   
@@ -74,7 +75,7 @@ public class PhysicalEngineLegacy extends PhysicalEngine
    * @param[in] nodeB
    * @param[out] force calculated between those two nodes
    */
-  public void calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB, Vector force )
+  public void calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB, Vector2f force )
   {
     float distx, disty;
     float lensq;
@@ -98,12 +99,12 @@ public class PhysicalEngineLegacy extends PhysicalEngine
    * 
    * TODO: does force should be a property of the node (or not?)
    */
-  public void applyForceTo( code_swarm.Node node, Vector force )
+  public void applyForceTo( code_swarm.Node node, Vector2f force )
   {
     float dlen;
 
     /** TODO: add comment to this algorithm */
-    dlen = force.getNorm();
+    dlen = force.length();
     if ( (dlen > 0) && (node.getMass() > 0)) {
       node.addDX( force.getX() / node.getMass() / dlen * FORCE_TO_SPEED_MULTIPLIER );
       node.addDY( force.getY() / node.getMass() / dlen * FORCE_TO_SPEED_MULTIPLIER );
@@ -120,8 +121,8 @@ public class PhysicalEngineLegacy extends PhysicalEngine
     float div;
     // This block enforces a maximum absolute velocity.
     if (node.getSpeed() > node.maxSpeed) {
-      Vector mag = new Vector(node.getDX() / node.maxSpeed, node.getDY() / node.maxSpeed);
-      div = mag.getNorm();
+      Vector2f mag = new Vector2f(node.getDX() / node.maxSpeed, node.getDY() / node.maxSpeed);
+      div = mag.length();
       node.mulDX( 1/div );
       node.mulDY( 1/div );
     }

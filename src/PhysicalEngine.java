@@ -17,6 +17,7 @@
  * along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import javax.vecmath.Vector2f;
 
 /**
  * Abstract class describing interface of any code_swarm physical engine.
@@ -34,7 +35,7 @@ abstract class PhysicalEngine
    * @param[in]  edge the link between a person and one of its file 
    * @param[out] force calculated between those two nodes
    */
-  abstract public void calculateForceAlongAnEdge( code_swarm.Edge edge, Vector force );
+  abstract public void calculateForceAlongAnEdge( code_swarm.Edge edge, Vector2f force );
 
   /**
    * Method that calculate the force between to nodes.
@@ -43,7 +44,7 @@ abstract class PhysicalEngine
    * @param[in]  nodeB
    * @param[out] force calculated between those two nodes
    */
-  abstract void calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB, Vector force );
+  abstract void calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB, Vector2f force );
 
   /**
    * Method that apply a force to a node, converting force to acceleration, that in turn modify speed.
@@ -53,7 +54,7 @@ abstract class PhysicalEngine
    * 
    * @Note Standard physics is "Speed Variation = Force / Mass x Duration" with a convention of "Duration=1" between to frames
    */
-  abstract void applyForceTo( code_swarm.Node node, Vector force );
+  abstract void applyForceTo( code_swarm.Node node, Vector2f force );
 
   /**
    * Method that manage speed conversion to position.

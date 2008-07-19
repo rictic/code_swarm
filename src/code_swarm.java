@@ -32,6 +32,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
+import javax.vecmath.Vector2f;
 
 /**
  * Definition of the code_swarm Application.
@@ -814,7 +815,7 @@ public class code_swarm extends PApplet {
    */
 
   /**
-   * Keystroke callback function
+   * @note Keystroke callback function
    */
   public void keyPressed() {
     switch (key) {
@@ -990,7 +991,7 @@ public class code_swarm extends PApplet {
      * 2) calculating next frame state.
      */
     public void relax() {
-      Vector force    = new Vector();
+      Vector2f force    = new Vector2f();
 
       // Calculate force between the node "from" and the node "to"
       mPhysicalEngine.calculateForceAlongAnEdge(this, force);
@@ -1005,7 +1006,7 @@ public class code_swarm extends PApplet {
       // transmit (applying) fake force projection to file and person nodes
       /** TODO: use this instead of above
       mPhysicalEngine.applyForceTo(nodeTo, force);
-      Vector forceInv = new Vector( -force.getX(), -force.getY()); // force is inverted for the other end of the edge
+      Vector2f forceInv = new Vector2f( -force.getX(), -force.getY()); // force is inverted for the other end of the edge
       mPhysicalEngine.applyForceTo(nodeFrom, forceInv);
       */
      }
@@ -1045,8 +1046,8 @@ public class code_swarm extends PApplet {
     protected float x, y;
     protected float dx, dy;
     /** TODO: We SHOULD use vector for position, speed and accel, not using x and y everywhere
-    protected Vector mPosition;
-    protected Vector mSpeed;
+    protected Vector2f mPosition;
+    protected Vector2f mSpeed;
     */
     
     // TODO: mass would serve for "force to speed" conversion, and could be function of "life" or of node's "importance" (commit size, or touches...)
@@ -1110,8 +1111,8 @@ public class code_swarm extends PApplet {
     }
 
     public float getSpeed() {
-      Vector speed = new Vector(dx, dy);  /** TODO: use mSpeed vector */
-      return speed.getNorm();
+      Vector2f speed = new Vector2f(dx, dy);  /** TODO: use mSpeed vector */
+      return speed.length();
     }
 
     public void addDX(float ddx) {
@@ -1172,8 +1173,8 @@ public class code_swarm extends PApplet {
      *       => then it could be moved up
      */
     public void relax() {
-      Vector forceBetween2Files = new Vector();
-      Vector forceSummation     = new Vector();
+      Vector2f forceBetween2Files = new Vector2f();
+      Vector2f forceSummation     = new Vector2f();
       
       if (life <= 0)
         return;
@@ -1318,8 +1319,8 @@ public class code_swarm extends PApplet {
      *       it could be moved up
      */
     public void relax() {
-      Vector forceBetween2Persons = new Vector();
-      Vector forceSummation       = new Vector();
+      Vector2f forceBetween2Persons = new Vector2f();
+      Vector2f forceSummation       = new Vector2f();
 
       if (life <= 0)
         return;
