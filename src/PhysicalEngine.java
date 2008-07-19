@@ -32,25 +32,25 @@ abstract class PhysicalEngine
   /**
    * Method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
    * 
-   * @param[in]  edge the link between a person and one of its file 
-   * @param[out] force calculated between those two nodes
+   * @param edge [in] the link between a person and one of its file 
+   * @param force [out] force calculated between those two nodes
    */
   abstract public void calculateForceAlongAnEdge( code_swarm.Edge edge, Vector2f force );
 
   /**
    * Method that calculate the force between to nodes.
    * 
-   * @param[in]  nodeA
-   * @param[in]  nodeB
-   * @param[out] force calculated between those two nodes
+   * @param nodeA [in]
+   * @param nodeB [in]
+   * @param force [out] force calculated between those two nodes
    */
   abstract void calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB, Vector2f force );
 
   /**
    * Method that apply a force to a node, converting force to acceleration, that in turn modify speed.
    * 
-   * @param[in]  Node the node to which the force apply
-   * @param[in]  force a force Vector representing the force on a node
+   * @param node [in] Node the node to which the force apply
+   * @param force [in] a force Vector representing the force on a node
    * 
    * @Note Standard physics is "Speed Variation = Force / Mass x Duration" with a convention of "Duration=1" between to frames
    */
@@ -59,7 +59,7 @@ abstract class PhysicalEngine
   /**
    * Method that manage speed conversion to position.
    * 
-   * @param[in] node the node to which the force apply
+   * @param node [in] the node to which the force apply
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */

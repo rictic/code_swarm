@@ -24,7 +24,6 @@ import javax.vecmath.Vector2f;
  * 
  * This is only a rewriting of the initial code_swarm prototype.
  * 
- * @see other Physical Engine for more methods 
  */
 public class PhysicalEngineLegacy extends PhysicalEngine
 {
@@ -47,8 +46,8 @@ public class PhysicalEngineLegacy extends PhysicalEngine
   /**
    * Legacy method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
    * 
-   * @param[in] edge the link between a person and one of its file 
-   * @param[out] force calculated between those two nodes
+   * @param edge [in] the link between a person and one of its file 
+   * @param force [out] force calculated between those two nodes
    */
   public void calculateForceAlongAnEdge( code_swarm.Edge edge, Vector2f force )
   {
@@ -71,9 +70,9 @@ public class PhysicalEngineLegacy extends PhysicalEngine
   /**
    * Legacy method that calculate the repulsive force between two similar nodes (either files or persons).
    * 
-   * @param[in] nodeA
-   * @param[in] nodeB
-   * @param[out] force calculated between those two nodes
+   * @param nodeA [in]
+   * @param nodeB [in]
+   * @param force [out] force calculated between those two nodes
    */
   public void calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB, Vector2f force )
   {
@@ -94,8 +93,8 @@ public class PhysicalEngineLegacy extends PhysicalEngine
   /**
    * Legacy method that apply a force to a node, converting acceleration to speed.
    * 
-   * @param[in]  Node the node to which the force apply
-   * @param[in]  force a force Vector representing the force on a node
+   * @param node [in] Node the node to which the force apply
+   * @param force [in] force a force Vector representing the force on a node
    * 
    * TODO: does force should be a property of the node (or not?)
    */

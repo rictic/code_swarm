@@ -486,6 +486,10 @@ public class code_swarm extends PApplet {
       counter++;
     }
   }
+  
+  /**
+   * Show the Loading screen.
+   */
 
   public void drawLoading() {
     noStroke();
@@ -676,6 +680,11 @@ public class code_swarm extends PApplet {
     }
   }
 
+  /**
+   * Searches the nodes array for a given name
+   * @param name
+   * @return FileNode with matching name or null if not found.
+   */
   public FileNode findNode(String name) {
     for (FileNode node : nodes) {
       if (node.name.equals(name))
@@ -684,17 +693,25 @@ public class code_swarm extends PApplet {
     return null;
   }
 
+  /**
+   * Searches the nodes array for a given name
+   * @param n1 From
+   * @param n2 To
+   * @return Edge connecting n1 to n2 or null if not found
+   */
   public Edge findEdge(Node n1, Node n2) {
     for (Edge edge : edges) {
       if (edge.nodeFrom == n1 && edge.nodeTo == n2)
         return edge;
-      // Shouldn't need this.
-      // if (edge.nodeFrom == n2 && edge.nodeTo == n1)
-      // return edge;
     }
     return null;
   }
 
+  /**
+   * Searches the people array for a given name.
+   * @param name
+   * @return PersonNode for given name or null if not found.
+   */
   public PersonNode findPerson(String name) {
     for (PersonNode p : people) {
       if (p.name.equals(name))
@@ -704,7 +721,8 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   *  Head function for loadRecurse
+   * Head function for loadRecurse
+   * @param filename
    * @deprecated
    */
   public void loadRepository(String filename) {
@@ -714,7 +732,10 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   *  Load repository-formatted file
+   * Load repository-formatted file
+   * @param xml
+   * @param path
+   * @param filename
    * @deprecated
    */
   public void loadRepository(XMLElement xml, String path, String filename) {
@@ -743,30 +764,32 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   *  Load event-formatted file
+   *  Load the standard event-formatted file.
+   *  @param filename
    */
-  public void loadRepEvents(String filename1) {
-    XMLElement doc = new XMLElement(this, filename1);
+  public void loadRepEvents(String filename) {
+    XMLElement doc = new XMLElement(this, filename);
     for (int i = 0; i < doc.getChildCount(); i++) {
       XMLElement xml = doc.getChild(i);
-      String filename = xml.getStringAttribute("filename");
-      String datestr = xml.getStringAttribute("date");
-      long date = Long.parseLong(datestr);
-      String author = xml.getStringAttribute("author");
-      // int linesadded = xml.getIntAttribute( "linesadded" );
-      // int linesremoved = xml.getIntAttribute( "linesremoved" );
-      FileEvent evt = new FileEvent(date, author, "", filename);
+      String eventFilename = xml.getStringAttribute("filename");
+      String eventDatestr = xml.getStringAttribute("date");
+      long eventDate = Long.parseLong(eventDatestr);
+      String eventAuthor = xml.getStringAttribute("author");
+      // int eventLinesAdded = xml.getIntAttribute( "linesadded" );
+      // int eventLinesRemoved = xml.getIntAttribute( "linesremoved" );
+      FileEvent evt = new FileEvent(eventDate, eventAuthor, "", eventFilename);
       eventsQueue.add(evt);
       if (eventsQueue.size() % 100 == 0)
         loadingMessage = "Creating events: " + eventsQueue.size();
     }
     loading = false;
-    // reset the Frame Counter.
-    frameCount = 0;
+    // reset the Frame Counter. Only needed if Threaded.
+    // frameCount = 0;
   }
 
   /**
-   *  Load SVN log formatted file
+   * Load SVN log formatted file
+   * @param doc 
    * @deprecated
    */
   public void loadSVNRepository(XMLElement doc) {
@@ -926,6 +949,8 @@ public class code_swarm extends PApplet {
 
     /**
      * Comparing two events by date (Not Used)
+     * @param o
+     * @return -1 if <, 0 if =, 1 if >
      */
     public int compareTo(Object o) {
       return date.compareTo(((FileEvent) o).date);
@@ -1110,52 +1135,97 @@ public class code_swarm extends PApplet {
       decay();
     }
 
-    // getters and setters
+    /**
+     * @return x position
+     */
     public float getX() {
       return this.x;
     }
 
+    /**
+     * @return y position
+     */
     public float getY() {
       return this.y;
     }
-
+    
+    /**
+     * Modify X position by deltax
+     * @param dx
+     */
     public void addX(float dx) {
       this.x += dx;
     }
 
+    /**
+     * Modify Y position by deltay
+     * @param dy
+     */
     public void addY(float dy) {
       this.y += dy;
     }
 
+    /**
+     * 
+     * @return deltax
+     */
     public float getDX() {
       return this.dx;
     }
 
+    /**
+     * 
+     * @return deltay
+     */
     public float getDY() {
       return this.dy;
     }
 
+    /**
+     * 
+     * @return length of the vector (Speed)
+     */
     public float getSpeed() {
       Vector2f speed = new Vector2f(dx, dy);  /** TODO: use mSpeed vector */
       return speed.length();
     }
 
+    /**
+     * 
+     * @param ddx
+     */
     public void addDX(float ddx) {
       this.dx += ddx;
     }
 
+    /**
+     * 
+     * @param ddx
+     */
     public void addDY(float ddx) {
       this.dy += ddx;
     }
 
+    /**
+     * 
+     * @param coef
+     */
     public void mulDX(float coef) {
       this.dx *= coef;
     }
 
+    /**
+     * 
+     * @param coef
+     */
     public void mulDY(float coef) {
       this.dy *= coef;
     }
     
+    /**
+     * 
+     * @return mass of the node
+     */
     public float getMass() {
       return this.mass;
     }
@@ -1171,7 +1241,7 @@ public class code_swarm extends PApplet {
     int touches;
 
     /**
-     * getting file node as a string
+     * @return file node as a string
      */
     public String toString() {
       return "FileNode{" + "name='" + name + '\'' + ", nodeHue=" + nodeHue + ", touches=" + touches + '}';
@@ -1395,6 +1465,7 @@ public class code_swarm extends PApplet {
 
   /**
    * code_swarm Entry point.
+   * @param args : should be the path to the config file
    */
   static public void main(String args[]) {
     try {
