@@ -47,7 +47,7 @@ class Vector
   Vector(float x, float y)
   {
     this.x = x;
-    this.x = x;
+    this.y = y;
   }
 
   public void setX(float x)
@@ -117,8 +117,8 @@ class Vector
    */
   void multiply(float multiplier)
   {
-    x    *= multiplier;
-    y    *= multiplier;
+    x *= multiplier;
+    y *= multiplier;
   }
   
 }

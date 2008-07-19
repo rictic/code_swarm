@@ -1160,7 +1160,7 @@ public class code_swarm extends PApplet {
       touches = 1;
       life = LIFE_INIT;
       colorMode(RGB);
-      minBold = (int)(LIFE_INIT * 0.95);
+      minBold = (int)(LIFE_INIT * 0.95f);
       nodeHue = colorAssigner.getColor(name);
       mass = 1.0f;
     }
@@ -1234,7 +1234,7 @@ public class code_swarm extends PApplet {
     }
     
     public boolean qualifies() {
-      if (this.touches >= maxTouches * 0.5) {
+      if (this.touches >= maxTouches * 0.5f) {
         return true;
       }
       return false;
