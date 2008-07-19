@@ -533,7 +533,7 @@ public class code_swarm extends PApplet {
     text("- p : show Popular", 0, 10*line++);
     text("- q : Quit code_swarm", 0, 10*line++);
     text("- s : draw names Sharp", 0, 10*line++);
-    text("- t : draw files sharp", 0, 10*line++);
+    text("- S : draw files Sharp", 0, 10*line++);
     text("- ? : show help", 0, 10*line++);
   }
   /**
@@ -872,7 +872,7 @@ public class code_swarm extends PApplet {
         drawNamesSharp = !drawNamesSharp;
         break;
       }
-      case 't': {
+      case 'S': {
         drawFilesSharp = !drawFilesSharp;
         break;
       }
