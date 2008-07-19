@@ -522,14 +522,19 @@ public class code_swarm extends PApplet {
     fill(255, 200);
     text("Help on Keyboard commands:", 0, 10*line++);
     text("- space bar : pause", 0, 10*line++);
-    text("- h : show Histogram", 0, 10*line++);
-    text("- d : show Date", 0, 10*line++);
-    text("- l : show Legend", 0, 10*line++);
-    text("- e : show Edges", 0, 10*line++);
+    text("- a : show name hAlos", 0, 10*line++);
     text("- b : show deBug", 0, 10*line++);
+    text("- d : show Date", 0, 10*line++);
+    text("- e : show Edges", 0, 10*line++);
+    text("- f : draw files Fuzzy", 0, 10*line++);
+    text("- h : show Histogram", 0, 10*line++);
+    text("- j : draw files Jelly", 0, 10*line++);
+    text("- l : show Legend", 0, 10*line++);
     text("- p : show Popular", 0, 10*line++);
-    text("- ? : show help", 0, 10*line++);
     text("- q : Quit code_swarm", 0, 10*line++);
+    text("- s : draw names Sharp", 0, 10*line++);
+    text("- t : draw files sharp", 0, 10*line++);
+    text("- ? : show help", 0, 10*line++);
   }
   /**
    *  Show debug information about all drawable objects
@@ -823,36 +828,56 @@ public class code_swarm extends PApplet {
         pauseButton();
         break;
       }
-      case 'h': {
-        showHistogram = !showHistogram;
-        break;
-      }
-      case 'd': {
-        showDate = !showDate;
-        break;
-      }
-      case 'l': {
-        showLegend = !showLegend;
-        break;
-      }
-      case 'e' : {
-        showEdges = !showEdges;
+      case 'a': {
+        drawNamesHalos = !drawNamesHalos;
         break;
       }
       case 'b': {
         showDebug = !showDebug;
         break;
       }
+      case 'd': {
+        showDate = !showDate;
+        break;
+      }
+      case 'e' : {
+        showEdges = !showEdges;
+        break;
+      }
+      case 'f' : {
+        drawFilesFuzzy = !drawFilesFuzzy;
+        break;
+      }
+      case 'h': {
+        showHistogram = !showHistogram;
+        break;
+      }
+      case 'j' : {
+        drawFilesJelly = !drawFilesJelly;
+        break;
+      }
+      case 'l': {
+        showLegend = !showLegend;
+        break;
+      }
       case 'p': {
         showPopular = !showPopular;
         break;
       }
-      case '?': {
-        showHelp = !showHelp;
-        break;
-      }
       case 'q': {
         exit();
+        break;
+      }
+      case 's': {
+        drawNamesSharp = !drawNamesSharp;
+        break;
+      }
+      case 't': {
+        drawFilesSharp = !drawFilesSharp;
+        break;
+      }
+      case '?': {
+        showHelp = !showHelp;
         break;
       }
     }
