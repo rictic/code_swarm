@@ -22,6 +22,8 @@
  * Abstract class describing interface of any code_swarm physical engine.
  *
  * @note Need to be derived to define force calculation algorithms between Nodes
+ * @note Need to use the constructor to apply some configuration options
+ * 
  * @note For portability, no Processing library should be use there, only standard Java packages
  */
 abstract class PhysicalEngine
@@ -49,7 +51,7 @@ abstract class PhysicalEngine
    * @param[in]  Node the node to which the force apply
    * @param[in]  force a force Vector representing the force on a node
    * 
-   * @Note Standard physics is "Speed Variation = Force x Mass / Duration" with a convention of "Duration=1" between to frames
+   * @Note Standard physics is "Speed Variation = Force / Mass x Duration" with a convention of "Duration=1" between to frames
    */
   abstract void applyForceTo( code_swarm.Node node, Vector force );
 

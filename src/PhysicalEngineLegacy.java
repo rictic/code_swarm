@@ -27,6 +27,7 @@
  */
 public class PhysicalEngineLegacy extends PhysicalEngine
 {
+  final private float FORCE_EDGE_MULTIPLIER;
   final private float FORCE_CALCULATION_RANDOMIZER;
   final private float FORCE_TO_SPEED_MULTIPLIER;
   final private float SPEED_TO_POSITION_MULTIPLIER;
@@ -34,11 +35,12 @@ public class PhysicalEngineLegacy extends PhysicalEngine
   /**
    * Constructor for initializing parameters.
    */
-  PhysicalEngineLegacy(float forceCalculationRandomizer, float forceToSpeedMultiplier, float speedToPositionMultiplier)
+  PhysicalEngineLegacy(float forceEdgeMultiplier, float forceCalculationRandomizer, float forceToSpeedMultiplier, float speedToPositionDrag)
   {
+    FORCE_EDGE_MULTIPLIER         = forceEdgeMultiplier;
     FORCE_CALCULATION_RANDOMIZER  = forceCalculationRandomizer;
     FORCE_TO_SPEED_MULTIPLIER     = forceToSpeedMultiplier;
-    SPEED_TO_POSITION_MULTIPLIER  = speedToPositionMultiplier;
+    SPEED_TO_POSITION_MULTIPLIER  = speedToPositionDrag;
   }
   
   /**
@@ -61,7 +63,7 @@ public class PhysicalEngineLegacy extends PhysicalEngine
       // force ponderation using a re-mapping life from 0-255 scale to 0-1.0 range
       fakeForce = fakeForce * (edge.life * 1.0f) / 255;
       // fake force projection onto x and y axis
-      force.multiply( fakeForce );
+      force.multiply( fakeForce * FORCE_EDGE_MULTIPLIER );
     }
   }
   
@@ -101,13 +103,11 @@ public class PhysicalEngineLegacy extends PhysicalEngine
     float dlen;
 
     /** TODO: add comment to this algorithm */
-    dlen = force.getNorm() / 2;
-    if (dlen > 0) {
-      node.addDX( force.getX() / dlen );
-      node.addDY( force.getY() / dlen );
+    dlen = force.getNorm();
+    if ( (dlen > 0) && (node.getMass() > 0)) {
+      node.addDX( force.getX() / node.getMass() / dlen * FORCE_TO_SPEED_MULTIPLIER );
+      node.addDY( force.getY() / node.getMass() / dlen * FORCE_TO_SPEED_MULTIPLIER );
     }
-    node.mulDX( FORCE_TO_SPEED_MULTIPLIER );
-    node.mulDY( FORCE_TO_SPEED_MULTIPLIER );
   }
 
   /**

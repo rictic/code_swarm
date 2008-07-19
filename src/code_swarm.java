@@ -233,11 +233,11 @@ public class code_swarm extends PApplet {
     
     // TODO: to complete with more physical engines
     if ( physicalEngineSelection.equals( PHYSICAL_ENGINE_LEGACY ) ) {
-      mPhysicalEngine = new PhysicalEngineLegacy(0.01f, 1.0f, 1/12.0f); // (forceCalculationRandomizer, forceToSpeedMultiplier, speedToPositionMultiplier)
+      mPhysicalEngine = new PhysicalEngineLegacy(1.0f, 0.01f, 1.0f, 0.5f); // (forceEdgeMultiplier, forceCalculationRandomizer, forceToSpeedMultiplier, speedToPositionDrag)
     }
     else {
       // legacy is current default
-      mPhysicalEngine = new PhysicalEngineLegacy(0.01f, 1.0f, 1/12.0f); // (forceCalculationRandomizer, forceToSpeedMultiplier, speedToPositionMultiplier)
+      mPhysicalEngine = new PhysicalEngineLegacy(1.0f, 0.01f, 1.0f, 0.5f); // (forceEdgeMultiplier, forceCalculationRandomizer, forceToSpeedMultiplier, speedToPositionDrag)
     }
     
     smooth();
@@ -990,16 +990,24 @@ public class code_swarm extends PApplet {
      * 2) calculating next frame state.
      */
     public void relax() {
-      // TODO: use a force calculation class 
-      Vector force = new Vector();
+      Vector force    = new Vector();
+
+      // Calculate force between the node "from" and the node "to"
       mPhysicalEngine.calculateForceAlongAnEdge(this, force);
-      
-        // transmit (applying) fake force projection to file and person nodes
-        /** TODO: use (or permit to use) real forces, not only delta position (ie speed) modification */
-        nodeTo.addDX(force.getX()); // Person
-        nodeTo.addDY(force.getY()); // Person
-        nodeFrom.addDX(-force.getX()); // File
-        nodeFrom.addDY(-force.getY()); // File
+
+      // transmit (applying) fake force projection to file and person nodes
+      /** TODO: remove */
+      nodeTo.addDX(force.getX()); // Person
+      nodeTo.addDY(force.getY()); // Person
+      nodeFrom.addDX(-force.getX()); // File
+      nodeFrom.addDY(-force.getY()); // File
+      /**/
+      // transmit (applying) fake force projection to file and person nodes
+      /** TODO: use this instead of above
+      mPhysicalEngine.applyForceTo(nodeTo, force);
+      Vector forceInv = new Vector( -force.getX(), -force.getY()); // force is inverted for the other end of the edge
+      mPhysicalEngine.applyForceTo(nodeFrom, forceInv);
+      */
      }
 
     /**
@@ -1033,18 +1041,18 @@ public class code_swarm extends PApplet {
    * A node is an abstraction for a File or a Person.
    */
   public abstract class Node extends Drawable {
-    String name;
-    float x, y;
-    float dx, dy;
+    protected String name;
+    protected float x, y;
+    protected float dx, dy;
     /** TODO: We SHOULD use vector for position, speed and accel, not using x and y everywhere
-    private Vector mPosition;
-    private Vector mSpeed;
+    protected Vector mPosition;
+    protected Vector mSpeed;
     */
     
-    /** TODO: Not Used : need to be implemented in physics */
-    float mass  = 10;   // mass would serve for "force to speed" conversion, and could be function of "life" or of node's "importance" (commit size, or touches...) 
-
-    /** TODO: add config */
+    // TODO: mass would serve for "force to speed" conversion, and could be function of "life" or of node's "importance" (commit size, or touches...)
+    protected float mass; 
+    
+    /** TODO: add configuration for max speed */
     protected float maxSpeed = 7.0f;
 
     /**
@@ -1052,10 +1060,11 @@ public class code_swarm extends PApplet {
      */
     Node(int lifeInit, int lifeDecrement) {
       super(lifeInit, lifeDecrement);
-      /** TODO: implement new sort of (random or not) arrival, "configurables"
+      /** TODO: implement new sort of (random or not) arrival, with configuration
                 => to permit things like "injection points", circular arrival, and so on */
       x = random(width);
       y = random(height);
+      mass = 10.0f; // bigger mass to person then to node, to stabilize them
     }
 
     /**
@@ -1120,6 +1129,11 @@ public class code_swarm extends PApplet {
     public void mulDY(float coef) {
       this.dy *= coef;
     }
+    
+    public float getMass() {
+      return this.mass;
+    }
+    
   }
 
   /**
@@ -1148,7 +1162,7 @@ public class code_swarm extends PApplet {
       colorMode(RGB);
       minBold = (int)(LIFE_INIT * 0.95);
       nodeHue = colorAssigner.getColor(name);
-
+      mass = 1.0f;
     }
 
     /**
