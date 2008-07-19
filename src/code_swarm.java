@@ -23,7 +23,7 @@ import processing.core.PImage;
 import processing.xml.XMLElement;
 
 import java.io.IOException;
-import java.sql.Timestamp;
+//import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
@@ -307,48 +307,6 @@ public class code_swarm extends PApplet {
     ColorTest ct = new ColorTest();
     ct.loadProperty(CodeSwarmConfig.DEFAULT_COLOR_ASSIGN);
     colorAssigner.addRule(ct);
-  }
-
-  /**
-   *  kept for reference
-   *  @deprecated
-   */
-  public void apacheColors() {
-    colorAssigner.addRule("Source", "/src.*", color(0, 255, 255), color(15, 255, 255));
-    colorAssigner.addRule("Docs", "/doc.*", color(150, 255, 255), color(170, 255, 255));
-    colorAssigner.addRule("Modules", "/mod.*|/contrib.*", color(25, 255, 255), color(40, 255, 255));
-  }
-
-  /**
-   *  kept for reference
-   *  @deprecated
-   */
-  public void pythonColors() {
-    colorAssigner.addRule("Text", ".*\\.tex|.*\\.txt", color(150, 255, 255), color( 170, 255, 255));
-    colorAssigner.addRule("Modules", ".*/Modules/.*", color(25, 255, 255), color( 40, 255, 255));
-    colorAssigner.addRule("Source", ".*\\.py|.*\\.c|.*\\.h", color(0, 255, 255), color(15, 255, 255));
-    colorAssigner.addRule("Docs", ".*/Doc/.*", color(150, 255, 255), color(170, 255, 255));
-  }
-
-  /**
-   *  kept for reference
-   *  @deprecated
-   */
-  public void javaColors() {
-    colorAssigner.addRule("Source", ".*\\.java|.*/src/.*", color(0, 255, 255), color(15, 255, 255));
-    colorAssigner.addRule("Docs", ".*/docs/.*|.*/xdocs/.*", color(150, 255, 255), color(170, 255, 255));
-    colorAssigner.addRule("Libs", ".*/lib/.*", color(25, 255, 255), color(40, 255, 255));
-  }
-
-  /**
-   *  kept for reference
-   *  @deprecated
-   */
-  public void eclipseColors() {
-    colorAssigner.addRule("Source", ".*\\.java|.*/src/.*", color(0, 255, 255), color(15, 255, 255));
-    colorAssigner.addRule("Docs", ".*/doc/.*|.*/xdocs/.*", color(150, 255, 255), color(170, 255, 255));
-    colorAssigner.addRule("Libs", ".*/lib/.*", color(25, 255, 255), color(40, 255, 255));
-    colorAssigner.addRule("Images", ".*\\.gif|.*\\.jpg", color(120, 255, 255), color(135, 255, 255));
   }
 
   /**
@@ -721,49 +679,6 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * Head function for loadRecurse
-   * @param filename
-   * @deprecated
-   */
-  public void loadRepository(String filename) {
-    XMLElement doc = new XMLElement(this, filename);
-    loadRepository(doc, "", "");
-    doc = null;
-  }
-
-  /**
-   * Load repository-formatted file
-   * @param xml
-   * @param path
-   * @param filename
-   * @deprecated
-   */
-  public void loadRepository(XMLElement xml, String path, String filename) {
-    String tag = xml.getName();
-    if (tag.equals("event")) {
-      String datestr = xml.getStringAttribute("date");
-      long date = Long.parseLong(datestr);
-      String author = xml.getStringAttribute("author");
-      int linesadded = xml.getIntAttribute("linesadded");
-      int linesremoved = xml.getIntAttribute("linesremoved");
-      FileEvent evt = new FileEvent(date, author, path, filename, linesadded, linesremoved);
-      eventsQueue.add(evt);
-    } else if (tag.equals("file")) {
-      String name = xml.getStringAttribute("name");
-      for (int i = 0; i < xml.getChildCount(); i++)
-        loadRepository(xml.getChild(i), path, name);
-      } else if (tag.equals("directory")) {
-        String name = xml.getStringAttribute("name");
-        for (int i = 0; i < xml.getChildCount(); i++)
-          loadRepository(xml.getChild(i), path + name, "");
-    } else if (tag.equals("log")) {
-      // The tag 'log' represents the xml output of a SVN log, which
-      // requires slightly different commit event parsing.
-      loadSVNRepository(xml);
-    }
-  }
-
-  /**
    *  Load the standard event-formatted file.
    *  @param filename
    */
@@ -785,55 +700,6 @@ public class code_swarm extends PApplet {
     loading = false;
     // reset the Frame Counter. Only needed if Threaded.
     // frameCount = 0;
-  }
-
-  /**
-   * Load SVN log formatted file
-   * @param doc 
-   * @deprecated
-   */
-  public void loadSVNRepository(XMLElement doc) {
-    // Iterate over commit nodes.
-    for (int i = 0; i < doc.getChildCount(); i++) {
-      XMLElement xml = doc.getChild(i);
-
-      // In the SVN xml log, timestamps have the following format:
-      // 2008-06-19T03:46:04.335538Z
-      // The date and the time need to be parsed from this so that we can convert it
-      // to a 'long'
-      // with the sql.Timestamp class.
-      String datestr = xml.getChild("date").getContent();
-      String[] datesplit = datestr.split("\\.");
-      datesplit = datesplit[0].split("T");
-      datestr = datesplit[0] + " " + datesplit[1];
-      Timestamp ts = Timestamp.valueOf(datestr);
-      long date = ts.getTime();
-
-      // When the SVN repository is created, there is no author associated with the
-      // commit, so for
-      // now just log it as anonymous.
-      /** FIXME: Should we ignored events with no author completely or log them
-                       a different way? */
-      XMLElement author_node = xml.getChild("author");
-      String author = "anonymous";
-      if (author_node != null)
-        author = author_node.getContent();
-
-      // Under each commit there is a child node named 'paths', which will have it's
-      // own
-      // 'path' children which contain the paths of the files which were modified and
-      // details
-      // about the change(file modified, deleted, created, etc...)
-      XMLElement paths = xml.getChild("paths");
-      String path;
-      if (paths != null) {
-        for (int j = 0; j < paths.getChildCount(); j++) {
-          path = paths.getChild(j).getContent();
-          FileEvent evt = new FileEvent(date, author, "", path);
-          eventsQueue.add(evt);
-        }
-      }
-    }
   }
 
   /*
@@ -968,7 +834,6 @@ public class code_swarm extends PApplet {
 
     final public int LIFE_INIT;
     final public int LIFE_DECREMENT;
-
     /**
      * 1) constructor(s)
      * 
@@ -990,9 +855,7 @@ public class code_swarm extends PApplet {
     /**
      * 3) applying next frame state
      */
-    public void update() {
-      decay();
-    }
+    public abstract void update();
     
     /**
      *  4) shortening life.
@@ -1014,24 +877,24 @@ public class code_swarm extends PApplet {
     /**
      * 6) reseting life as if new.
      */
-    public void freshen() {
-      life = LIFE_INIT;
-    }
+    public abstract void freshen();
   }
 
   /**
    * An Edge link two nodes together : a File to a Person.
    */
   class Edge extends Drawable {
-    private Node  nodeFrom;
-    private Node  nodeTo;
+    protected Node  nodeFrom;
+    protected Node  nodeTo;
     private float len;
 
     /**
      * 1) constructor.
+     * @param from FileNode
+     * @param to PersonNode
      */
     Edge(Node from, Node to) {
-      super(EDGE_LIFE_INIT, EDGE_LIFE_DECREMENT); // 255, -2
+      super(EDGE_LIFE_INIT, EDGE_LIFE_DECREMENT);
       this.nodeFrom = from;
       this.nodeTo   = to;
       this.len      = EDGE_LEN;  // 25
@@ -1059,18 +922,16 @@ public class code_swarm extends PApplet {
       if (life > 240) {
         stroke(255, life);
         strokeWeight(0.35f);
-        line(nodeFrom.x, nodeFrom.y, nodeTo.x, nodeTo.y);
+        line(nodeFrom.mPosition.x, nodeFrom.mPosition.y, nodeTo.mPosition.x, nodeTo.mPosition.y);
       }
     }
     
-    public Node getNodeFrom()
-    {
-      return nodeFrom;
+    public void update() {
+      decay();
     }
     
-    public Node getNodeTo()
-    {
-      return nodeTo;
+    public void freshen() {
+      life = EDGE_LIFE_INIT;
     }
     
     public float getLen()
@@ -1084,19 +945,16 @@ public class code_swarm extends PApplet {
    */
   public abstract class Node extends Drawable {
     protected String name;
-    protected float x, y;
-    protected float dx, dy;
-    /** TODO: We SHOULD use vector for position, speed and accel, not using x and y everywhere
     protected Vector2f mPosition;
     protected Vector2f mSpeed;
-    */
-    
-    /** TODO: mass would serve for "force to speed" conversion, and could be function of "life" or of node's "importance" (commit size, or touches...) */
-    protected float mass; 
-    
     /** TODO: add configuration for max speed */
     protected float maxSpeed = 7.0f;
 
+    /**
+     * mass of the node
+     */
+    public float mass;
+    
     /**
      * 1) constructor.
      */
@@ -1104,8 +962,8 @@ public class code_swarm extends PApplet {
       super(lifeInit, lifeDecrement);
       /** TODO: implement new sort of (random or not) arrival, with configuration
                 => to permit things like "injection points", circular arrival, and so on */
-      x = random(width);
-      y = random(height);
+      mPosition = new Vector2f(random(width), random(height));
+      mSpeed = new Vector2f();
     }
 
     /**
@@ -1118,117 +976,32 @@ public class code_swarm extends PApplet {
       mPhysicalEngine.applySpeedTo(this);
       
       // ensure coherent resulting position
-      x = constrain(x, 0, width);
-      y = constrain(y, 0, height);
-
+      mPosition.set(constrain(mPosition.x, 0, width),constrain(mPosition.y, 0, height));
+      
       // shortening life
       decay();
     }
-
-    /**
-     * @return x position
-     */
-    public float getX() {
-      return this.x;
-    }
-
-    /**
-     * @return y position
-     */
-    public float getY() {
-      return this.y;
-    }
     
     /**
-     * Modify X position by deltax
-     * @param dx
+     *  4) shortening life.
      */
-    public void addX(float dx) {
-      this.x += dx;
+    public void decay() {
+      if (life > 0) {
+        life += LIFE_DECREMENT;
+        if (life < 0) {
+          life = 0;
+        }
+      }
     }
-
-    /**
-     * Modify Y position by deltay
-     * @param dy
-     */
-    public void addY(float dy) {
-      this.y += dy;
-    }
-
-    /**
-     * 
-     * @return deltax
-     */
-    public float getDX() {
-      return this.dx;
-    }
-
-    /**
-     * 
-     * @return deltay
-     */
-    public float getDY() {
-      return this.dy;
-    }
-
-    /**
-     * 
-     * @return length of the vector (Speed)
-     */
-    public float getSpeed() {
-      Vector2f speed = new Vector2f(dx, dy);  /** TODO: use mSpeed vector */
-      return speed.length();
-    }
-
-    /**
-     * 
-     * @param ddx
-     */
-    public void addDX(float ddx) {
-      this.dx += ddx;
-    }
-
-    /**
-     * 
-     * @param ddx
-     */
-    public void addDY(float ddx) {
-      this.dy += ddx;
-    }
-
-    /**
-     * 
-     * @param coef
-     */
-    public void mulDX(float coef) {
-      this.dx *= coef;
-    }
-
-    /**
-     * 
-     * @param coef
-     */
-    public void mulDY(float coef) {
-      this.dy *= coef;
-    }
-    
-    /**
-     * 
-     * @return mass of the node
-     */
-    public float getMass() {
-      return this.mass;
-    }
-    
   }
 
   /**
    * A node describing a file, which is repulsed by other files.
    */
   class FileNode extends Node implements Comparable<FileNode> {
-    int nodeHue;
-    int minBold;
-    int touches;
+    private int nodeHue;
+    private int minBold;
+    private int touches;
 
     /**
      * @return file node as a string
@@ -1244,9 +1017,9 @@ public class code_swarm extends PApplet {
       super(FILE_LIFE_INIT, FILE_LIFE_DECREMENT); // 255, -2
       name = fe.path + fe.filename;
       touches = 1;
-      life = LIFE_INIT;
+      life = FILE_LIFE_INIT;
       colorMode(RGB);
-      minBold = (int)(LIFE_INIT * 0.95f);
+      minBold = (int)(FILE_LIFE_INIT * 0.95f);
       nodeHue = colorAssigner.getColor(name);
       mass = 1.0f;
     }
@@ -1259,7 +1032,7 @@ public class code_swarm extends PApplet {
      */
     public void relax() {
       Vector2f forceBetweenFiles = new Vector2f();
-      Vector2f forceSummation     = new Vector2f();
+      Vector2f forceSummation    = new Vector2f();
       
       if (life <= 0)
         return;
@@ -1302,7 +1075,7 @@ public class code_swarm extends PApplet {
         if (showPopular) {
           textAlign( CENTER, CENTER );
           if (this.qualifies()) {
-            text(touches, x, y - (8 + (int)sqrt(touches)));
+            text(touches, mPosition.x, mPosition.y - (8 + (int)sqrt(touches)));
           }
         }
       }
@@ -1316,10 +1089,11 @@ public class code_swarm extends PApplet {
       if (++touches > maxTouches) {
         maxTouches = touches;
       }
+      mass += Math.sqrt(touches);
     }
     
     public boolean qualifies() {
-      if (this.touches >= maxTouches * 0.5f) {
+      if (this.touches >= (maxTouches * 0.5f)) {
         return true;
       }
       return false;
@@ -1344,16 +1118,18 @@ public class code_swarm extends PApplet {
       if (life >= minBold) {
         stroke(255, 128);
         w *= 2;
-      } else
+      } else {
         noStroke();
+      }
+      
       ellipseMode(CENTER);
-      ellipse(x, y, w, w);
+      ellipse(mPosition.x, mPosition.y, w, w);
     }
 
     public void drawFuzzy() {
       tint(nodeHue, life);
 
-      float w = 8 + sqrt(touches) * 4;
+      float w = 8 + (sqrt(touches) * 4);
       // not used float dubw = w * 2;
       float halfw = w / 2;
       if (life >= minBold) {
@@ -1362,7 +1138,7 @@ public class code_swarm extends PApplet {
         // image( sprite, x - w, y - w, dubw, dubw );
       }
       // else
-      image(sprite, x - halfw, y - halfw, w, w);
+      image(sprite, mPosition.x - halfw, mPosition.y - halfw, w, w);
     }
 
     public void drawJelly() {
@@ -1373,7 +1149,7 @@ public class code_swarm extends PApplet {
         stroke(nodeHue, life);
       float w = sqrt(touches);
       ellipseMode(CENTER);
-      ellipse(x, y, w, w);
+      ellipse(mPosition.x, mPosition.y, w, w);
     }
   }
 
@@ -1381,9 +1157,10 @@ public class code_swarm extends PApplet {
    * A node describing a person, which is repulsed by other persons.
    */
   class PersonNode extends Node {
-    int flavor = color(0);
-    int colorCount = 1;
-    int minBold;
+    private int flavor = color(0);
+    private int colorCount = 1;
+    private int minBold;
+    private int touches;
 
     /**
      * 1) constructor.
@@ -1393,7 +1170,7 @@ public class code_swarm extends PApplet {
       maxSpeed = 2.0f;
       name = n;
       /** TODO: add config */
-      minBold = (int)(LIFE_INIT * 0.95f);
+      minBold = (int)(PERSON_LIFE_INIT * 0.95f);
       mass = 10.0f; // bigger mass to person then to node, to stabilize them
     }
 
@@ -1405,7 +1182,7 @@ public class code_swarm extends PApplet {
      */
     public void relax() {
       Vector2f forceBetweenPersons = new Vector2f();
-      Vector2f forceSummation       = new Vector2f();
+      Vector2f forceSummation      = new Vector2f();
 
       if (life <= 0)
         return;
@@ -1443,9 +1220,14 @@ public class code_swarm extends PApplet {
       else
         textFont(font);
 
-      text(name, x, y);
+      text(name, mPosition.x, mPosition.y);
     }
-
+    
+    public void freshen () {
+      life = PERSON_LIFE_INIT;
+      touches++;
+    }
+    
     public void addColor(int c) {
       colorMode(RGB);
       flavor = lerpColor(flavor, c, 1.0f / colorCount);

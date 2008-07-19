@@ -56,7 +56,7 @@ public class PhysicalEngineLegacy extends PhysicalEngine
     Vector2f force = new Vector2f();
     
     // distance calculation
-    force.set( edge.getNodeTo().getX() - edge.getNodeFrom().getX(), edge.getNodeTo().getY() - edge.getNodeFrom().getY() );
+    force.set( edge.nodeTo.mPosition.x - edge.nodeFrom.mPosition.x, edge.nodeTo.mPosition.y - edge.nodeFrom.mPosition.y );
     distance = force.length();
     if (distance > 0) {
       // fake force calculation (increase when distance is different from targeted len")
@@ -79,18 +79,20 @@ public class PhysicalEngineLegacy extends PhysicalEngine
    */
   public Vector2f calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB )
   {
-    float distx, disty;
     float lensq;
     Vector2f force = new Vector2f();
+    Vector2f normVec;
     
     /** TODO: add comment to this algorithm */
-    distx = nodeA.getX() - nodeB.getX();
+/*    distx = nodeA.getX() - nodeB.getX();
     disty = nodeA.getY() - nodeB.getY();
-    lensq = distx * distx + disty * disty;
+    lensq = distx * distx + disty * disty; */
+    lensq = nodeA.mPosition.length() * nodeB.mPosition.length();
     if (lensq == 0) {
       force.set( (float)Math.random()*FORCE_CALCULATION_RANDOMIZER, (float)Math.random()*FORCE_CALCULATION_RANDOMIZER );
     } else if (lensq < 10000) {
-      force.set( distx / lensq, disty / lensq );
+      normVec = new Vector2f(nodeA.mPosition.length() / lensq, nodeB.mPosition.length() / lensq );
+      force.normalize( normVec );
     }
     
     return force;
@@ -107,12 +109,14 @@ public class PhysicalEngineLegacy extends PhysicalEngine
   public void applyForceTo( code_swarm.Node node, Vector2f force )
   {
     float dlen;
+    Vector2f mod = new Vector2f();
 
     /** TODO: add comment to this algorithm */
     dlen = force.length();
-    if ( (dlen > 0) && (node.getMass() > 0)) {
-      node.addDX( (force.getX() / (node.getMass() / dlen)) * FORCE_TO_SPEED_MULTIPLIER );
-      node.addDY( (force.getY() / (node.getMass() / dlen)) * FORCE_TO_SPEED_MULTIPLIER );
+    if ( (dlen > 0) && (node.mass > 0)) {
+      mod.set(((force.x / (node.mass / dlen)) * FORCE_TO_SPEED_MULTIPLIER),
+              ((force.y / (node.mass / dlen)) * FORCE_TO_SPEED_MULTIPLIER));
+      node.mSpeed.add(mod);
     }
   }
 
@@ -125,20 +129,17 @@ public class PhysicalEngineLegacy extends PhysicalEngine
   {
     float div;
     // This block enforces a maximum absolute velocity.
-    if (node.getSpeed() > node.maxSpeed) {
-      Vector2f mag = new Vector2f(node.getDX() / node.maxSpeed, node.getDY() / node.maxSpeed);
+    if (node.mSpeed.length() > node.maxSpeed) {
+      Vector2f mag = new Vector2f(node.mSpeed.x / node.maxSpeed, node.mSpeed.y / node.maxSpeed);
       div = mag.length();
-      node.mulDX( 1/div );
-      node.mulDY( 1/div );
+      node.mSpeed.scale( 1/div );
     }
     
     // This block convert Speed to Position
-    node.addX( node.getDX() );
-    node.addY( node.getDY() );
+    node.mPosition.add(node.mSpeed);
     
     // Apply drag (reduce Speed for next frame calculation)
-    node.mulDX( SPEED_TO_POSITION_MULTIPLIER );
-    node.mulDY( SPEED_TO_POSITION_MULTIPLIER );
+    node.mSpeed.scale( SPEED_TO_POSITION_MULTIPLIER );
   }
 }
 
