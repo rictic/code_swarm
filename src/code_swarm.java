@@ -1089,7 +1089,6 @@ public class code_swarm extends PApplet {
       if (++touches > maxTouches) {
         maxTouches = touches;
       }
-      mass += Math.sqrt(touches);
     }
     
     public boolean qualifies() {
