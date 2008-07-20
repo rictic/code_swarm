@@ -1,0 +1,4 @@
+This directory will contain the different config files for the Physics Engines.
+
+They must all have a "Name" entry.  This will be used by the project specific config
+files to specify a starting Physics Engine.
