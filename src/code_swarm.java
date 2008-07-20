@@ -229,6 +229,12 @@ public class code_swarm extends PApplet {
       UPDATE_DELTA = 21600000;
     }
 
+    /**
+     * How do we make this more modularized?  I'd like to be able to include my own .jar potentially.
+     * Could this be a part of a config?  Should we make a config for the application itself?  Would
+     * keep some of this type of stuff out of the project specific configs.  A project config should be
+     * allowed to override these values.
+     */
     // Physical engine configuration and instantiation
     physicalEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICAL_ENGINE_SELECTION, PHYSICAL_ENGINE_LEGACY );
     

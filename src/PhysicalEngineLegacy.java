@@ -54,16 +54,19 @@ public class PhysicalEngineLegacy extends PhysicalEngine
     float distance;
     float fakeForce;
     Vector2f force = new Vector2f();
+    Vector2f tforce = new Vector2f();
     
     // distance calculation
-    force.set( edge.nodeTo.mPosition.x - edge.nodeFrom.mPosition.x, edge.nodeTo.mPosition.y - edge.nodeFrom.mPosition.y );
-    distance = force.length();
+    tforce.sub( edge.nodeTo.mPosition, edge.nodeFrom.mPosition);
+    distance = tforce.length();
     if (distance > 0) {
       // fake force calculation (increase when distance is different from targeted len")
       fakeForce = (edge.getLen() - distance) / (distance * 3);
       // force ponderation using a re-mapping life from 0-255 scale to 0-1.0 range
+      // This allows nodes to drift apart as their life decreases.
       fakeForce = fakeForce * (edge.life * 1.0f) / 255;
       // fake force projection onto x and y axis
+      force.set(tforce);
       force.scale( fakeForce * FORCE_EDGE_MULTIPLIER );
     }
     
@@ -81,18 +84,27 @@ public class PhysicalEngineLegacy extends PhysicalEngine
   {
     float lensq;
     Vector2f force = new Vector2f();
-    Vector2f normVec;
+    Vector2f normVec = new Vector2f();
     
-    /** TODO: add comment to this algorithm */
-/*    distx = nodeA.getX() - nodeB.getX();
-    disty = nodeA.getY() - nodeB.getY();
-    lensq = distx * distx + disty * disty; */
-    lensq = nodeA.mPosition.length() * nodeB.mPosition.length();
+    /**
+     * Get the distance between nodeA and nodeB
+     */
+    normVec.sub(nodeA.mPosition,nodeB.mPosition);
+    
+    lensq = normVec.lengthSquared();
+    /**
+     * If there is a Collision.  This is assuming a radius of zero.
+     * if (lensq == (radius1 + radius2)) is what to use if we have radius 
+     * could use touches for files and edge_length for people?
+     */
     if (lensq == 0) {
       force.set( (float)Math.random()*FORCE_CALCULATION_RANDOMIZER, (float)Math.random()*FORCE_CALCULATION_RANDOMIZER );
     } else if (lensq < 10000) {
-      normVec = new Vector2f(nodeA.mPosition.length() / lensq, nodeB.mPosition.length() / lensq );
-      force.normalize( normVec );
+      /**
+       * No collision
+       */
+      normVec.scale(1/lensq);
+      force.set( normVec);
     }
     
     return force;
