@@ -17,6 +17,7 @@
  * along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.vecmath.Vector2f;
 
 /**
@@ -64,7 +65,7 @@ public class PhysicalEngineLegacy extends PhysicalEngine
       fakeForce = (edge.getLen() - distance) / (distance * 3);
       // force ponderation using a re-mapping life from 0-255 scale to 0-1.0 range
       // This allows nodes to drift apart as their life decreases.
-      fakeForce = fakeForce * (edge.life * 1.0f) / 255;
+      fakeForce *= ((float)edge.life / edge.LIFE_INIT);
       // fake force projection onto x and y axis
       force.set(tforce);
       force.scale( fakeForce * FORCE_EDGE_MULTIPLIER );
@@ -89,8 +90,7 @@ public class PhysicalEngineLegacy extends PhysicalEngine
     /**
      * Get the distance between nodeA and nodeB
      */
-    normVec.sub(nodeA.mPosition,nodeB.mPosition);
-    
+    normVec.sub(nodeA.mPosition, nodeB.mPosition);
     lensq = normVec.lengthSquared();
     /**
      * If there is a Collision.  This is assuming a radius of zero.
@@ -152,6 +152,50 @@ public class PhysicalEngineLegacy extends PhysicalEngine
     
     // Apply drag (reduce Speed for next frame calculation)
     node.mSpeed.scale( SPEED_TO_POSITION_MULTIPLIER );
+  }
+  
+  /**
+   * Method that allows Physics Engine to modify Speed / Position during the relax phase.
+   * 
+   * @param nodeList the list of People
+   * @param node the node to which the force apply
+   * 
+   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
+   */
+  void onRelaxNode( CopyOnWriteArrayList<code_swarm.FileNode> nodeList, code_swarm.FileNode node ) {
+  }
+  
+  /**
+   * Method that allows Physics Engine to modify Speed / Position during the relax phase.
+   * 
+   * @param nodeList the list of People
+   * @param node the node to which the force apply
+   * 
+   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
+   */
+  void onRelaxPerson( CopyOnWriteArrayList<code_swarm.PersonNode> nodeList, code_swarm.PersonNode node ) {
+  }
+  
+  /**
+   * Method that allows Physics Engine to modify Speed / Position during the update phase.
+   * 
+   * @param nodeList the list of People
+   * @param node the node to which the force apply
+   * 
+   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
+   */
+  void onUpdateNode( CopyOnWriteArrayList<code_swarm.FileNode> nodeList, code_swarm.FileNode node ) {
+  }
+  
+  /**
+   * Method that allows Physics Engine to modify Speed / Position during the update phase.
+   * 
+   * @param nodeList the list of People
+   * @param node the node to which the force apply
+   * 
+   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
+   */
+  void onUpdatePerson( CopyOnWriteArrayList<code_swarm.PersonNode> nodeList, code_swarm.PersonNode node ) {
   }
 }
 

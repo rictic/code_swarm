@@ -27,9 +27,8 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.LinkedList;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
 import javax.vecmath.Vector2f;
@@ -522,7 +521,7 @@ public class code_swarm extends PApplet {
    * TODO This could be made to look a lot better.
    */
   public void drawPopular() {
-    SortedSet <FileNode> al=new TreeSet<FileNode>();
+    CopyOnWriteArrayList <FileNode> al=new CopyOnWriteArrayList<FileNode>();
     noStroke();
     textFont(font);
     textAlign(RIGHT, TOP);
@@ -531,12 +530,25 @@ public class code_swarm extends PApplet {
     for (int i = 0; i < nodes.size(); i++) {
       FileNode fn = (FileNode) nodes.get(i);
       if (fn.qualifies()) {
-        al.add(fn);
+        // Insertion Sort
+        if (al.size() > 0) {
+          int j = 0;
+          for (; j < al.size(); j++) {
+            if (fn.compareTo(al.get(j)) <= 0) {
+              continue;
+            } else {
+              break;
+            }
+          }
+          al.add(j,fn);
+        } else {
+          al.add(fn);
+        }
       }
     }
     
     int i = 1;
-    Iterator<FileNode> it = al.iterator();
+    ListIterator<FileNode> it = al.listIterator();
     while (it.hasNext()) {
       FileNode n = it.next();
       // Limit to the top 10.
@@ -968,7 +980,7 @@ public class code_swarm extends PApplet {
       super(lifeInit, lifeDecrement);
       /** TODO: implement new sort of (random or not) arrival, with configuration
                 => to permit things like "injection points", circular arrival, and so on */
-      mPosition = new Vector2f(random(width), random(height));
+      mPosition = new Vector2f((float)Math.random()*width, (float)Math.random()*height);
       mSpeed = new Vector2f();
     }
 
@@ -1042,6 +1054,8 @@ public class code_swarm extends PApplet {
       
       if (life <= 0)
         return;
+      
+      mPhysicalEngine.onRelaxNode(nodes, this);
 
       // Calculation of repulsive force between persons
       for (int j = 0; j < nodes.size(); j++) {
@@ -1081,7 +1095,7 @@ public class code_swarm extends PApplet {
         if (showPopular) {
           textAlign( CENTER, CENTER );
           if (this.qualifies()) {
-            text(touches, mPosition.x, mPosition.y - (8 + (int)sqrt(touches)));
+            text(touches, mPosition.x, mPosition.y - (8 + (int)Math.sqrt(touches)));
           }
         }
       }
@@ -1104,13 +1118,12 @@ public class code_swarm extends PApplet {
       return false;
     }
     
-    // Yes, I know this is backwards.
     public int compareTo(FileNode fn) {
       int retval = 0;
       if (this.touches < fn.touches) {
-        retval = 1;
-      } else if (this.touches > fn.touches) {
         retval = -1;
+      } else if (this.touches > fn.touches) {
+        retval = 1;
       }
       return retval;
     }
@@ -1177,6 +1190,8 @@ public class code_swarm extends PApplet {
       /** TODO: add config */
       minBold = (int)(PERSON_LIFE_INIT * 0.95f);
       mass = 10.0f; // bigger mass to person then to node, to stabilize them
+      // range (-1,1)
+      mSpeed.set((float)(Math.random()*2-1),(float)(Math.random()*2-1));
     }
 
     /**
@@ -1192,6 +1207,7 @@ public class code_swarm extends PApplet {
       if (life <= 0)
         return;
 
+      mPhysicalEngine.onRelaxPerson(people, this);
       // Calculation of repulsive force between persons
       for (int j = 0; j < people.size(); j++) {
         Node n = (Node) people.get(j);

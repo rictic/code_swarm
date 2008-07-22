@@ -40,8 +40,6 @@ public class CodeSwarmConfig
   public static final String FRAMES_PER_DAY_KEY = "FramesPerDay";
   /** Boolean value, controls png creation */
   public static final String TAKE_SNAPSHOTS_KEY = "TakeSnapshots";
-  /** @deprecated Boolean value, control drawing halos around names */
-  public static final String NAME_HALOS_KEY = "NameHalos";
   /** R,G,B Determines the background color */
   public static final String BACKGROUND_KEY = "Background";
   /** Rules for color coding nodes */
@@ -106,7 +104,10 @@ public class CodeSwarmConfig
     def.setProperty( WIDTH_KEY, "640" );
     def.setProperty( HEIGHT_KEY, "480");
     def.setProperty( INPUT_FILE_KEY, "data/sample-repevents.xml");
-  /*def.setProperty( MSEC_PER_FRAME_KEY, "21600000"); default is forbidden because it is the only way to specify a FRAMES_PER_DAY_KEY */
+  /*
+   * default is forbidden because it is the only way to specify a FRAMES_PER_DAY_KEY
+   * def.setProperty( MSEC_PER_FRAME_KEY, "21600000");
+   */
     def.setProperty( BACKGROUND_KEY, "0,0,0" );
     def.setProperty( TAKE_SNAPSHOTS_KEY, "false");
     def.setProperty( SNAPSHOT_LOCATION_KEY, "frames/snap-#####.png" );

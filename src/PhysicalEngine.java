@@ -17,6 +17,8 @@
  * along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.IOException;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.vecmath.Vector2f;
 
 /**
@@ -29,6 +31,15 @@ import javax.vecmath.Vector2f;
  */
 abstract class PhysicalEngine
 {
+  private static CodeSwarmConfig cfg;
+  
+  public PhysicalEngine(){
+    try {
+      cfg = new CodeSwarmConfig("physics_engine/Legacy.config");
+    } catch (IOException e) {
+      System.err.println("Failed due to exception: " + e.getMessage());
+    }
+  };
   /**
    * Method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
    * 
@@ -64,5 +75,45 @@ abstract class PhysicalEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   abstract void applySpeedTo( code_swarm.Node node );
+  
+  /**
+   * Method that allows Physics Engine to modify Speed / Position during the relax phase.
+   * 
+   * @param nodeList the list of People
+   * @param node the node to which the force apply
+   * 
+   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
+   */
+  abstract void onRelaxNode( CopyOnWriteArrayList<code_swarm.FileNode> nodeList, code_swarm.FileNode node );
+  
+  /**
+   * Method that allows Physics Engine to modify Speed / Position during the relax phase.
+   * 
+   * @param nodeList the list of People
+   * @param node the node to which the force apply
+   * 
+   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
+   */
+  abstract void onRelaxPerson( CopyOnWriteArrayList<code_swarm.PersonNode> nodeList, code_swarm.PersonNode node );
+  
+  /**
+   * Method that allows Physics Engine to modify Speed / Position during the update phase.
+   * 
+   * @param nodeList the list of People
+   * @param node the node to which the force apply
+   * 
+   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
+   */
+  abstract void onUpdateNode( CopyOnWriteArrayList<code_swarm.FileNode> nodeList, code_swarm.FileNode node );
+  
+  /**
+   * Method that allows Physics Engine to modify Speed / Position during the update phase.
+   * 
+   * @param nodeList the list of People
+   * @param node the node to which the force apply
+   * 
+   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
+   */
+  abstract void onUpdatePerson( CopyOnWriteArrayList<code_swarm.PersonNode> nodeList, code_swarm.PersonNode node );
 }
 
