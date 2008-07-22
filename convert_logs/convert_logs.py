@@ -57,6 +57,10 @@ def parse_args(argv):
         metavar="<log file>",
         help="input wikimedia log to convert to standard event xml")
 
+    p.add_option("-m", "--mercurial-log", dest="mercurial_log", 
+        metavar="<log file>",
+        help="input mercurial log to convert to standard event xml")
+
     p.add_option( "-o", "--output-log", dest="output_log", 
         metavar="<log file>",
         help="specify standard log output file")
@@ -238,6 +242,37 @@ def main():
                 
             create_event_xml(event_list, log_file, opts.output_log)
 
+    if opts.mercurial_log:
+        # author: Stefan Scherfke
+        # contact: stefan.scherfke at uni-oldenburg.de
+        log_file = opts.mercurial_log
+        
+        if os.path.exists(log_file):
+            event_list = []
+            file_handle = open(log_file, 'r')
+            state = 0
+            user = ''
+            date = ''
+            files = []
+            for line in file_handle.readlines():
+                if state == 0:
+                    author = line[:-1]
+                    state += 1
+                elif state == 1:
+                    date = line[:line.find('.')] + '000'
+                    state += 1
+                elif state == 2:
+                    files = line[:-1].split(' ')
+                    for filename in files:
+                        event_list.append(Event(filename, date, author.lower()))
+                    state += 1
+                elif state == 3:
+                    state = 0
+                else:
+                    print 'Error: undifined state'
+
+        create_event_xml(event_list, log_file, opts.output_log)
+        
     if opts.wikimedia_log:
         print "Not yet implemented."
         
@@ -276,4 +311,4 @@ def create_event_xml(events, base_log, output_log=None):
 if __name__ == "__main__":
     """ Main entry point."""
     main()
-    
+   
