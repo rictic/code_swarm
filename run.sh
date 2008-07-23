@@ -14,7 +14,7 @@ if [ $# = 0 ]; then
     if [ ${#config} = 0 ]; then
         params=$default_config
     else
-        params=$key
+        params=$config
     fi
 else
     if [ $1 == "-h" ] || [ $1 == "--help" ]; then
