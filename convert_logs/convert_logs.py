@@ -53,9 +53,9 @@ def parse_args(argv):
         metavar="<log file>",
         help="input starteam log to convert to standard event xml")
 
-    p.add_option("-w", "--wikimedia-log", dest="wikimedia_log", 
+    p.add_option("-w", "--wikiswarm-log", dest="wikiswarm_log", 
         metavar="<log file>",
-        help="input wikimedia log to convert to standard event xml")
+        help="input wikiswarm log to convert to standard event xml")
 
     p.add_option("-m", "--mercurial-log", dest="mercurial_log", 
         metavar="<log file>",
@@ -240,6 +240,30 @@ def main():
                     #print "%s check in at %s" % (author, date)
                     continue
                 
+            create_event_xml(event_list, log_file, opts.output_log)
+
+    if opts.wikiswarm_log:
+        log_file = opts.wikiswarm_log
+        
+        # Check to be sure the specified log path exists.
+        if os.path.exists(log_file):
+            event_list = []
+            file_handle = open(log_file, 'r')
+            line = file_handle.readline()
+            
+            for rev_line in file_handle.readlines():
+                if rev_line is '':
+                    continue
+                
+                rev_parts = rev_line.split('|')
+                #rev_id    = rev_parts[0].strip()# Don't really need this, it's mainly for the ouputter
+                filename  = rev_parts[1].strip()
+                author    = rev_parts[2].strip()
+                date      = rev_parts[3].strip()+'000' # Padd to convert seconds into milliseconds
+                event_list.append(Event(filename, date, author))
+                continue
+                
+            # Generate standard event xml file from event_list.
             create_event_xml(event_list, log_file, opts.output_log)
 
     if opts.mercurial_log:
