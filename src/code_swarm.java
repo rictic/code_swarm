@@ -28,7 +28,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 //import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Date;
@@ -111,8 +110,7 @@ public class code_swarm extends PApplet {
   PhysicalEngine  mPhysicalEngine = null;
   
 
-  // Physical algorithms (class) names
-  // TODO: to complete with more physical engines
+  // Default Physical Engine (class) name
   static final String PHYSICAL_ENGINE_LEGACY  = "PhysicalEngineLegacy";
   
   // Formats the date string nicely
@@ -122,17 +120,19 @@ public class code_swarm extends PApplet {
   private long lastDrawDuration = 0;
   private boolean loading = true;
   private String loadingMessage = "Reading input file";
+  protected static int width=0;
+  protected static int height=0;
 
   /**
    * Initialization
    */
   public void setup() {
-    int width=cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
+    width=cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
     if (width <= 0) {
       width = 640;
     }
     
-    int height=cfg.getIntProperty(CodeSwarmConfig.HEIGHT_KEY,480);
+    height=cfg.getIntProperty(CodeSwarmConfig.HEIGHT_KEY,480);
     if (height <= 0) {
       height = 480;
     }
@@ -273,7 +273,6 @@ public class code_swarm extends PApplet {
           }
           PhysicalEngine pe = null;
           try {
-            System.out.println(c.getCanonicalName());
             Constructor peConstructor = c.getConstructor();
             pe = (PhysicalEngine) peConstructor.newInstance();
             pe.setup(p);
@@ -316,7 +315,6 @@ public class code_swarm extends PApplet {
     ListIterator<peConfig> peIterator = mPhysicalEngineChoices.listIterator();
     while (peIterator.hasNext()) {
       peConfig p = peIterator.next();
-      System.out.println(p.name);
       if (physicalEngineSelection.equals(p.name)) {
         mPhysicalEngine = p.pe;
       }
@@ -569,20 +567,22 @@ public class code_swarm extends PApplet {
     textAlign(LEFT, TOP);
     fill(255, 200);
     text("Help on Keyboard commands:", 0, 10*line++);
-    text("- space bar : pause", 0, 10*line++);
-    text("- a : show name hAlos", 0, 10*line++);
-    text("- b : show deBug", 0, 10*line++);
-    text("- d : show Date", 0, 10*line++);
-    text("- e : show Edges", 0, 10*line++);
-    text("- f : draw files Fuzzy", 0, 10*line++);
-    text("- h : show Histogram", 0, 10*line++);
-    text("- j : draw files Jelly", 0, 10*line++);
-    text("- l : show Legend", 0, 10*line++);
-    text("- p : show Popular", 0, 10*line++);
-    text("- q : Quit code_swarm", 0, 10*line++);
-    text("- s : draw names Sharp", 0, 10*line++);
-    text("- S : draw files Sharp", 0, 10*line++);
-    text("- ? : show help", 0, 10*line++);
+    text("  space bar : pause", 0, 10*line++);
+    text("  a : show name hAlos", 0, 10*line++);
+    text("  b : show deBug", 0, 10*line++);
+    text("  d : show Date", 0, 10*line++);
+    text("  e : show Edges", 0, 10*line++);
+    text("  f : draw files Fuzzy", 0, 10*line++);
+    text("  h : show Histogram", 0, 10*line++);
+    text("  j : draw files Jelly", 0, 10*line++);
+    text("  l : show Legend", 0, 10*line++);
+    text("  p : show Popular", 0, 10*line++);
+    text("  q : Quit code_swarm", 0, 10*line++);
+    text("  s : draw names Sharp", 0, 10*line++);
+    text("  S : draw files Sharp", 0, 10*line++);
+    text("  + : use next Physics Engine", 0, 10*line++);
+    text("  - : use previous Physics Engine", 0, 10*line++);
+    text("  ? : show help", 0, 10*line++);
   }
   /**
    *  Show debug information about all drawable objects
@@ -713,28 +713,33 @@ public class code_swarm extends PApplet {
       history.remove();
 
     for (Edge edge : edges) {
-      edge.relax();
-      mPhysicalEngine.calculateForceAlongAnEdge(edge);
+      //edge.relax();
+      mPhysicalEngine.onRelaxEdge(edge);
     }
 
     for (FileNode node : nodes) {
-      node.relax();
+      //node.relax();
+      mPhysicalEngine.onRelaxNode(node);
     }
 
-    for (PersonNode aPeople : people) {
-      aPeople.relax();
+    for (PersonNode person : people) {
+      //aPeople.relax();
+      mPhysicalEngine.onRelaxPerson(person);
     }
 
     for (Edge edge : edges) {
-      edge.update();
+      //edge.update();
+      mPhysicalEngine.onUpdateEdge(edge);
     }
 
     for (FileNode node : nodes) {
-      node.update();
+      //node.update();
+      mPhysicalEngine.onUpdateNode(node);
     }
 
-    for (PersonNode aPeople : people) {
-      aPeople.update();
+    for (PersonNode person : people) {
+      //aPeople.update();
+      mPhysicalEngine.onUpdatePerson(person);
     }
   }
 
@@ -865,9 +870,49 @@ public class code_swarm extends PApplet {
         drawFilesSharp = !drawFilesSharp;
         break;
       }
+      case '+': {
+        switchPhysicsEngine(true);
+        break;
+      }
+      case '-': {
+        switchPhysicsEngine(false);
+        break;
+      }
       case '?': {
         showHelp = !showHelp;
         break;
+      }
+    }
+  }
+  
+  /**
+   * Method to switch between Physics Engines
+   * @param increment Indicates whether or not to go left or right on the list
+   */
+  public void switchPhysicsEngine(boolean increment) {
+    if (mPhysicalEngineChoices.size() > 1) {
+      ListIterator<peConfig> peIterator = mPhysicalEngineChoices.listIterator();
+      while (peIterator.hasNext()) {
+        peConfig p = peIterator.next();
+        if (physicalEngineSelection.equals(p.name)) {
+          if (increment) {
+            if (peIterator.hasNext()) {
+              p = peIterator.next();
+            } else {
+              p = mPhysicalEngineChoices.listIterator().next();
+            }
+            mPhysicalEngine = p.pe;
+          } else {
+            if (peIterator.hasPrevious()) {
+              p = peIterator.previous();
+            } else {
+              while (peIterator.hasNext()) {
+                p = peIterator.next();
+              }
+            }
+            mPhysicalEngine = p.pe;
+          }
+        }
       }
     }
   }
@@ -961,16 +1006,6 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * 2) calculating next frame state => done in derived class
-     */
-    public abstract void relax();
-
-    /**
-     * 3) applying next frame state
-     */
-    public abstract void update();
-    
-    /**
      *  4) shortening life.
      */
     public void decay() {
@@ -1014,21 +1049,6 @@ public class code_swarm extends PApplet {
     }
 
     /**
-     * 2) calculating next frame state.
-     */
-    public void relax() {
-      Vector2f force    = new Vector2f();
-
-      // Calculate force between the node "from" and the node "to"
-      force = mPhysicalEngine.calculateForceAlongAnEdge(this);
-
-      // transmit (applying) fake force projection to file and person nodes
-      mPhysicalEngine.applyForceTo(nodeTo, force);
-      force.negate(); // force is inverted for the other end of the edge
-      mPhysicalEngine.applyForceTo(nodeFrom, force);
-     }
-
-    /**
      * 5) drawing the new state.
      */
     public void draw() {
@@ -1037,10 +1057,6 @@ public class code_swarm extends PApplet {
         strokeWeight(0.35f);
         line(nodeFrom.mPosition.x, nodeFrom.mPosition.y, nodeTo.mPosition.x, nodeTo.mPosition.y);
       }
-    }
-    
-    public void update() {
-      decay();
     }
     
     public void freshen() {
@@ -1079,22 +1095,6 @@ public class code_swarm extends PApplet {
       mSpeed = new Vector2f();
     }
 
-    /**
-     * 3) applying next frame state.
-     *
-     * This is a redefinition of the Drawable update() method
-     */
-    public void update() {
-      // Apply Speed to Position on nodes
-      mPhysicalEngine.applySpeedTo(this);
-      
-      // ensure coherent resulting position
-      mPosition.set(constrain(mPosition.x, 0, width),constrain(mPosition.y, 0, height));
-      
-      // shortening life
-      decay();
-    }
-    
     /**
      *  4) shortening life.
      */
@@ -1135,19 +1135,6 @@ public class code_swarm extends PApplet {
       minBold = (int)(FILE_LIFE_INIT * 0.95f);
       nodeHue = colorAssigner.getColor(name);
       mass = 1.0f;
-    }
-
-    /**
-     * 2) calculating next frame state.
-     * 
-     * TODO: this physic job should be uniformed between file a person nodes
-     *       => then it could be moved up
-     */
-    public void relax() {
-      if (life <= 0)
-        return;
-      
-      mPhysicalEngine.onRelaxNode(this);
     }
 
     /**
@@ -1269,19 +1256,6 @@ public class code_swarm extends PApplet {
       mass = 10.0f; // bigger mass to person then to node, to stabilize them
       // range (-1,1)
       mSpeed.set((float)(Math.random()*2-1),(float)(Math.random()*2-1));
-    }
-
-    /**
-     * 2) calculating next frame state.
-     * 
-     * TODO: this physic job should be uniformed between file a person nodes => then
-     *       it could be moved up
-     */
-    public void relax() {
-      if (life <= 0)
-        return;
-
-      mPhysicalEngine.onRelaxPerson(this);
     }
 
     /**

@@ -36,7 +36,8 @@ public class PhysicalEngineLegacy implements PhysicalEngine
   private float SPEED_TO_POSITION_MULTIPLIER;
   
   /**
-   * Constructor for initializing parameters.
+   * Method for initializing parameters.
+   * @param p Properties from the config file.
    */
   //PhysicalEngineLegacy(float forceEdgeMultiplier, float forceCalculationRandomizer, float forceToSpeedMultiplier, float speedToPositionDrag)
   public void setup (java.util.Properties p)
@@ -166,6 +167,20 @@ public class PhysicalEngineLegacy implements PhysicalEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxEdge(code_swarm.Edge edge) {
+    
+    if (edge.life <= 0) {
+      return;
+    }
+    
+    Vector2f force    = new Vector2f();
+
+    // Calculate force between the node "from" and the node "to"
+    force = calculateForceAlongAnEdge(edge);
+
+    // transmit (applying) fake force projection to file and person nodes
+    applyForceTo(edge.nodeTo, force);
+    force.negate(); // force is inverted for the other end of the edge
+    applyForceTo(edge.nodeFrom, force);
   }
   
   /**
@@ -176,6 +191,11 @@ public class PhysicalEngineLegacy implements PhysicalEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxNode(code_swarm.FileNode fNode ) {
+    
+    if (fNode.life <= 0) {
+      return;
+    }
+    
     Vector2f forceBetweenFiles = new Vector2f();
     Vector2f forceSummation    = new Vector2f();
       
@@ -203,6 +223,11 @@ public class PhysicalEngineLegacy implements PhysicalEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxPerson(code_swarm.PersonNode pNode) {
+
+    if (pNode.life <= 0) {
+      return;
+    }
+    
     Vector2f forceBetweenPersons = new Vector2f();
     Vector2f forceSummation      = new Vector2f();
 
@@ -231,6 +256,10 @@ public class PhysicalEngineLegacy implements PhysicalEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdateEdge(code_swarm.Edge edge) {
+    if (edge.life <= 0) {
+      return;
+    }
+    edge.decay();
   }
   
   /**
@@ -241,8 +270,29 @@ public class PhysicalEngineLegacy implements PhysicalEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdateNode(code_swarm.FileNode fNode) {
+    if (fNode.life <= 0) {
+      return;
+    }
+    // Apply Speed to Position on nodes
+    applySpeedTo(fNode);
+    
+    // ensure coherent resulting position
+    fNode.mPosition.set(constrain(fNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(fNode.mPosition.y, 0.0f, (float)code_swarm.height));
+    
+    // shortening life
+    fNode.decay();
   }
   
+  private float constrain(float value, float min, float max) {
+    if (value < min) {
+      return min;
+    } else if (value > max) {
+      return max;
+    }
+    
+    return value;
+  }
+
   /**
    * Method that allows Physics Engine to modify Speed / Position during the update phase.
    * 
@@ -251,6 +301,17 @@ public class PhysicalEngineLegacy implements PhysicalEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdatePerson(code_swarm.PersonNode pNode) {
+    if (pNode.life <= 0) {
+      return;
+    }
+    // Apply Speed to Position on nodes
+    applySpeedTo(pNode);
+    
+    // ensure coherent resulting position
+    pNode.mPosition.set(constrain(pNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(pNode.mPosition.y, 0.0f, (float)code_swarm.height));
+    
+    // shortening life
+    pNode.decay();
   }
 }
 
