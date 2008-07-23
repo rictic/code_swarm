@@ -21,18 +21,17 @@ import java.util.Properties;
 import javax.vecmath.Vector2f;
 
 /**
- * @brief Legacy algorithms describing all physicals interactions between nodes (files and persons)
+ * @brief Simple algorithms describing all physicals interactions between nodes (files and persons)
  * 
- * This is only a rewriting of the initial code_swarm prototype.
+ * This is a free test to explore dans demonstrate PhysicalEngine designs.
  * 
  * @see other Physical Engine for more methods 
  */
-public class PhysicalEngineLegacy implements PhysicalEngine
+public class PhysicalEngineSimple implements PhysicalEngine
 {
   private Properties cfg;
   
   private float FORCE_EDGE_MULTIPLIER;
-  private float FORCE_CALCULATION_RANDOMIZER;
   private float FORCE_NODES_MULTIPLIER;
   private float FORCE_TO_SPEED_MULTIPLIER;
   private float SPEED_TO_POSITION_MULTIPLIER;
@@ -41,19 +40,18 @@ public class PhysicalEngineLegacy implements PhysicalEngine
    * Method for initializing parameters.
    * @param p Properties from the config file.
    */
-  //PhysicalEngineLegacy(float forceEdgeMultiplier, float forceCalculationRandomizer, float forceToSpeedMultiplier, float speedToPositionDrag)
+  //PhysicalEngineSimple(float forceEdgeMultiplier, float forceToSpeedMultiplier, float speedToPositionDrag)
   public void setup (java.util.Properties p)
   {
     cfg = p;
     FORCE_EDGE_MULTIPLIER = Float.parseFloat(cfg.getProperty("edgeMultiplier","1.0"));
-    FORCE_CALCULATION_RANDOMIZER = Float.parseFloat(cfg.getProperty("calculationRandomizer","0.01"));
     FORCE_NODES_MULTIPLIER = Float.parseFloat(cfg.getProperty("nodesMultiplier","1.0"));
     FORCE_TO_SPEED_MULTIPLIER = Float.parseFloat(cfg.getProperty("speedMultiplier","1.0"));
     SPEED_TO_POSITION_MULTIPLIER = Float.parseFloat(cfg.getProperty("drag","0.5"));
   }
   
   /**
-   * Legacy method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
+   * Simple method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
    * 
    * @param edge the link between a person and one of its file 
    * @return force force calculated between those two nodes
@@ -68,22 +66,17 @@ public class PhysicalEngineLegacy implements PhysicalEngine
     // distance calculation
     tforce.sub( edge.nodeTo.mPosition, edge.nodeFrom.mPosition);
     distance = tforce.length();
-    if (distance > 0) {
-      // force calculation (increase when distance is different from targeted len")
-      deltaDistance = (edge.getLen() - distance) / (distance * 3);
-      // force ponderation using a re-mapping life from 0-255 scale to 0-1.0 range
-      // This allows nodes to drift apart as their life decreases.
-      deltaDistance *= ((float)edge.life / edge.LIFE_INIT);
-      // force projection onto x and y axis
-      tforce.scale( deltaDistance * FORCE_EDGE_MULTIPLIER );
-      force.set(tforce);
-    }
+    // force calculation (increase when distance is different from targeted len")
+    deltaDistance = (edge.getLen() - distance);
+    // force projection onto x and y axis
+    tforce.scale( deltaDistance * FORCE_EDGE_MULTIPLIER );
+    force.set(tforce);
     
     return force;
   }
   
   /**
-   * Legacy method that calculate the repulsive force between two similar nodes (either files or persons).
+   * Simple method that calculate the repulsive force between two similar nodes (either files or persons).
    * 
    * @param nodeA [in]
    * @param nodeB [in]
@@ -91,7 +84,7 @@ public class PhysicalEngineLegacy implements PhysicalEngine
    */
   public Vector2f calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB )
   {
-    float lensq;
+    float distance;
     Vector2f force = new Vector2f();
     Vector2f normVec = new Vector2f();
     
@@ -99,19 +92,10 @@ public class PhysicalEngineLegacy implements PhysicalEngine
      * Get the distance between nodeA and nodeB
      */
     normVec.sub(nodeA.mPosition, nodeB.mPosition);
-    lensq = normVec.lengthSquared();
-    /**
-     * If there is a Collision.  This is assuming a radius of zero.
-     * if (lensq == (radius1 + radius2)) is what to use if we have radius 
-     * could use touches for files and edge_length for people?
-     */
-    if (lensq == 0) {
-      force.set( (float)Math.random()*FORCE_CALCULATION_RANDOMIZER, (float)Math.random()*FORCE_CALCULATION_RANDOMIZER );
-    } else if (lensq < 10000) {
-      /**
-       * No collision
-       */
-      normVec.scale(1/lensq * FORCE_NODES_MULTIPLIER);
+    distance = normVec.length();
+    if (distance > 0) {
+      // No collision
+      normVec.scale(1/distance * FORCE_NODES_MULTIPLIER);
       force.set(normVec);
     }
     
@@ -119,7 +103,7 @@ public class PhysicalEngineLegacy implements PhysicalEngine
   }
   
   /**
-   * Legacy method that apply a force to a node, converting acceleration to speed.
+   * Simple method that apply a force to a node, converting acceleration to speed.
    * 
    * @param node [in] Node the node to which the force apply
    * @param force [in] force a force Vector representing the force on a node
@@ -141,7 +125,7 @@ public class PhysicalEngineLegacy implements PhysicalEngine
   }
 
   /**
-   * Legacy method that apply a force to a node, converting acceleration to speed.
+   * Simple method that apply a force to a node, converting acceleration to speed.
    * 
    * @param node the node to which the force apply
     */
@@ -149,6 +133,7 @@ public class PhysicalEngineLegacy implements PhysicalEngine
   {
     float div;
     // This block enforces a maximum absolute velocity.
+    // TODO : I want to remove all this
     if (node.mSpeed.length() > node.maxSpeed) {
       Vector2f mag = new Vector2f(node.mSpeed.x / node.maxSpeed, node.mSpeed.y / node.maxSpeed);
       div = mag.length();
