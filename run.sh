@@ -48,7 +48,7 @@ if [ ! -f $code_swarm_jar ]; then
 fi
 
 # running
-if java -Xmx1000m -classpath dist/code_swarm.jar:lib/core.jar:lib/xml.jar:. code_swarm $params; then
+if java -Xmx1000m -classpath dist/code_swarm.jar:lib/core.jar:lib/xml.jar:lib/vecmath.jar:. code_swarm $params; then
 # always on error due to no "exit buton" on rendering window
     echo "bye"
 #    echo -n "error, press a key to exit"

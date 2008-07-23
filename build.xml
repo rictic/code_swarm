@@ -21,7 +21,7 @@
     <echo>Running BUILD</echo>
     <mkdir dir="${build}" />
     <javac destdir="${build}" srcdir="${src}"
-classpath="${lib}/core.jar;${lib}/xml.jar;${lib}/jogl.jar;${lib}/opengl.jar" debug="true" deprecation="false" />
+classpath="${lib}/core.jar;${lib}/xml.jar;${lib}/jogl.jar;${lib}/opengl.jar;${lib}/vecmath.jar" debug="true" deprecation="false" />
     <copy file="${src}/particle.png" todir="${build}" />
   </target>
 
