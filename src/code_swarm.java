@@ -22,7 +22,13 @@ import processing.core.PFont;
 import processing.core.PImage;
 import processing.xml.XMLElement;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 //import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Date;
@@ -31,10 +37,12 @@ import java.util.ListIterator;
 import java.util.LinkedList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.Properties;
 import javax.vecmath.Vector2f;
 
 /**
- * Definition of the code_swarm Application.
+ * 
+ *
  */
 public class code_swarm extends PApplet {
   /** @remark needed for any serializable class */ 
@@ -50,9 +58,9 @@ public class code_swarm extends PApplet {
  
   // Data storage
   PriorityBlockingQueue<FileEvent> eventsQueue; // USE PROCESSING 0142 or higher
-  CopyOnWriteArrayList<FileNode> nodes;
-  CopyOnWriteArrayList<Edge> edges;
-  CopyOnWriteArrayList<PersonNode> people;
+  protected static CopyOnWriteArrayList<FileNode> nodes;
+  protected static CopyOnWriteArrayList<Edge> edges;
+  protected static CopyOnWriteArrayList<PersonNode> people;
   LinkedList<ColorBins> history;
 
   // Temporary variables
@@ -97,8 +105,11 @@ public class code_swarm extends PApplet {
   private final int FILE_LIFE_DECREMENT = -2;
   private final int PERSON_LIFE_DECREMENT = -1;
   // Physical engine configuration
+  String          physicalEngineConfigDir;
   String          physicalEngineSelection;
+  LinkedList<peConfig> mPhysicalEngineChoices = new LinkedList<peConfig>();
   PhysicalEngine  mPhysicalEngine = null;
+  
 
   // Physical algorithms (class) names
   // TODO: to complete with more physical engines
@@ -227,23 +238,93 @@ public class code_swarm extends PApplet {
       // Default to 4 frames per day.
       UPDATE_DELTA = 21600000;
     }
-
+    
     /**
-     * How do we make this more modularized?  I'd like to be able to include my own .jar potentially.
-     * Could this be a part of a config?  Should we make a config for the application itself?  Would
-     * keep some of this type of stuff out of the project specific configs.  A project config should be
-     * allowed to override these values.
+     * This section loads config files and calls the setup method for all physics engines.
      */
+
+    physicalEngineConfigDir = cfg.getStringProperty( CodeSwarmConfig.PHYSICAL_ENGINE_CONF_DIR, "physics_engine");
+    File f = new File(physicalEngineConfigDir);
+    String[] configFiles = null;
+    if ( f.exists()  &&  f.isDirectory() ) {
+      configFiles = f.list();
+    }
+    for (int i=0; configFiles != null  &&  i<configFiles.length; i++) {
+      if (configFiles[i].endsWith(".config")) {
+        Properties p = new Properties();
+        String ConfigPath = physicalEngineConfigDir + System.getProperty("file.separator") + configFiles[i];
+        try {
+          p.load(new FileInputStream(ConfigPath));
+        } catch (FileNotFoundException e) {
+          e.printStackTrace();
+          System.exit(1);
+        } catch (IOException e) {
+          e.printStackTrace();
+          System.exit(1);
+        }
+        String ClassName = p.getProperty("name", "__DEFAULT__");
+        if ( ! ClassName.equals("__DEFAULT__")) {
+          Class<?> c = null;
+          try {
+            c = Class.forName(ClassName);
+          } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            System.exit(1);
+          }
+          PhysicalEngine pe = null;
+          try {
+            System.out.println(c.getCanonicalName());
+            Constructor peConstructor = c.getConstructor();
+            pe = (PhysicalEngine) peConstructor.newInstance();
+            pe.setup(p);
+          } catch (InstantiationException e) {
+            e.printStackTrace();
+            System.exit(1);
+          } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            System.exit(1);
+          } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            System.exit(1);
+          } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            System.exit(1);
+          } catch (SecurityException e) {
+            e.printStackTrace();
+            System.exit(1);
+          } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            System.exit(1);
+          }
+          peConfig pec = new peConfig(ClassName,pe);
+          mPhysicalEngineChoices.add(pec);
+        } else {
+          System.out.println("Skipping config file '" + ConfigPath + "'.  Must specify class name via the 'name' parameter.");
+          System.exit(1);
+        }
+      }
+    }
+    
+    if (mPhysicalEngineChoices.size() == 0) {
+      System.out.println("No physics engine config files found in '" + physicalEngineConfigDir + "'.");
+      System.exit(1);
+    }
+    
     // Physical engine configuration and instantiation
     physicalEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICAL_ENGINE_SELECTION, PHYSICAL_ENGINE_LEGACY );
     
-    // TODO: to complete with more physical engines
-    if ( physicalEngineSelection.equals( PHYSICAL_ENGINE_LEGACY ) ) {
-      mPhysicalEngine = new PhysicalEngineLegacy(1.0f, 0.01f, 1.0f, 0.5f); // (forceEdgeMultiplier, forceCalculationRandomizer, forceToSpeedMultiplier, speedToPositionDrag)
+    ListIterator<peConfig> peIterator = mPhysicalEngineChoices.listIterator();
+    while (peIterator.hasNext()) {
+      peConfig p = peIterator.next();
+      System.out.println(p.name);
+      if (physicalEngineSelection.equals(p.name)) {
+        mPhysicalEngine = p.pe;
+      }
     }
-    else {
-      // legacy is current default
-      mPhysicalEngine = new PhysicalEngineLegacy(1.0f, 0.01f, 1.0f, 0.5f); // (forceEdgeMultiplier, forceCalculationRandomizer, forceToSpeedMultiplier, speedToPositionDrag)
+    
+    if (mPhysicalEngine == null) {
+      System.out.println("No physics engine matches your choice of '" + physicalEngineSelection + "'. Check '" + physicalEngineConfigDir + "' for options.");
+      System.exit(1);
     }
     
     smooth();
@@ -633,6 +714,7 @@ public class code_swarm extends PApplet {
 
     for (Edge edge : edges) {
       edge.relax();
+      mPhysicalEngine.calculateForceAlongAnEdge(edge);
     }
 
     for (FileNode node : nodes) {
@@ -799,6 +881,19 @@ public class code_swarm extends PApplet {
     else
       loop();
     looping = !looping;
+  }
+  
+  /**
+   * Describe an event on a file
+   */
+  class peConfig {
+    protected String name;
+    protected PhysicalEngine pe;
+    
+    peConfig(String n, PhysicalEngine p) {
+      name = n;
+      pe = p;
+    }
   }
 
   /**
@@ -1049,28 +1144,10 @@ public class code_swarm extends PApplet {
      *       => then it could be moved up
      */
     public void relax() {
-      Vector2f forceBetweenFiles = new Vector2f();
-      Vector2f forceSummation    = new Vector2f();
-      
       if (life <= 0)
         return;
       
-      mPhysicalEngine.onRelaxNode(nodes, this);
-
-      // Calculation of repulsive force between persons
-      for (int j = 0; j < nodes.size(); j++) {
-        FileNode n = (FileNode) nodes.get(j);
-        if (n.life <= 0)
-          continue;
-
-        if (n != this) {
-          // elemental force calculation, and summation
-          forceBetweenFiles = mPhysicalEngine.calculateForceBetweenNodes(this, n);
-          forceSummation.add(forceBetweenFiles);
-        }
-      }
-      // Apply repulsive force from other files to this Node
-      mPhysicalEngine.applyForceTo(this, forceSummation);
+      mPhysicalEngine.onRelaxNode(this);
     }
 
     /**
@@ -1201,28 +1278,10 @@ public class code_swarm extends PApplet {
      *       it could be moved up
      */
     public void relax() {
-      Vector2f forceBetweenPersons = new Vector2f();
-      Vector2f forceSummation      = new Vector2f();
-
       if (life <= 0)
         return;
 
-      mPhysicalEngine.onRelaxPerson(people, this);
-      // Calculation of repulsive force between persons
-      for (int j = 0; j < people.size(); j++) {
-        Node n = (Node) people.get(j);
-        if (n.life <= 0)
-          continue;
-
-        if (n != this) {
-          // elemental force calculation, and summation
-          forceBetweenPersons = mPhysicalEngine.calculateForceBetweenNodes(this, n);
-          forceSummation.add(forceBetweenPersons);
-        }
-      }
-      
-      // Apply repulsive force from other persons to this Node
-      mPhysicalEngine.applyForceTo(this, forceSummation);
+      mPhysicalEngine.onRelaxPerson(this);
     }
 
     /**

@@ -17,7 +17,7 @@
  * along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Properties;
 import javax.vecmath.Vector2f;
 
 /**
@@ -26,22 +26,26 @@ import javax.vecmath.Vector2f;
  * This is only a rewriting of the initial code_swarm prototype.
  * 
  */
-public class PhysicalEngineLegacy extends PhysicalEngine
+public class PhysicalEngineLegacy implements PhysicalEngine
 {
-  final private float FORCE_EDGE_MULTIPLIER;
-  final private float FORCE_CALCULATION_RANDOMIZER;
-  final private float FORCE_TO_SPEED_MULTIPLIER;
-  final private float SPEED_TO_POSITION_MULTIPLIER;
+  private Properties cfg;
+  
+  private float FORCE_EDGE_MULTIPLIER;
+  private float FORCE_CALCULATION_RANDOMIZER;
+  private float FORCE_TO_SPEED_MULTIPLIER;
+  private float SPEED_TO_POSITION_MULTIPLIER;
   
   /**
    * Constructor for initializing parameters.
    */
-  PhysicalEngineLegacy(float forceEdgeMultiplier, float forceCalculationRandomizer, float forceToSpeedMultiplier, float speedToPositionDrag)
+  //PhysicalEngineLegacy(float forceEdgeMultiplier, float forceCalculationRandomizer, float forceToSpeedMultiplier, float speedToPositionDrag)
+  public void setup (java.util.Properties p)
   {
-    FORCE_EDGE_MULTIPLIER         = forceEdgeMultiplier;
-    FORCE_CALCULATION_RANDOMIZER  = forceCalculationRandomizer;
-    FORCE_TO_SPEED_MULTIPLIER     = forceToSpeedMultiplier;
-    SPEED_TO_POSITION_MULTIPLIER  = speedToPositionDrag;
+    cfg = p;
+    FORCE_EDGE_MULTIPLIER = Float.parseFloat(cfg.getProperty("edgeMultiplier","1.0"));
+    FORCE_CALCULATION_RANDOMIZER = Float.parseFloat(cfg.getProperty("calculationRandomizer","0.01"));
+    FORCE_TO_SPEED_MULTIPLIER = Float.parseFloat(cfg.getProperty("speedMultiplier","1.0"));
+    SPEED_TO_POSITION_MULTIPLIER = Float.parseFloat(cfg.getProperty("drag","0.5"));
   }
   
   /**
@@ -155,47 +159,98 @@ public class PhysicalEngineLegacy extends PhysicalEngine
   }
   
   /**
-   * Method that allows Physics Engine to modify Speed / Position during the relax phase.
+   * Method that allows Physics Engine to modify forces between files and people during the relax stage
    * 
-   * @param nodeList the list of People
-   * @param node the node to which the force apply
+   * @param edge the edge to which the force apply (both ends)
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  void onRelaxNode( CopyOnWriteArrayList<code_swarm.FileNode> nodeList, code_swarm.FileNode node ) {
+  public void onRelaxEdge(code_swarm.Edge edge) {
   }
   
   /**
    * Method that allows Physics Engine to modify Speed / Position during the relax phase.
    * 
-   * @param nodeList the list of People
-   * @param node the node to which the force apply
+   * @param fNode the node to which the force apply
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  void onRelaxPerson( CopyOnWriteArrayList<code_swarm.PersonNode> nodeList, code_swarm.PersonNode node ) {
+  public void onRelaxNode(code_swarm.FileNode fNode ) {
+    Vector2f forceBetweenFiles = new Vector2f();
+    Vector2f forceSummation    = new Vector2f();
+      
+    // Calculation of repulsive force between persons
+    for (int j = 0; j < code_swarm.nodes.size(); j++) {
+      code_swarm.FileNode n = (code_swarm.FileNode) code_swarm.nodes.get(j);
+      if (n.life <= 0)
+        continue;
+
+      if (n != fNode) {
+        // elemental force calculation, and summation
+        forceBetweenFiles = calculateForceBetweenNodes(fNode, n);
+        forceSummation.add(forceBetweenFiles);
+      }
+    }
+    // Apply repulsive force from other files to this Node
+    applyForceTo(fNode, forceSummation);
+  }
+  
+  /**
+   * Method that allows Physics Engine to modify Speed / Position during the relax phase.
+   * 
+   * @param pNode the node to which the force apply
+   * 
+   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
+   */
+  public void onRelaxPerson(code_swarm.PersonNode pNode) {
+    Vector2f forceBetweenPersons = new Vector2f();
+    Vector2f forceSummation      = new Vector2f();
+
+    // Calculation of repulsive force between persons
+    for (int j = 0; j < code_swarm.people.size(); j++) {
+      code_swarm.Node n = (code_swarm.Node) code_swarm.people.get(j);
+      if (n.life <= 0)
+        continue;
+
+      if (n != pNode) {
+        // elemental force calculation, and summation
+        forceBetweenPersons = calculateForceBetweenNodes(pNode, n);
+        forceSummation.add(forceBetweenPersons);
+      }
+    }
+    
+    // Apply repulsive force from other persons to this Node
+    applyForceTo(pNode, forceSummation);
   }
   
   /**
    * Method that allows Physics Engine to modify Speed / Position during the update phase.
    * 
-   * @param nodeList the list of People
-   * @param node the node to which the force apply
+   * @param edge the node to which the force apply
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  void onUpdateNode( CopyOnWriteArrayList<code_swarm.FileNode> nodeList, code_swarm.FileNode node ) {
+  public void onUpdateEdge(code_swarm.Edge edge) {
   }
   
   /**
    * Method that allows Physics Engine to modify Speed / Position during the update phase.
    * 
-   * @param nodeList the list of People
-   * @param node the node to which the force apply
+   * @param fNode the node to which the force apply
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  void onUpdatePerson( CopyOnWriteArrayList<code_swarm.PersonNode> nodeList, code_swarm.PersonNode node ) {
+  public void onUpdateNode(code_swarm.FileNode fNode) {
+  }
+  
+  /**
+   * Method that allows Physics Engine to modify Speed / Position during the update phase.
+   * 
+   * @param pNode the node to which the force apply
+   * 
+   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
+   */
+  public void onUpdatePerson(code_swarm.PersonNode pNode) {
   }
 }
 
