@@ -37,42 +37,6 @@ public interface PhysicalEngine
   public void setup (Properties p);
   
   /**
-   * Method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
-   * 
-   * @param edge the link between a person and one of its file 
-   * @return force force calculated between those two nodes
-   */
-  public Vector2f calculateForceAlongAnEdge(code_swarm.Edge edge);
-
-  /**
-   * Method that calculate the force between to nodes.
-   * 
-   * @param nodeA [in]
-   * @param nodeB [in]
-   * @return force force calculated between those two nodes
-   */
-  public Vector2f calculateForceBetweenNodes(code_swarm.Node nodeA, code_swarm.Node nodeB);
-
-  /**
-   * Method that apply a force to a node, converting force to acceleration, that in turn modify speed.
-   * 
-   * @param node [in] the node to which the force apply
-   * @param force [in] a force Vector representing the force on a node
-   * 
-   * @Note Standard physics is "Speed Variation = Force / Mass x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void applyForceTo(code_swarm.Node node, Vector2f force);
-
-  /**
-   * Method that manage speed conversion to position.
-   * 
-   * @param node [in] the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void applySpeedTo(code_swarm.Node node);
-  
-  /**
    * Method that allows Physics Engine to modify Speed / Position during the relax phase.
    * 
    * @param edge the node to which the force apply

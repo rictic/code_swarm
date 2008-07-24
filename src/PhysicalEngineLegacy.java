@@ -53,6 +53,23 @@ public class PhysicalEngineLegacy implements PhysicalEngine
   }
   
   /**
+   * Method to ensure upper and lower bounds
+   * @param value Value to check
+   * @param min Floor value
+   * @param max Ceiling value
+   * @return value if between min and max, min if < max if >
+   */
+  private float constrain(float value, float min, float max) {
+    if (value < min) {
+      return min;
+    } else if (value > max) {
+      return max;
+    }
+    
+    return value;
+  }
+  
+  /**
    * Legacy method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
    * 
    * @param edge the link between a person and one of its file 
@@ -66,16 +83,18 @@ public class PhysicalEngineLegacy implements PhysicalEngine
     Vector2f tforce = new Vector2f();
     
     // distance calculation
-    tforce.sub( edge.nodeTo.mPosition, edge.nodeFrom.mPosition);
+    tforce.sub(edge.nodeTo.mPosition, edge.nodeFrom.mPosition);
     distance = tforce.length();
     if (distance > 0) {
       // force calculation (increase when distance is different from targeted len")
-      deltaDistance = (edge.getLen() - distance) / (distance * 3);
+      deltaDistance = (edge.len - distance) / (distance * 3);
       // force ponderation using a re-mapping life from 0-255 scale to 0-1.0 range
       // This allows nodes to drift apart as their life decreases.
       deltaDistance *= ((float)edge.life / edge.LIFE_INIT);
+      
       // force projection onto x and y axis
-      tforce.scale( deltaDistance * FORCE_EDGE_MULTIPLIER );
+      tforce.scale(deltaDistance*FORCE_EDGE_MULTIPLIER);
+      
       force.set(tforce);
     }
     
@@ -129,13 +148,14 @@ public class PhysicalEngineLegacy implements PhysicalEngine
   public void applyForceTo( code_swarm.Node node, Vector2f force )
   {
     float dlen;
-    Vector2f mod = new Vector2f();
+    Vector2f mod = new Vector2f(force);
 
-    /** TODO: add comment to this algorithm */
-    dlen = force.length();
-    if ( (dlen > 0) && (node.mass > 0)) {
-      mod.set(((force.x / (node.mass / dlen)) * FORCE_TO_SPEED_MULTIPLIER),
-              ((force.y / (node.mass / dlen)) * FORCE_TO_SPEED_MULTIPLIER));
+    /**
+     * Taken from Newton's 2nd law.  F=ma
+     */
+    dlen = mod.length();
+    if (dlen > 0) {
+      mod.scale(node.mass * FORCE_TO_SPEED_MULTIPLIER);
       node.mSpeed.add(mod);
     }
   }
@@ -174,7 +194,6 @@ public class PhysicalEngineLegacy implements PhysicalEngine
     if (edge.life <= 0) {
       return;
     }
-    
     Vector2f force    = new Vector2f();
 
     // Calculate force between the node "from" and the node "to"
@@ -286,16 +305,6 @@ public class PhysicalEngineLegacy implements PhysicalEngine
     fNode.decay();
   }
   
-  private float constrain(float value, float min, float max) {
-    if (value < min) {
-      return min;
-    } else if (value > max) {
-      return max;
-    }
-    
-    return value;
-  }
-
   /**
    * Method that allows Physics Engine to modify Speed / Position during the update phase.
    * 

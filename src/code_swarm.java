@@ -713,32 +713,26 @@ public class code_swarm extends PApplet {
       history.remove();
 
     for (Edge edge : edges) {
-      //edge.relax();
       mPhysicalEngine.onRelaxEdge(edge);
     }
 
     for (FileNode node : nodes) {
-      //node.relax();
       mPhysicalEngine.onRelaxNode(node);
     }
 
     for (PersonNode person : people) {
-      //aPeople.relax();
       mPhysicalEngine.onRelaxPerson(person);
     }
 
     for (Edge edge : edges) {
-      //edge.update();
       mPhysicalEngine.onUpdateEdge(edge);
     }
 
     for (FileNode node : nodes) {
-      //node.update();
       mPhysicalEngine.onUpdateNode(node);
     }
 
     for (PersonNode person : people) {
-      //aPeople.update();
       mPhysicalEngine.onUpdatePerson(person);
     }
   }
@@ -1034,7 +1028,7 @@ public class code_swarm extends PApplet {
   class Edge extends Drawable {
     protected Node  nodeFrom;
     protected Node  nodeTo;
-    private float len;
+    protected float len;
 
     /**
      * 1) constructor.
@@ -1061,11 +1055,6 @@ public class code_swarm extends PApplet {
     
     public void freshen() {
       life = EDGE_LIFE_INIT;
-    }
-    
-    public float getLen()
-    {
-      return len;
     }
   }
 

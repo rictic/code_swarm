@@ -66,8 +66,8 @@ public class PhysicalEngineSimple implements PhysicalEngine
     // distance calculation
     tforce.sub( edge.nodeTo.mPosition, edge.nodeFrom.mPosition);
     distance = tforce.length();
-    // force calculation (increase when distance is different from targeted len")
-    deltaDistance = (edge.getLen() - distance);
+    // force calculation (increase when distance is different from targeted len)
+    deltaDistance = (edge.len - distance);
     // force projection onto x and y axis
     tforce.scale( deltaDistance * FORCE_EDGE_MULTIPLIER );
     force.set(tforce);
