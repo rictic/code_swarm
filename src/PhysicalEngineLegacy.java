@@ -128,9 +128,9 @@ public class PhysicalEngineLegacy implements PhysicalEngine
       force.set( (float)Math.random()*FORCE_CALCULATION_RANDOMIZER, (float)Math.random()*FORCE_CALCULATION_RANDOMIZER );
     } else if (lensq < 10000) {
       /**
-       * No collision
+       * No collision and distance is close enough to actually matter.
        */
-      normVec.scale(1/lensq * FORCE_NODES_MULTIPLIER);
+      normVec.scale(FORCE_NODES_MULTIPLIER/lensq);
       force.set(normVec);
     }
     
@@ -265,9 +265,11 @@ public class PhysicalEngineLegacy implements PhysicalEngine
         forceSummation.add(forceBetweenPersons);
       }
     }
-    
     // Apply repulsive force from other persons to this Node
     applyForceTo(pNode, forceSummation);
+    
+    // Don't know why, but the prototype had this.
+    pNode.mSpeed.scale(1.0f/12);
   }
   
   /**
