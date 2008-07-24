@@ -885,26 +885,22 @@ public class code_swarm extends PApplet {
    */
   public void switchPhysicsEngine(boolean increment) {
     if (mPhysicalEngineChoices.size() > 1) {
-      ListIterator<peConfig> peIterator = mPhysicalEngineChoices.listIterator();
-      while (peIterator.hasNext()) {
-        peConfig p = peIterator.next();
-        if (physicalEngineSelection.equals(p.name)) {
+      boolean found = false;
+      for (int i = 0; i < mPhysicalEngineChoices.size() && !found; i++) {
+        if (mPhysicalEngineChoices.get(i).pe == mPhysicalEngine) {
+          found = true;
           if (increment) {
-            if (peIterator.hasNext()) {
-              p = peIterator.next();
+            if ((i+1) < mPhysicalEngineChoices.size()) {
+              mPhysicalEngine=mPhysicalEngineChoices.get(i+1).pe;
             } else {
-              p = mPhysicalEngineChoices.listIterator().next();
+              mPhysicalEngine=mPhysicalEngineChoices.get(0).pe;
             }
-            mPhysicalEngine = p.pe;
           } else {
-            if (peIterator.hasPrevious()) {
-              p = peIterator.previous();
+            if ((i-1) > 0) {
+              mPhysicalEngine=mPhysicalEngineChoices.get(i-1).pe;
             } else {
-              while (peIterator.hasNext()) {
-                p = peIterator.next();
-              }
+              mPhysicalEngine=mPhysicalEngineChoices.get(mPhysicalEngineChoices.size()-1).pe;
             }
-            mPhysicalEngine = p.pe;
           }
         }
       }
@@ -1244,7 +1240,7 @@ public class code_swarm extends PApplet {
       minBold = (int)(PERSON_LIFE_INIT * 0.95f);
       mass = 10.0f; // bigger mass to person then to node, to stabilize them
       // range (-1,1)
-      mSpeed.set((float)(Math.random()*2-1),(float)(Math.random()*2-1));
+      mSpeed.set((float)(mass*Math.random()*2-1),(float)(mass*Math.random()*2-1));
     }
 
     /**
