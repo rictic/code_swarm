@@ -79,9 +79,9 @@ public class CodeSwarmConfig
   /** Boolean value, controls drawing files as an ellipse uses touches to determine size */
   public static final String DRAW_FILES_JELLY = "DrawFilesJelly";
   /** Controls which physics engine to use */
-  public static final String PHYSICAL_ENGINE_SELECTION = "PhysicalEngineSelection";
+  public static final String PHYSICS_ENGINE_SELECTION = "PhysicsEngineSelection";
   /** Controls where the config files are for the Physical Engine */
-  public static final String PHYSICAL_ENGINE_CONF_DIR = "PhysicalEngineConfigDir";
+  public static final String PHYSICS_ENGINE_CONF_DIR = "PhysicsEngineConfigDir";
   /** Default regex and rgb values used to match anything not caught in the config file */
   public static String DEFAULT_COLOR_ASSIGN = "\"Misc\",\".*\",128,128,128,128,128,128";
 

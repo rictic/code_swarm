@@ -103,15 +103,15 @@ public class code_swarm extends PApplet {
   private final int EDGE_LIFE_DECREMENT = -2;
   private final int FILE_LIFE_DECREMENT = -2;
   private final int PERSON_LIFE_DECREMENT = -1;
-  // Physical engine configuration
-  String          physicalEngineConfigDir;
-  String          physicalEngineSelection;
-  LinkedList<peConfig> mPhysicalEngineChoices = new LinkedList<peConfig>();
-  PhysicalEngine  mPhysicalEngine = null;
+  // Physics engine configuration
+  String          physicsEngineConfigDir;
+  String          physicsEngineSelection;
+  LinkedList<peConfig> mPhysicsEngineChoices = new LinkedList<peConfig>();
+  PhysicsEngine  mPhysicsEngine = null;
   
 
-  // Default Physical Engine (class) name
-  static final String PHYSICAL_ENGINE_LEGACY  = "PhysicalEngineLegacy";
+  // Default Physics Engine (class) name
+  static final String PHYSICS_ENGINE_LEGACY  = "PhysicsEngineLegacy";
   
   // Formats the date string nicely
   DateFormat formatter = DateFormat.getDateInstance();
@@ -243,8 +243,8 @@ public class code_swarm extends PApplet {
      * This section loads config files and calls the setup method for all physics engines.
      */
 
-    physicalEngineConfigDir = cfg.getStringProperty( CodeSwarmConfig.PHYSICAL_ENGINE_CONF_DIR, "physics_engine");
-    File f = new File(physicalEngineConfigDir);
+    physicsEngineConfigDir = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_CONF_DIR, "physics_engine");
+    File f = new File(physicsEngineConfigDir);
     String[] configFiles = null;
     if ( f.exists()  &&  f.isDirectory() ) {
       configFiles = f.list();
@@ -252,7 +252,7 @@ public class code_swarm extends PApplet {
     for (int i=0; configFiles != null  &&  i<configFiles.length; i++) {
       if (configFiles[i].endsWith(".config")) {
         Properties p = new Properties();
-        String ConfigPath = physicalEngineConfigDir + System.getProperty("file.separator") + configFiles[i];
+        String ConfigPath = physicsEngineConfigDir + System.getProperty("file.separator") + configFiles[i];
         try {
           p.load(new FileInputStream(ConfigPath));
         } catch (FileNotFoundException e) {
@@ -271,10 +271,10 @@ public class code_swarm extends PApplet {
             e.printStackTrace();
             System.exit(1);
           }
-          PhysicalEngine pe = null;
+          PhysicsEngine pe = null;
           try {
             Constructor peConstructor = c.getConstructor();
-            pe = (PhysicalEngine) peConstructor.newInstance();
+            pe = (PhysicsEngine) peConstructor.newInstance();
             pe.setup(p);
           } catch (InstantiationException e) {
             e.printStackTrace();
@@ -296,7 +296,7 @@ public class code_swarm extends PApplet {
             System.exit(1);
           }
           peConfig pec = new peConfig(ClassName,pe);
-          mPhysicalEngineChoices.add(pec);
+          mPhysicsEngineChoices.add(pec);
         } else {
           System.out.println("Skipping config file '" + ConfigPath + "'.  Must specify class name via the 'name' parameter.");
           System.exit(1);
@@ -304,24 +304,24 @@ public class code_swarm extends PApplet {
       }
     }
     
-    if (mPhysicalEngineChoices.size() == 0) {
-      System.out.println("No physics engine config files found in '" + physicalEngineConfigDir + "'.");
+    if (mPhysicsEngineChoices.size() == 0) {
+      System.out.println("No physics engine config files found in '" + physicsEngineConfigDir + "'.");
       System.exit(1);
     }
     
-    // Physical engine configuration and instantiation
-    physicalEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICAL_ENGINE_SELECTION, PHYSICAL_ENGINE_LEGACY );
+    // Physics engine configuration and instantiation
+    physicsEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_SELECTION, PHYSICS_ENGINE_LEGACY );
     
-    ListIterator<peConfig> peIterator = mPhysicalEngineChoices.listIterator();
+    ListIterator<peConfig> peIterator = mPhysicsEngineChoices.listIterator();
     while (peIterator.hasNext()) {
       peConfig p = peIterator.next();
-      if (physicalEngineSelection.equals(p.name)) {
-        mPhysicalEngine = p.pe;
+      if (physicsEngineSelection.equals(p.name)) {
+        mPhysicsEngine = p.pe;
       }
     }
     
-    if (mPhysicalEngine == null) {
-      System.out.println("No physics engine matches your choice of '" + physicalEngineSelection + "'. Check '" + physicalEngineConfigDir + "' for options.");
+    if (mPhysicsEngine == null) {
+      System.out.println("No physics engine matches your choice of '" + physicsEngineSelection + "'. Check '" + physicsEngineConfigDir + "' for options.");
       System.exit(1);
     }
     
@@ -713,27 +713,27 @@ public class code_swarm extends PApplet {
       history.remove();
 
     for (Edge edge : edges) {
-      mPhysicalEngine.onRelaxEdge(edge);
+      mPhysicsEngine.onRelaxEdge(edge);
     }
 
     for (FileNode node : nodes) {
-      mPhysicalEngine.onRelaxNode(node);
+      mPhysicsEngine.onRelaxNode(node);
     }
 
     for (PersonNode person : people) {
-      mPhysicalEngine.onRelaxPerson(person);
+      mPhysicsEngine.onRelaxPerson(person);
     }
 
     for (Edge edge : edges) {
-      mPhysicalEngine.onUpdateEdge(edge);
+      mPhysicsEngine.onUpdateEdge(edge);
     }
 
     for (FileNode node : nodes) {
-      mPhysicalEngine.onUpdateNode(node);
+      mPhysicsEngine.onUpdateNode(node);
     }
 
     for (PersonNode person : people) {
-      mPhysicalEngine.onUpdatePerson(person);
+      mPhysicsEngine.onUpdatePerson(person);
     }
   }
 
@@ -884,22 +884,22 @@ public class code_swarm extends PApplet {
    * @param increment Indicates whether or not to go left or right on the list
    */
   public void switchPhysicsEngine(boolean increment) {
-    if (mPhysicalEngineChoices.size() > 1) {
+    if (mPhysicsEngineChoices.size() > 1) {
       boolean found = false;
-      for (int i = 0; i < mPhysicalEngineChoices.size() && !found; i++) {
-        if (mPhysicalEngineChoices.get(i).pe == mPhysicalEngine) {
+      for (int i = 0; i < mPhysicsEngineChoices.size() && !found; i++) {
+        if (mPhysicsEngineChoices.get(i).pe == mPhysicsEngine) {
           found = true;
           if (increment) {
-            if ((i+1) < mPhysicalEngineChoices.size()) {
-              mPhysicalEngine=mPhysicalEngineChoices.get(i+1).pe;
+            if ((i+1) < mPhysicsEngineChoices.size()) {
+              mPhysicsEngine=mPhysicsEngineChoices.get(i+1).pe;
             } else {
-              mPhysicalEngine=mPhysicalEngineChoices.get(0).pe;
+              mPhysicsEngine=mPhysicsEngineChoices.get(0).pe;
             }
           } else {
             if ((i-1) > 0) {
-              mPhysicalEngine=mPhysicalEngineChoices.get(i-1).pe;
+              mPhysicsEngine=mPhysicsEngineChoices.get(i-1).pe;
             } else {
-              mPhysicalEngine=mPhysicalEngineChoices.get(mPhysicalEngineChoices.size()-1).pe;
+              mPhysicsEngine=mPhysicsEngineChoices.get(mPhysicsEngineChoices.size()-1).pe;
             }
           }
         }
@@ -923,9 +923,9 @@ public class code_swarm extends PApplet {
    */
   class peConfig {
     protected String name;
-    protected PhysicalEngine pe;
+    protected PhysicsEngine pe;
     
-    peConfig(String n, PhysicalEngine p) {
+    peConfig(String n, PhysicsEngine p) {
       name = n;
       pe = p;
     }
