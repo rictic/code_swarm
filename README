@@ -7,35 +7,32 @@ Google Code Project :      http://code.google.com/p/codeswarm/
 Google Group/Mailing List: http://groups.google.com/group/codeswarm 
 
 
-I) Building 
+# Building 
 
 More detail is available at http://code.google.com/p/codeswarm/wiki/HowtoBuild
 
 This quick guide explains how to setup your development environment to build
 the binary (ie. jar) version of code_swarm from Java sources.
 
-I.1) Prerequisites
+## Prerequisites
 You will need the "Ant" software building tool, and the Java SDK from sun
 (no idea if another SDK could do the job).
 If Java and Ant aren't installed, you'll need a bit of familiarity with installing
 software packages on your platform.  A 
 
-I.1.a) Linux
-This guide is written with a Debian based Linux, Ubuntu 8.04. It would requires
-some minor adaptation to use on other distribution (other packaging systems).
+### Linux
+This guide is written with a Debian based Linux, Ubuntu 8.04. The process is likely
+to be similar with other linux distributions.
 
- * install ant with the following command (or with your favorite graphical package manager) 
+This should ensure that ant and java6 are installed and configured:
+
     sudo apt-get install ant 
-
- * install sun-java-jdk 1.5 or 1.6 following your distribution recommendation 
     sudo apt-get install sun-java6-jdk 
-
- * configure the Java SDK to specify the new installation path, for instance on Ubuntu : 
     sudo update-java-alternatives -s java-6-sun 
 
-   See http://doc.ubuntu-fr.org/java
 
-I.1.b) Windows
+
+### Windows
  * download ant for all platforms at http://ant.apache.org/bindownload.cgi
  * unpack it where you want it to be installed, and add the location of
    its binaries to the the "PATH" environment variable. For instance, add at the end : 
@@ -48,30 +45,41 @@ I.1.b) Windows
  * then create a new environment variable called JAVA_HOME and set its paht to 
    "C:\Program Files\Java\jdk1.6.0_06;" 
 
-I.2) Getting the source code
+## Getting the source code
+
+
+### Subversion
 
 code_swarm's source code is on a Google Code Subversion repository (svn) :
 http://codeswarm.googlecode.com/svn/trunk/
 
 See Subversion homepage at http://subversion.tigris.org/ for all appropriate 
-tools and documents. I would recommend "TortoiseSVN" for Windows users. 
+tools and documents. I would recommend [TortoiseSVN](http://tortoisesvn.tigris.org/) for Windows users. 
 Unix-like users would get their native "Subversion" package.
 
 For more information, see http://code.google.com/p/codeswarm/source/checkout
 
-I.3) Building the sources
+### git
+
+A git copy of the code_swarm repository is maintained at <http://github.com/rictic/code_swarm/tree/master>
+
+To obtain a clone of the repository, simply use:
+
+    git clone git://github.com/rictic/code_swarm.git
+
+
+## Building the sources
 
 With that out of the way, building and running code_swarm is quite easy:
 
- * Open a terminal/command line shell
- * cd path/to/code_swarm
- * ant run
+In your terminal/command line:
+    cd path/to/code_swarm
+    ant run
 
-Alternatively, you can just try the "run.sh" or "run.bat" scripts to get it
+Alternatively, you can just try the `run.sh` or `run.bat` scripts to get it
 done in once, but you'll need to rebuild manually if you modify the source code.
 
 Other commands:
- * "ant" will build, but not run
- * "ant all" will also generate Javadoc HTML documentation
- * "ant clean" will delete all intermediate and binary files 
-
+ * `ant` will build, but not run
+ * `ant all` will also generate Javadoc HTML documentation
+ * `ant clean` will delete all intermediate and binary files 
