@@ -3,7 +3,7 @@ code_swarm's standard input format.
 
 convert_logs.py supports more formats than we have documented here.  For more information:
 
-    python convert_logs.py
+    python convert_logs.py --help
 
 # SVN #
 
