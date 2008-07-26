@@ -12,7 +12,7 @@ svn_sep = "---------------------------------------------------------------------
 cvs_sep = "----------------------------"
 
 # Event to hold all of the separate events as we parse them from the logs.
-class Event():
+class Event(object):
     filename = ""
     date = "0"
     author = "(no author)"
@@ -297,8 +297,8 @@ def main():
 
         create_event_xml(event_list, log_file, opts.output_log)
         
-    if opts.wikimedia_log:
-        print "Not yet implemented."
+#     if opts.wikimedia_log:
+#         print "Not yet implemented."
         
 def create_event_xml(events, base_log, output_log=None):
     """ Write out the final XML output log file based on an input
