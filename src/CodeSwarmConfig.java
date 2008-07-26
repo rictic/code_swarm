@@ -111,7 +111,6 @@ public class CodeSwarmConfig
     def.setProperty( BACKGROUND_KEY, "0,0,0" );
     def.setProperty( TAKE_SNAPSHOTS_KEY, "false");
     def.setProperty( SNAPSHOT_LOCATION_KEY, "frames/snap-#####.png" );
-    def.setProperty( EDGE_LENGTH_KEY, "25" );
     def.setProperty( SPRITE_FILE_KEY, "particle.png" );
     def.setProperty( COLOR_ASSIGN_KEY + "1" , DEFAULT_COLOR_ASSIGN );
 

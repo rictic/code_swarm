@@ -240,12 +240,10 @@ public class code_swarm extends PApplet {
     // Physics engine configuration and instantiation
     physicsEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_SELECTION, PHYSICS_ENGINE_LEGACY );
     
-    ListIterator<peConfig> peIterator = mPhysicsEngineChoices.listIterator();
-    while (peIterator.hasNext()) {
-      peConfig p = peIterator.next();
-      if (physicsEngineSelection.equals(p.name)) {
-        mPhysicsEngine = p.pe;
-      }
+    for (peConfig p : mPhysicsEngineChoices){
+    	if (physicsEngineSelection.equals(p.name)){
+    		mPhysicsEngine = p.pe;
+    	}
     }
     
     if (mPhysicsEngine == null) {
@@ -282,10 +280,7 @@ public class code_swarm extends PApplet {
     /** TODO: use adapter pattern to handle different data sources */
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
-    EDGE_LEN = cfg.getIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY);
-    if (EDGE_LEN <= 0) {
-      EDGE_LEN = 25;
-    }
+    EDGE_LEN = cfg.getPositiveIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY, 25);
 
     // Create fonts
     /**
