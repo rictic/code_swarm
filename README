@@ -20,7 +20,7 @@ the binary (ie. jar) version of code_swarm from Java sources.
 You will need the "Ant" software building tool, and the Java SDK from Sun
 (no idea if another SDK could do the job).
 If Java and Ant aren't installed, you'll need a bit of familiarity with installing
-software packages on your platform.  A 
+software packages on your platform.
 
 ### Linux ###
 
