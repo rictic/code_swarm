@@ -17,7 +17,6 @@
  * along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Properties;
 import javax.vecmath.Vector2f;
 
 /**
@@ -29,7 +28,7 @@ import javax.vecmath.Vector2f;
  */
 public class PhysicsEngineSimple implements PhysicsEngine
 {
-  private Properties cfg;
+  private CodeSwarmConfig cfg;
   
   private float FORCE_EDGE_MULTIPLIER;
   private float FORCE_NODES_MULTIPLIER;
@@ -41,13 +40,13 @@ public class PhysicsEngineSimple implements PhysicsEngine
    * @param p Properties from the config file.
    */
   //PhysicalEngineSimple(float forceEdgeMultiplier, float forceToSpeedMultiplier, float speedToPositionDrag)
-  public void setup (java.util.Properties p)
+  public void setup (CodeSwarmConfig p)
   {
     cfg = p;
-    FORCE_EDGE_MULTIPLIER = Float.parseFloat(cfg.getProperty("edgeMultiplier","1.0"));
-    FORCE_NODES_MULTIPLIER = Float.parseFloat(cfg.getProperty("nodesMultiplier","1.0"));
-    FORCE_TO_SPEED_MULTIPLIER = Float.parseFloat(cfg.getProperty("speedMultiplier","1.0"));
-    SPEED_TO_POSITION_MULTIPLIER = Float.parseFloat(cfg.getProperty("drag","0.5"));
+    FORCE_EDGE_MULTIPLIER = cfg.getFloatProperty("edgeMultiplier",1.0);
+    FORCE_NODES_MULTIPLIER = cfg.getFloatProperty("nodesMultiplier",1.0);
+    FORCE_TO_SPEED_MULTIPLIER = cfg.getFloatProperty("speedMultiplier",1.0);
+    SPEED_TO_POSITION_MULTIPLIER = cfg.getFloatProperty("drag",0.5);
   }
   
   /**

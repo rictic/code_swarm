@@ -17,9 +17,6 @@
  * along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Properties;
-import javax.vecmath.Vector2f;
-
 /**
  * Abstract interface of any code_swarm physical engine.
  *
@@ -34,7 +31,7 @@ public interface PhysicsEngine
    * Initialize the Physical Engine
    * @param p Properties file
    */
-  public void setup (Properties p);
+  public void setup (CodeSwarmConfig p);
   
   /**
    * Method that allows Physics Engine to modify Speed / Position during the relax phase.

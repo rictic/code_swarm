@@ -179,10 +179,10 @@ public class code_swarm extends PApplet {
     }
     for (int i=0; configFiles != null  &&  i<configFiles.length; i++) {
       if (configFiles[i].endsWith(".config")) {
-        Properties p = new Properties();
         String ConfigPath = physicsEngineConfigDir + System.getProperty("file.separator") + configFiles[i];
+        CodeSwarmConfig physicsConfig = null;
         try {
-          p.load(new FileInputStream(ConfigPath));
+          physicsConfig = new CodeSwarmConfig(ConfigPath);
         } catch (FileNotFoundException e) {
           e.printStackTrace();
           System.exit(1);
@@ -190,7 +190,7 @@ public class code_swarm extends PApplet {
           e.printStackTrace();
           System.exit(1);
         }
-        String ClassName = p.getProperty("name", "__DEFAULT__");
+        String ClassName = physicsConfig.getStringProperty("name", "__DEFAULT__");
         if ( ! ClassName.equals("__DEFAULT__")) {
           Class<PhysicsEngine> c = null;
           try {
@@ -203,7 +203,7 @@ public class code_swarm extends PApplet {
           try {
             Constructor<PhysicsEngine> peConstructor = c.getConstructor();
             pe = peConstructor.newInstance();
-            pe.setup(p);
+            pe.setup(physicsConfig);
           } catch (InstantiationException e) {
             e.printStackTrace();
             System.exit(1);
@@ -241,9 +241,9 @@ public class code_swarm extends PApplet {
     physicsEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_SELECTION, PHYSICS_ENGINE_LEGACY );
     
     for (peConfig p : mPhysicsEngineChoices){
-    	if (physicsEngineSelection.equals(p.name)){
-    		mPhysicsEngine = p.pe;
-    	}
+      if (physicsEngineSelection.equals(p.name)){
+        mPhysicsEngine = p.pe;
+      }
     }
     
     if (mPhysicsEngine == null) {

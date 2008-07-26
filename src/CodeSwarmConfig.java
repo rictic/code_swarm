@@ -231,6 +231,16 @@ public class CodeSwarmConfig
 
   /**
    * 
+   * @param key
+   * @param defValue
+   * @return defValue if not found, float value of property if found.
+   */
+  public Float getFloatProperty(String key, double defValue) {
+    return Float.parseFloat( p.getProperty(key, String.valueOf(defValue)) );
+  }
+  
+  /**
+   * 
    * @param str
    * @return Color object constructed from values in str
    */
