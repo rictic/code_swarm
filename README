@@ -80,10 +80,11 @@ In your terminal/command line:
     cd path/to/code_swarm
     ant run
 
-Alternatively, you can just try the `run.sh` or `run.bat` scripts to get it
-done in once, but you'll need to rebuild manually if you modify the source code.
+Alternatively, you can just try the `run.sh` or `run.bat` scripts after you've built
+the project, but you'll need to rebuild manually if you modify the code_swarm source.
 
 Other commands:
- * `ant` will build, but not run
- * `ant all` will also generate Javadoc HTML documentation
- * `ant clean` will delete all intermediate and binary files 
+
+* `ant` will build, but not run the project
+* `ant all` will also generate Javadoc HTML documentation
+* `ant clean` will delete all intermediate and binary files 
