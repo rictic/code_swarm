@@ -7,20 +7,23 @@ Google Code Project :      http://code.google.com/p/codeswarm/
 Google Group/Mailing List: http://groups.google.com/group/codeswarm 
 
 
-# Building 
+# Building #
 
 More detail is available at http://code.google.com/p/codeswarm/wiki/HowtoBuild
 
 This quick guide explains how to setup your development environment to build
 the binary (ie. jar) version of code_swarm from Java sources.
 
-## Prerequisites
-You will need the "Ant" software building tool, and the Java SDK from sun
+
+## Prerequisites ##
+
+You will need the "Ant" software building tool, and the Java SDK from Sun
 (no idea if another SDK could do the job).
 If Java and Ant aren't installed, you'll need a bit of familiarity with installing
 software packages on your platform.  A 
 
-### Linux
+### Linux ###
+
 This guide is written with a Debian based Linux, Ubuntu 8.04. The process is likely
 to be similar with other linux distributions.
 
@@ -31,24 +34,25 @@ This should ensure that ant and java6 are installed and configured:
     sudo update-java-alternatives -s java-6-sun 
 
 
+### Windows ###
 
-### Windows
- * download ant for all platforms at http://ant.apache.org/bindownload.cgi
- * unpack it where you want it to be installed, and add the location of
-   its binaries to the the "PATH" environment variable. For instance, add at the end : 
-   "C:\apache-ant-1.7.0\bin;" 
+* download ant for all platforms at http://ant.apache.org/bindownload.cgi
+* unpack it where you want it to be installed, and add the location of
+  its binaries to the the `PATH` environment variable. For instance, add at the end : 
+  `C:\apache-ant-1.7.0\bin;` 
 
- * download Sun Java SDK at http://java.sun.com/javase/downloads/index.jsp
- * install it and add the "javac" Java compiler to the PATH : 
-   "C:\Program Files\Java\jdk1.6.0_06\bin;" 
+* download Sun Java SDK at http://java.sun.com/javase/downloads/index.jsp
+* install it and add the "javac" Java compiler to the PATH : 
+  `C:\Program Files\Java\jdk1.6.0_06\bin;`
 
- * then create a new environment variable called JAVA_HOME and set its paht to 
-   "C:\Program Files\Java\jdk1.6.0_06;" 
-
-## Getting the source code
+* then create a new environment variable called JAVA_HOME and set its path to 
+  `C:\Program Files\Java\jdk1.6.0_06;`
 
 
-### Subversion
+
+## Getting the source code ##
+
+### Subversion ###
 
 code_swarm's source code is on a Google Code Subversion repository (svn) :
 http://codeswarm.googlecode.com/svn/trunk/
@@ -59,7 +63,7 @@ Unix-like users would get their native "Subversion" package.
 
 For more information, see http://code.google.com/p/codeswarm/source/checkout
 
-### git
+### git ###
 
 A git copy of the code_swarm repository is maintained at <http://github.com/rictic/code_swarm/tree/master>
 
@@ -68,7 +72,7 @@ To obtain a clone of the repository, simply use:
     git clone git://github.com/rictic/code_swarm.git
 
 
-## Building the sources
+## Building the sources ##
 
 With that out of the way, building and running code_swarm is quite easy:
 
