@@ -1,0 +1,5 @@
+*.DS_Store
+*.svn
+build
+frames
+dist
