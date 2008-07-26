@@ -189,13 +189,13 @@ public class CodeSwarmConfig
    */
   public int getPositiveIntProperty( String key, int defValue)
   {
-	  if (p.containsKey(key)){
-		  int value = Integer.parseInt(p.getProperty(key));
-		  if (value > 0)
-			  return value;
-	  }
+	if (p.containsKey(key)){
+	  int value = Integer.parseInt(p.getProperty(key));
+	  if (value > 0)
+	    return value;
+	}
 
-	  return defValue;
+	return defValue;
   }
   
   /**
