@@ -127,15 +127,8 @@ public class code_swarm extends PApplet {
    * Initialization
    */
   public void setup() {
-    width=cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
-    if (width <= 0) {
-      width = 640;
-    }
-    
-    height=cfg.getIntProperty(CodeSwarmConfig.HEIGHT_KEY,480);
-    if (height <= 0) {
-      height = 480;
-    }
+    width = cfg.getPositiveIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
+    height = cfg.getPositiveIntProperty(CodeSwarmConfig.HEIGHT_KEY,480);
     
     if (cfg.getBooleanProperty(CodeSwarmConfig.USE_OPEN_GL, false)) {
       size(width, height, OPENGL);
@@ -143,12 +136,12 @@ public class code_swarm extends PApplet {
       size(width, height);
     }
     
-    showLegend = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND, false);
-    showHistogram = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY, false); 
-    showDate = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DATE, false);
-    showEdges = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_EDGES, false);
-    showDebug = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DEBUG, false);
-    takeSnapshots = cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY,false);
+    showLegend     = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND, false);
+    showHistogram  = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY, false); 
+    showDate       = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DATE, false);
+    showEdges      = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_EDGES, false);
+    showDebug      = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DEBUG, false);
+    takeSnapshots  = cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY,false);
     drawNamesSharp = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_SHARP, true);
     drawNamesHalos = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS, false); 
     drawFilesSharp = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_SHARP, false);
@@ -158,20 +151,9 @@ public class code_swarm extends PApplet {
     background = cfg.getBackground().getRGB();
     
     // Ensure we have sane values.
-    EDGE_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.EDGE_LIFE_KEY,255);
-    if (EDGE_LIFE_INIT <= 0) {
-      EDGE_LIFE_INIT = 255;
-    }
-    
-    FILE_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.FILE_LIFE_KEY,255);
-    if (FILE_LIFE_INIT <= 0) {
-      FILE_LIFE_INIT = 255;
-    }
-    
-    PERSON_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.PERSON_LIFE_KEY,255);
-    if (PERSON_LIFE_INIT <= 0) {
-      PERSON_LIFE_INIT = 255;
-    }
+    EDGE_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.EDGE_LIFE_KEY,255);
+    FILE_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.FILE_LIFE_KEY,255);
+    PERSON_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.PERSON_LIFE_KEY,255);
     
     UPDATE_DELTA = cfg.getIntProperty("testsets"/*CodeSwarmConfig.MSEC_PER_FRAME_KEY*/, -1);
     if (UPDATE_DELTA == -1) {

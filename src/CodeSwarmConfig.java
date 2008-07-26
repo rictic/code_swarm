@@ -103,8 +103,6 @@ public class CodeSwarmConfig
   private Properties createDefaults()
   {
     Properties def = new Properties();
-    def.setProperty( WIDTH_KEY, "640" );
-    def.setProperty( HEIGHT_KEY, "480");
     def.setProperty( INPUT_FILE_KEY, "data/sample-repevents.xml");
   /*
    * default is forbidden because it is the only way to specify a FRAMES_PER_DAY_KEY
@@ -185,6 +183,23 @@ public class CodeSwarmConfig
   public int getIntProperty( String key, int defValue )
   {
     return Integer.parseInt( p.getProperty(key, String.valueOf(defValue)) );
+  }
+  
+  /**
+   * 
+   * @param key
+   * @param defValue
+   * @return defValue if not found or found value isn't positive, Value of property if found.
+   */
+  public int getPositiveIntProperty( String key, int defValue)
+  {
+	  if (p.containsKey(key)){
+		  int value = Integer.parseInt(p.getProperty(key));
+		  if (value > 0)
+			  return value;
+	  }
+
+	  return defValue;
   }
   
   /**
