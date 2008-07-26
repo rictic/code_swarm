@@ -143,72 +143,18 @@ public class code_swarm extends PApplet {
       size(width, height);
     }
     
-    if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND, false)) {
-      showLegend = true;
-    } else {
-      showLegend = false;
-    }
+    showLegend = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND, false);
+    showHistogram = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY, false); 
+    showDate = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DATE, false);
+    showEdges = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_EDGES, false);
+    showDebug = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DEBUG, false);
+    takeSnapshots = cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY,false);
+    drawNamesSharp = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_SHARP, true);
+    drawNamesHalos = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS, false); 
+    drawFilesSharp = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_SHARP, false);
+    drawFilesFuzzy = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_FUZZY, true);
+    drawFilesJelly = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY, false);
 
-    if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY, false)) {
-      showHistogram = true;
-    } else {
-      showHistogram = false;
-    }
-    
-    if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DATE, false)) {
-      showDate = true;
-    } else {
-      showDate = false;
-    }
-    
-    if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_EDGES, false)) {
-      showEdges = true;
-    } else {
-      showEdges = false;
-    }
-    
-    if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DEBUG, false)) {
-      showDebug = true;
-    } else {
-      showDebug = false;
-    }
-    
-    if (cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY,false)) {
-      takeSnapshots = true;
-    } else {
-      takeSnapshots = false;
-    }
-    
-    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_SHARP, true)) {
-      drawNamesSharp = true;
-    } else {
-      drawNamesSharp = false;
-    }   
-    
-    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS, false)) {
-      drawNamesHalos = true;
-    } else {
-      drawNamesHalos = false;
-    }
-
-    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_SHARP, false)) {
-      drawFilesSharp = true;
-    } else {
-      drawFilesSharp = false;
-    }   
-    
-    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_FUZZY, true)) {
-      drawFilesFuzzy = true;
-    } else {
-      drawFilesFuzzy = false;
-    }   
-    
-    if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY, false)) {
-      drawFilesJelly = true;
-    } else {
-      drawFilesJelly = false;
-    }   
-    
     background = cfg.getBackground().getRGB();
     
     // Ensure we have sane values.
@@ -264,17 +210,17 @@ public class code_swarm extends PApplet {
         }
         String ClassName = p.getProperty("name", "__DEFAULT__");
         if ( ! ClassName.equals("__DEFAULT__")) {
-          Class<?> c = null;
+          Class<PhysicsEngine> c = null;
           try {
-            c = Class.forName(ClassName);
+            c = (Class<PhysicsEngine>)Class.forName(ClassName);
           } catch (ClassNotFoundException e) {
             e.printStackTrace();
             System.exit(1);
           }
           PhysicsEngine pe = null;
           try {
-            Constructor peConstructor = c.getConstructor();
-            pe = (PhysicsEngine) peConstructor.newInstance();
+            Constructor<PhysicsEngine> peConstructor = c.getConstructor();
+            pe = peConstructor.newInstance();
             pe.setup(p);
           } catch (InstantiationException e) {
             e.printStackTrace();
