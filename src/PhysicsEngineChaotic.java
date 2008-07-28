@@ -28,7 +28,7 @@ import javax.vecmath.Vector2f;
  */
 public class PhysicsEngineChaotic implements PhysicsEngine
 {
-  private Properties cfg;
+  private CodeSwarmConfig cfg;
   
   private float DRAG;
   
@@ -37,10 +37,10 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * Method for initializing parameters.
    * @param p Properties from the config file.
    */
-  public void setup (Properties p)
+  public void setup (CodeSwarmConfig p)
   {
     cfg = p;
-    DRAG = Float.parseFloat(cfg.getProperty("drag","0.00001"));
+    DRAG = cfg.getFloatProperty("drag",0.00001);
   }
   
   /**
