@@ -109,19 +109,19 @@ public class PhysicsEngineChaotic implements PhysicsEngine
      * Get the distance between nodeA and nodeB
      */
     normVec.sub(nodeA.mPosition, nodeB.mPosition);
-    distance = (float) Math.sqrt(normVec.lengthSquared());
+    distance = normVec.lengthSquared();
     /**
      * If there is a Collision.  This is assuming a radius of zero.
      * if (lensq == (radius1 + radius2)) is what to use if we have radius 
      * could use touches for files and edge_length for people?
      */
-    if (distance <= (nodeA.touches + nodeB.touches)) {
-      force.set(((float)Math.random()*2)-1, ((float)Math.random()*2)-1);
+    if (distance == (nodeA.touches + nodeB.touches)) {
+      force.set(0.01f* (((float)Math.random()*2)-1), (0.01f* ((float)Math.random()*2)-1));
     } else if (distance < 10000) {
       /**
        * No collision and distance is close enough to actually matter.
        */
-      normVec.normalize();
+      normVec.scale(1/distance);
       force.set(normVec);
     }
     
@@ -159,6 +159,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
           nodeB.mSpeed.negate();
         } else {                                               // Node B down and right
           nodeB.mSpeed.x *= -1;
+          nodeA.mSpeed.x *= 2;
         }
       } else if (nodeA.mSpeed.x > 0 && nodeA.mSpeed.y < 0) {   // Node A up and right
         if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y > 0) {        // Node B down and left
@@ -166,6 +167,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
           nodeB.mSpeed.negate();
         } else if (nodeB.mSpeed.x > 0 && nodeB.mSpeed.y < 0) { // Node B up and right
           nodeA.mSpeed.x *= -1;
+          nodeB.mSpeed.x *= 2;
         } else if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y < 0) { // Node B up and left
           nodeA.mSpeed.x *= -1;
           nodeB.mSpeed.x *= -1;
@@ -176,6 +178,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
       } else if (nodeA.mSpeed.x < 0 && nodeA.mSpeed.y > 0) {   // Node A down and left
         if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y > 0) {        // Node B down and left
           nodeB.mSpeed.x *= -1;
+          nodeA.mSpeed.x *= 2;
         } else if (nodeB.mSpeed.x > 0 && nodeB.mSpeed.y < 0) { // Node B up and right
           nodeA.mSpeed.negate();
           nodeB.mSpeed.negate();
@@ -195,6 +198,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
           nodeB.mSpeed.x *= -1;
         } else if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y < 0) { // Node B up and left
           nodeA.mSpeed.x *= -1;
+          nodeB.mSpeed.x *= 2;
         } else {                                               // Node B down and right
           nodeA.mSpeed.negate();
           nodeB.mSpeed.negate();
@@ -230,7 +234,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     /**
      * Taken from Newton's 2nd law.  F=ma
      */
-    dlen = (float)Math.sqrt(mod.lengthSquared());
+    dlen = mod.length();
     if (dlen > 0) {
       mod.scale(node.mass);
       node.mSpeed.add(mod);
@@ -245,7 +249,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
   private void applySpeedTo( code_swarm.Node node )
   {
     // This block enforces a maximum absolute velocity.
-    if (Math.sqrt(node.mSpeed.lengthSquared()) > node.maxSpeed) {
+    if (node.mSpeed.length() > node.maxSpeed) {
       Vector2f mag = new Vector2f(node.mSpeed.x / node.maxSpeed, node.mSpeed.y / node.maxSpeed);
       node.mSpeed.scale(1/mag.lengthSquared());
     }
@@ -346,7 +350,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     fNode.decay();
     
     // Apply drag (reduce Speed for next frame calculation)
-    fNode.mSpeed.scaleAdd(DRAG, fNode.mSpeed);
+    fNode.mSpeed.scale(DRAG);
   }
   
   /**
@@ -370,14 +374,14 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     pNode.mSpeed.normalize();
     pNode.mSpeed.scale(4);
     
-/*    float distance = pNode.mSpeed.length();
+    float distance = pNode.mSpeed.length();
     if (distance > 0) {
       float deltaDistance = (pNode.mass - distance) / (distance * 2);
       deltaDistance *= ((float)pNode.life / pNode.LIFE_INIT);
       
       pNode.mSpeed.scale(deltaDistance);
     }
-*/
+    
     applySpeedTo(pNode);
   }
   
