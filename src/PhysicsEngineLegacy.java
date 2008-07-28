@@ -75,7 +75,7 @@ public class PhysicsEngineLegacy implements PhysicsEngine
    * @param edge the link between a person and one of its file 
    * @return force force calculated between those two nodes
    */
-  public Vector2f calculateForceAlongAnEdge( code_swarm.Edge edge )
+  private Vector2f calculateForceAlongAnEdge( code_swarm.Edge edge )
   {
     float distance;
     float deltaDistance;
@@ -108,7 +108,7 @@ public class PhysicsEngineLegacy implements PhysicsEngine
    * @param nodeB [in]
    * @return force force calculated between those two nodes
    */
-  public Vector2f calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB )
+  private Vector2f calculateForceBetweenNodes( code_swarm.Node nodeA, code_swarm.Node nodeB )
   {
     float lensq;
     Vector2f force = new Vector2f();
@@ -145,7 +145,7 @@ public class PhysicsEngineLegacy implements PhysicsEngine
    * 
    * TODO: does force should be a property of the node (or not?)
    */
-  public void applyForceTo( code_swarm.Node node, Vector2f force )
+  private void applyForceTo( code_swarm.Node node, Vector2f force )
   {
     float dlen;
     Vector2f mod = new Vector2f(force);
@@ -165,7 +165,7 @@ public class PhysicsEngineLegacy implements PhysicsEngine
    * 
    * @param node the node to which the force apply
     */
-  public void applySpeedTo( code_swarm.Node node )
+  private void applySpeedTo( code_swarm.Node node )
   {
     float div;
     // This block enforces a maximum absolute velocity.

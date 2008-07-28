@@ -81,6 +81,7 @@ public class code_swarm extends PApplet {
   boolean showLegend = false;
   boolean showPopular = false;
   boolean showEdges = false;
+  boolean showEngine = false;
   boolean showHelp = false;
   boolean takeSnapshots = false;
   boolean showDebug = false;
@@ -100,14 +101,17 @@ public class code_swarm extends PApplet {
   private int EDGE_LIFE_INIT = 255;
   private int FILE_LIFE_INIT = 255;
   private int PERSON_LIFE_INIT = 255;
-  private final int EDGE_LIFE_DECREMENT = -2;
-  private final int FILE_LIFE_DECREMENT = -2;
+  private final int EDGE_LIFE_DECREMENT = -1;
+  private final int FILE_LIFE_DECREMENT = -1;
   private final int PERSON_LIFE_DECREMENT = -1;
   // Physics engine configuration
   String          physicsEngineConfigDir;
   String          physicsEngineSelection;
   LinkedList<peConfig> mPhysicsEngineChoices = new LinkedList<peConfig>();
   PhysicsEngine  mPhysicsEngine = null;
+  private boolean safeToToggle = false;
+  private boolean wantToToggle = false;
+  private boolean toggleDirection = false;
   
 
   // Default Physics Engine (class) name
@@ -364,7 +368,7 @@ public class code_swarm extends PApplet {
      * TODO Put this in the config.
      */
     font = createFont("SansSerif", 10);
-    boldFont = createFont("SansSerif.bold", 14);
+    boldFont = createFont("SansSerif.bold", 10);
     textFont(font);
 
     String SPRITE_FILE = cfg.getStringProperty(CodeSwarmConfig.SPRITE_FILE_KEY);
@@ -431,6 +435,11 @@ public class code_swarm extends PApplet {
 
       textFont(font);
 
+      // Show the physics engine name
+      if (showEngine) {
+        drawEngine();
+      }
+      
       // help, legend and debug information are exclusive
       if (showHelp) {
         // help override legend and debug information
@@ -556,6 +565,16 @@ public class code_swarm extends PApplet {
       text(t.label, 10, (i + 1) * 10);
     }
   }
+  
+  /**
+   *  Show physics engine name
+   */
+  public void drawEngine() {
+    fill(255);
+    textAlign(RIGHT, BASELINE);
+    textSize(10);
+    text(physicsEngineSelection, width-1, height - (textDescent() * 5));
+  }
 
   /**
    *  Show short help on avaible commands
@@ -566,23 +585,24 @@ public class code_swarm extends PApplet {
     textFont(font);
     textAlign(LEFT, TOP);
     fill(255, 200);
-    text("Help on Keyboard commands:", 0, 10*line++);
-    text("  space bar : pause", 0, 10*line++);
-    text("  a : show name hAlos", 0, 10*line++);
-    text("  b : show deBug", 0, 10*line++);
-    text("  d : show Date", 0, 10*line++);
-    text("  e : show Edges", 0, 10*line++);
-    text("  f : draw files Fuzzy", 0, 10*line++);
-    text("  h : show Histogram", 0, 10*line++);
-    text("  j : draw files Jelly", 0, 10*line++);
-    text("  l : show Legend", 0, 10*line++);
-    text("  p : show Popular", 0, 10*line++);
-    text("  q : Quit code_swarm", 0, 10*line++);
-    text("  s : draw names Sharp", 0, 10*line++);
-    text("  S : draw files Sharp", 0, 10*line++);
-    text("  + : use next Physics Engine", 0, 10*line++);
-    text("  - : use previous Physics Engine", 0, 10*line++);
-    text("  ? : show help", 0, 10*line++);
+    text("Help on keyboard commands:", 0, 10*line++);
+    text("space bar : pause", 0, 10*line++);
+    text("           a : show name halos", 0, 10*line++);
+    text("           b : show debug", 0, 10*line++);
+    text("           d : show date", 0, 10*line++);
+    text("           e : show edges", 0, 10*line++);
+    text("           E : show physics engine name", 0, 10*line++);
+    text("            f : draw files fuzzy", 0, 10*line++);
+    text("           h : show histogram", 0, 10*line++);
+    text("            j : draw files jelly", 0, 10*line++);
+    text("            l : show legend", 0, 10*line++);
+    text("           p : show popular", 0, 10*line++);
+    text("           q : quit code_swarm", 0, 10*line++);
+    text("           s : draw names sharp", 0, 10*line++);
+    text("           S : draw files sharp", 0, 10*line++);
+    text("   minus : previous physics engine", 0, 10*line++);
+    text("      plus : next physics engine", 0, 10*line++);
+    text("           ? : show help", 0, 10*line++);
   }
   /**
    *  Show debug information about all drawable objects
@@ -712,28 +732,41 @@ public class code_swarm extends PApplet {
     while (history.size() > 320)
       history.remove();
 
+    // Do not allow toggle Physics Engine yet.
+    safeToToggle = false;
+    // update velocity
     for (Edge edge : edges) {
       mPhysicsEngine.onRelaxEdge(edge);
     }
 
+    // update velocity
     for (FileNode node : nodes) {
       mPhysicsEngine.onRelaxNode(node);
     }
 
+    // update velocity
     for (PersonNode person : people) {
       mPhysicsEngine.onRelaxPerson(person);
     }
 
+    // update position
     for (Edge edge : edges) {
       mPhysicsEngine.onUpdateEdge(edge);
     }
 
+    // update position
     for (FileNode node : nodes) {
       mPhysicsEngine.onUpdateNode(node);
     }
 
+    // update position
     for (PersonNode person : people) {
       mPhysicsEngine.onUpdatePerson(person);
+    }
+    
+    safeToToggle = true;
+    if (wantToToggle == true) {
+      switchPhysicsEngine(toggleDirection);
     }
   }
 
@@ -832,6 +865,10 @@ public class code_swarm extends PApplet {
         showEdges = !showEdges;
         break;
       }
+      case 'E' : {
+        showEngine = !showEngine;
+        break;
+      }
       case 'f' : {
         drawFilesFuzzy = !drawFilesFuzzy;
         break;
@@ -864,12 +901,14 @@ public class code_swarm extends PApplet {
         drawFilesSharp = !drawFilesSharp;
         break;
       }
-      case '+': {
-        switchPhysicsEngine(true);
+      case '-': {
+        wantToToggle = true;
+        toggleDirection = false;
         break;
       }
-      case '-': {
-        switchPhysicsEngine(false);
+      case '+': {
+        wantToToggle = true;
+        toggleDirection = true;
         break;
       }
       case '?': {
@@ -881,25 +920,30 @@ public class code_swarm extends PApplet {
   
   /**
    * Method to switch between Physics Engines
-   * @param increment Indicates whether or not to go left or right on the list
+   * @param direction Indicates whether or not to go left or right on the list
    */
-  public void switchPhysicsEngine(boolean increment) {
-    if (mPhysicsEngineChoices.size() > 1) {
+  public void switchPhysicsEngine(boolean direction) {
+    if (mPhysicsEngineChoices.size() > 1 && safeToToggle) {
       boolean found = false;
       for (int i = 0; i < mPhysicsEngineChoices.size() && !found; i++) {
         if (mPhysicsEngineChoices.get(i).pe == mPhysicsEngine) {
           found = true;
-          if (increment) {
+          wantToToggle = false;
+          if (direction == true) {
             if ((i+1) < mPhysicsEngineChoices.size()) {
               mPhysicsEngine=mPhysicsEngineChoices.get(i+1).pe;
+              physicsEngineSelection=mPhysicsEngineChoices.get(i+1).name;
             } else {
               mPhysicsEngine=mPhysicsEngineChoices.get(0).pe;
+              physicsEngineSelection=mPhysicsEngineChoices.get(0).name;
             }
           } else {
-            if ((i-1) > 0) {
+            if ((i-1) >= 0) {
               mPhysicsEngine=mPhysicsEngineChoices.get(i-1).pe;
+              physicsEngineSelection=mPhysicsEngineChoices.get(i-1).name;
             } else {
               mPhysicsEngine=mPhysicsEngineChoices.get(mPhysicsEngineChoices.size()-1).pe;
+              physicsEngineSelection=mPhysicsEngineChoices.get(mPhysicsEngineChoices.size()-1).name;
             }
           }
         }
@@ -919,7 +963,8 @@ public class code_swarm extends PApplet {
   }
   
   /**
-   * Describe an event on a file
+   * Class to associate the Physics Engine name to the
+   * Physics Engine interface
    */
   class peConfig {
     protected String name;
@@ -1022,8 +1067,8 @@ public class code_swarm extends PApplet {
    * An Edge link two nodes together : a File to a Person.
    */
   class Edge extends Drawable {
-    protected Node  nodeFrom;
-    protected Node  nodeTo;
+    protected FileNode nodeFrom;
+    protected PersonNode nodeTo;
     protected float len;
 
     /**
@@ -1031,7 +1076,7 @@ public class code_swarm extends PApplet {
      * @param from FileNode
      * @param to PersonNode
      */
-    Edge(Node from, Node to) {
+    Edge(FileNode from, PersonNode to) {
       super(EDGE_LIFE_INIT, EDGE_LIFE_DECREMENT);
       this.nodeFrom = from;
       this.nodeTo   = to;
@@ -1067,7 +1112,7 @@ public class code_swarm extends PApplet {
     /**
      * mass of the node
      */
-    public float mass;
+    protected float mass;
     
     /**
      * 1) constructor.
@@ -1077,7 +1122,7 @@ public class code_swarm extends PApplet {
       /** TODO: implement new sort of (random or not) arrival, with configuration
                 => to permit things like "injection points", circular arrival, and so on */
       mPosition = new Vector2f((float)Math.random()*width, (float)Math.random()*height);
-      mSpeed = new Vector2f();
+      mSpeed = new Vector2f(mass*(float)Math.random()-mass,mass*(float)Math.random()-mass);
     }
 
     /**
@@ -1099,7 +1144,7 @@ public class code_swarm extends PApplet {
   class FileNode extends Node implements Comparable<FileNode> {
     private int nodeHue;
     private int minBold;
-    private int touches;
+    protected int touches;
 
     /**
      * @return file node as a string
@@ -1227,20 +1272,19 @@ public class code_swarm extends PApplet {
     private int flavor = color(0);
     private int colorCount = 1;
     private int minBold;
-    private int touches;
+    protected int touches;
 
     /**
      * 1) constructor.
      */
     PersonNode(String n) {
       super(PERSON_LIFE_INIT, PERSON_LIFE_DECREMENT); // -1
-      maxSpeed = 2.0f;
+      maxSpeed = 4.0f;
       name = n;
       /** TODO: add config */
       minBold = (int)(PERSON_LIFE_INIT * 0.95f);
       mass = 10.0f; // bigger mass to person then to node, to stabilize them
-      // range (-1,1)
-      mSpeed.set((float)(mass*Math.random()*2-1),(float)(mass*Math.random()*2-1));
+      touches = 1;
     }
 
     /**
@@ -1285,6 +1329,7 @@ public class code_swarm extends PApplet {
         System.out.println("it under the terms of the GNU General Public License as published by");
         System.out.println("the Free Software Foundation, either version 3 of the License, or");
         System.out.println("(at your option) any later version.");
+        System.out.flush();
         cfg = new CodeSwarmConfig(args[0]);
         PApplet.main(new String[] { "code_swarm" });
       } else {
