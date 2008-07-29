@@ -364,11 +364,12 @@ public class code_swarm extends PApplet {
     }
 
     // Create fonts
-    /**
-     * TODO Put this in the config.
-     */
-    font = createFont("SansSerif", 10);
-    boldFont = createFont("SansSerif.bold", 10);
+    String fontName = cfg.getStringProperty(CodeSwarmConfig.FONT_KEY,"SansSerif");
+    Integer fontSize = cfg.getIntProperty(CodeSwarmConfig.FONT_SIZE, 10);
+    Integer fontSizeBold = cfg.getIntProperty(CodeSwarmConfig.FONT_SIZE_BOLD, 14);
+    font = createFont(fontName, fontSize);
+    boldFont = createFont(fontName + ".bold", fontSizeBold);
+    
     textFont(font);
 
     String SPRITE_FILE = cfg.getStringProperty(CodeSwarmConfig.SPRITE_FILE_KEY);
