@@ -63,6 +63,12 @@ public class CodeSwarmConfig
   /** How long to keep edges alive */
   public static final String PERSON_DECREMENT = "PersonDecrement";
   /** How long to keep edges alive */
+  public static final String DEFAULT_NODE_SPEED = "NodeSpeed";
+  /** How long to keep edges alive */
+  public static final String DEFAULT_FILE_SPEED = "FileSpeed";
+  /** How long to keep edges alive */
+  public static final String DEFAULT_PERSON_SPEED = "PersonSpeed";
+  /** How long to keep edges alive */
   public static final String EDGE_LIFE_KEY = "EdgeLife";
   /** How long to keep nodes alive */
   public static final String FILE_LIFE_KEY = "FileLife";
@@ -218,6 +224,27 @@ public class CodeSwarmConfig
   public long getLongProperty( String key, long defValue )
   {
     return Long.parseLong( p.getProperty(key, String.valueOf(defValue)) );
+  }
+  
+  /**
+   * 
+   * @param key
+   * @return value of property if found, 0 if not found.
+   */
+  public float getFloatProperty( String key )
+  {
+    return Float.parseFloat( p.getProperty(key) );
+  }
+  
+  /**
+   * 
+   * @param key
+   * @param defValue
+   * @return defValue if not found, Value of property if found.
+   */
+  public float getFloatProperty( String key, float defValue )
+  {
+    return Float.parseFloat( p.getProperty(key, String.valueOf(defValue)) );
   }
   
   /**

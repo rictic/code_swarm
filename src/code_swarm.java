@@ -104,6 +104,11 @@ public class code_swarm extends PApplet {
   private int EDGE_LIFE_DECREMENT = -1;
   private int FILE_LIFE_DECREMENT = -1;
   private int PERSON_LIFE_DECREMENT = -1;
+  
+  private float DEFAULT_NODE_SPEED = 7.0f;
+  private float DEFAULT_FILE_SPEED = 7.0f;
+  private float DEFAULT_PERSON_SPEED = 2.0f;
+  
   // Physics engine configuration
   String          physicsEngineConfigDir;
   String          physicsEngineSelection;
@@ -245,6 +250,10 @@ public class code_swarm extends PApplet {
       PERSON_LIFE_DECREMENT = -1;
     }
     
+    DEFAULT_NODE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.DEFAULT_NODE_SPEED, 7.0f);
+    DEFAULT_FILE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.DEFAULT_FILE_SPEED, DEFAULT_NODE_SPEED);
+    DEFAULT_PERSON_SPEED = cfg.getFloatProperty(CodeSwarmConfig.DEFAULT_PERSON_SPEED, DEFAULT_NODE_SPEED);
+    
     UPDATE_DELTA = cfg.getIntProperty("testsets"/*CodeSwarmConfig.MSEC_PER_FRAME_KEY*/, -1);
     if (UPDATE_DELTA == -1) {
       int framesperday = cfg.getIntProperty(CodeSwarmConfig.FRAMES_PER_DAY_KEY, 4);
@@ -369,7 +378,6 @@ public class code_swarm extends PApplet {
 //    });
 //    t.setDaemon(true);
 //    t.start();
-    /** TODO: use adapter pattern to handle different data sources */
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
     EDGE_LEN = cfg.getIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY);
@@ -1122,7 +1130,7 @@ public class code_swarm extends PApplet {
     protected Vector2f mPosition;
     protected Vector2f mSpeed;
     /** TODO: add configuration for max speed */
-    protected float maxSpeed = 7.0f;
+    protected float maxSpeed = DEFAULT_NODE_SPEED;
 
     /**
      * mass of the node
@@ -1180,6 +1188,7 @@ public class code_swarm extends PApplet {
       minBold = (int)(FILE_LIFE_INIT * 0.95f);
       nodeHue = colorAssigner.getColor(name);
       mass = 1.0f;
+      maxSpeed = DEFAULT_FILE_SPEED;
     }
 
     /**
@@ -1294,7 +1303,7 @@ public class code_swarm extends PApplet {
      */
     PersonNode(String n) {
       super(PERSON_LIFE_INIT, PERSON_LIFE_DECREMENT); // -1
-      maxSpeed = 4.0f;
+      maxSpeed = DEFAULT_PERSON_SPEED;
       name = n;
       /** TODO: add config */
       minBold = (int)(PERSON_LIFE_INIT * 0.95f);
