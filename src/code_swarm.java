@@ -109,6 +109,9 @@ public class code_swarm extends PApplet {
   private float DEFAULT_FILE_SPEED = 7.0f;
   private float DEFAULT_PERSON_SPEED = 2.0f;
   
+  private float FILE_MASS = 1.0f;
+  private float PERSON_MASS = 10.0f;
+  
   // Physics engine configuration
   String          physicsEngineConfigDir;
   String          physicsEngineSelection;
@@ -237,22 +240,25 @@ public class code_swarm extends PApplet {
     }
     
     /* enforce decrements < 0 */
-    EDGE_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.EDGE_DECREMENT,-2);
+    EDGE_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.EDGE_DECREMENT_KEY,-2);
     if (EDGE_LIFE_DECREMENT >= 0) {
       EDGE_LIFE_DECREMENT = -2;
     }
-    FILE_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.FILE_DECREMENT,-2);
+    FILE_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.FILE_DECREMENT_KEY,-2);
     if (FILE_LIFE_DECREMENT >= 0) {
       FILE_LIFE_DECREMENT = -2;
     }
-    PERSON_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.PERSON_DECREMENT,-1);
+    PERSON_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.PERSON_DECREMENT_KEY,-1);
     if (PERSON_LIFE_DECREMENT >= 0) {
       PERSON_LIFE_DECREMENT = -1;
     }
     
-    DEFAULT_NODE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.DEFAULT_NODE_SPEED, 7.0f);
-    DEFAULT_FILE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.DEFAULT_FILE_SPEED, DEFAULT_NODE_SPEED);
-    DEFAULT_PERSON_SPEED = cfg.getFloatProperty(CodeSwarmConfig.DEFAULT_PERSON_SPEED, DEFAULT_NODE_SPEED);
+    DEFAULT_NODE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.NODE_SPEED_KEY, 7.0f);
+    DEFAULT_FILE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.FILE_SPEED_KEY, DEFAULT_NODE_SPEED);
+    DEFAULT_PERSON_SPEED = cfg.getFloatProperty(CodeSwarmConfig.PERSON_SPEED_KEY, DEFAULT_NODE_SPEED);
+    
+    FILE_MASS = cfg.getFloatProperty(CodeSwarmConfig.FILE_MASS_KEY,1.0f);
+    PERSON_MASS = cfg.getFloatProperty(CodeSwarmConfig.PERSON_MASS_KEY,1.0f);
     
     UPDATE_DELTA = cfg.getIntProperty("testsets"/*CodeSwarmConfig.MSEC_PER_FRAME_KEY*/, -1);
     if (UPDATE_DELTA == -1) {
@@ -1129,11 +1135,11 @@ public class code_swarm extends PApplet {
     protected String name;
     protected Vector2f mPosition;
     protected Vector2f mSpeed;
-    /** TODO: add configuration for max speed */
     protected float maxSpeed = DEFAULT_NODE_SPEED;
 
     /**
      * mass of the node
+     * TODO: Add this to config.
      */
     protected float mass;
     
@@ -1187,7 +1193,7 @@ public class code_swarm extends PApplet {
       colorMode(RGB);
       minBold = (int)(FILE_LIFE_INIT * 0.95f);
       nodeHue = colorAssigner.getColor(name);
-      mass = 1.0f;
+      mass = FILE_MASS;
       maxSpeed = DEFAULT_FILE_SPEED;
     }
 
@@ -1307,7 +1313,7 @@ public class code_swarm extends PApplet {
       name = n;
       /** TODO: add config */
       minBold = (int)(PERSON_LIFE_INIT * 0.95f);
-      mass = 10.0f; // bigger mass to person then to node, to stabilize them
+      mass = PERSON_MASS; // bigger mass to person then to node, to stabilize them
       touches = 1;
     }
 
