@@ -57,6 +57,12 @@ public class CodeSwarmConfig
   /** Path to sprite file for nodes */
   public static final String SPRITE_FILE_KEY = "ParticleSpriteFile";
   /** How long to keep edges alive */
+  public static final String EDGE_DECREMENT = "EdgeDecrement";
+  /** How long to keep edges alive */
+  public static final String FILE_DECREMENT = "FileDecrement";
+  /** How long to keep edges alive */
+  public static final String PERSON_DECREMENT = "PersonDecrement";
+  /** How long to keep edges alive */
   public static final String EDGE_LIFE_KEY = "EdgeLife";
   /** How long to keep nodes alive */
   public static final String FILE_LIFE_KEY = "FileLife";

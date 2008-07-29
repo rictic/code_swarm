@@ -96,14 +96,14 @@ public class code_swarm extends PApplet {
   int currentColor;
 
   // Edge Length
-  private int EDGE_LEN = 25;
+  protected int EDGE_LEN = 25;
   // Drawable object life decrement
   private int EDGE_LIFE_INIT = 255;
   private int FILE_LIFE_INIT = 255;
   private int PERSON_LIFE_INIT = 255;
-  private final int EDGE_LIFE_DECREMENT = -1;
-  private final int FILE_LIFE_DECREMENT = -1;
-  private final int PERSON_LIFE_DECREMENT = -1;
+  private int EDGE_LIFE_DECREMENT = -1;
+  private int FILE_LIFE_DECREMENT = -1;
+  private int PERSON_LIFE_DECREMENT = -1;
   // Physics engine configuration
   String          physicsEngineConfigDir;
   String          physicsEngineSelection;
@@ -229,6 +229,20 @@ public class code_swarm extends PApplet {
     PERSON_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.PERSON_LIFE_KEY,255);
     if (PERSON_LIFE_INIT <= 0) {
       PERSON_LIFE_INIT = 255;
+    }
+    
+    /* enforce decrements < 0 */
+    EDGE_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.EDGE_DECREMENT,-2);
+    if (EDGE_LIFE_DECREMENT >= 0) {
+      EDGE_LIFE_DECREMENT = -2;
+    }
+    FILE_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.FILE_DECREMENT,-2);
+    if (FILE_LIFE_DECREMENT >= 0) {
+      FILE_LIFE_DECREMENT = -2;
+    }
+    PERSON_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.PERSON_DECREMENT,-1);
+    if (PERSON_LIFE_DECREMENT >= 0) {
+      PERSON_LIFE_DECREMENT = -1;
     }
     
     UPDATE_DELTA = cfg.getIntProperty("testsets"/*CodeSwarmConfig.MSEC_PER_FRAME_KEY*/, -1);

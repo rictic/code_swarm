@@ -25,7 +25,7 @@ import javax.vecmath.Vector2f;
  * 
  * This is only a rewriting of the initial code_swarm prototype.
  * 
- * @see other Physical Engine for more methods 
+ * @see PhysicsEngine Physical Engine Interface
  */
 public class PhysicsEngineLegacy implements PhysicsEngine
 {

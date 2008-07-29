@@ -18,7 +18,6 @@
  */
 
 import java.util.Properties;
-import javax.vecmath.Vector2f;
 
 /**
  * Abstract interface of any code_swarm physical engine.

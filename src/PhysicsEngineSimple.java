@@ -25,7 +25,7 @@ import javax.vecmath.Vector2f;
  * 
  * This is a free test to explore dans demonstrate PhysicalEngine designs.
  * 
- * @see other Physical Engine for more methods 
+ * @see PhysicsEngine Physics Engine Interface
  */
 public class PhysicsEngineSimple implements PhysicsEngine
 {
