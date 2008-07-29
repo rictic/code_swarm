@@ -130,10 +130,6 @@ public class CodeSwarmConfig
     def.setProperty( WIDTH_KEY, "640" );
     def.setProperty( HEIGHT_KEY, "480");
     def.setProperty( INPUT_FILE_KEY, "data/sample-repevents.xml");
-  /*
-   * default is forbidden because it is the only way to specify a FRAMES_PER_DAY_KEY
-   * def.setProperty( MSEC_PER_FRAME_KEY, "21600000");
-   */
     def.setProperty( BACKGROUND_KEY, "0,0,0" );
     def.setProperty( TAKE_SNAPSHOTS_KEY, "false");
     def.setProperty( SNAPSHOT_LOCATION_KEY, "frames/snap-#####.png" );

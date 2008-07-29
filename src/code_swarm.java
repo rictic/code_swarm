@@ -267,7 +267,7 @@ public class code_swarm extends PApplet {
       HIGHLIGHT_PCT = 5;
     }
     
-    UPDATE_DELTA = cfg.getIntProperty("testsets"/*CodeSwarmConfig.MSEC_PER_FRAME_KEY*/, -1);
+    UPDATE_DELTA = cfg.getIntProperty(CodeSwarmConfig.MSEC_PER_FRAME_KEY, -1);
     if (UPDATE_DELTA == -1) {
       int framesperday = cfg.getIntProperty(CodeSwarmConfig.FRAMES_PER_DAY_KEY, 4);
       if (framesperday > 0) {
