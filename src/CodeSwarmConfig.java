@@ -80,6 +80,8 @@ public class CodeSwarmConfig
   public static final String PERSON_LIFE_KEY = "PersonLife";
   /** Boolean value, controls using the OpenGL library (experimental) */
   public static final String USE_OPEN_GL = "UseOpenGL";
+  /** Percentage of life to highlight */
+  public static final String HIGHLIGHT_PCT_KEY = "HighlightPct";
   /** Boolean value, controls showing the Legend */
   public static final String SHOW_LEGEND = "ShowLegend";
   /** Boolean value, controls showing the Histogram */

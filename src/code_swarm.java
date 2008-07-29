@@ -112,6 +112,8 @@ public class code_swarm extends PApplet {
   private float FILE_MASS = 1.0f;
   private float PERSON_MASS = 10.0f;
   
+  private int HIGHLIGHT_PCT = 5;
+  
   // Physics engine configuration
   String          physicsEngineConfigDir;
   String          physicsEngineSelection;
@@ -259,6 +261,11 @@ public class code_swarm extends PApplet {
     
     FILE_MASS = cfg.getFloatProperty(CodeSwarmConfig.FILE_MASS_KEY,1.0f);
     PERSON_MASS = cfg.getFloatProperty(CodeSwarmConfig.PERSON_MASS_KEY,1.0f);
+    
+    HIGHLIGHT_PCT = cfg.getIntProperty(CodeSwarmConfig.HIGHLIGHT_PCT_KEY,5);
+    if (HIGHLIGHT_PCT < 0 || HIGHLIGHT_PCT > 100) {
+      HIGHLIGHT_PCT = 5;
+    }
     
     UPDATE_DELTA = cfg.getIntProperty("testsets"/*CodeSwarmConfig.MSEC_PER_FRAME_KEY*/, -1);
     if (UPDATE_DELTA == -1) {
@@ -1139,7 +1146,6 @@ public class code_swarm extends PApplet {
 
     /**
      * mass of the node
-     * TODO: Add this to config.
      */
     protected float mass;
     
@@ -1191,7 +1197,7 @@ public class code_swarm extends PApplet {
       touches = 1;
       life = FILE_LIFE_INIT;
       colorMode(RGB);
-      minBold = (int)(FILE_LIFE_INIT * 0.95f);
+      minBold = (int)(FILE_LIFE_INIT * ((100.0f - HIGHLIGHT_PCT)/100));
       nodeHue = colorAssigner.getColor(name);
       mass = FILE_MASS;
       maxSpeed = DEFAULT_FILE_SPEED;
@@ -1311,8 +1317,7 @@ public class code_swarm extends PApplet {
       super(PERSON_LIFE_INIT, PERSON_LIFE_DECREMENT); // -1
       maxSpeed = DEFAULT_PERSON_SPEED;
       name = n;
-      /** TODO: add config */
-      minBold = (int)(PERSON_LIFE_INIT * 0.95f);
+      minBold = (int)(PERSON_LIFE_INIT * ((100.0f - HIGHLIGHT_PCT)/100));
       mass = PERSON_MASS; // bigger mass to person then to node, to stabilize them
       touches = 1;
     }
