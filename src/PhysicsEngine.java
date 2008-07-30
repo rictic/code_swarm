@@ -18,6 +18,7 @@
  */
 
 import java.util.Properties;
+import javax.vecmath.Vector2f;
 
 /**
  * Abstract interface of any code_swarm physical engine.
@@ -88,5 +89,30 @@ public interface PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdatePerson(code_swarm.PersonNode pNode);
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting location for a Person Node
+   */
+  public Vector2f pStartLocation();
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting location for a File Node
+   */
+  public Vector2f fStartLocation();
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting velocity for a Person Node
+   */
+  public Vector2f pStartVelocity();
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting velocity for a File Node
+   */
+  public Vector2f fStartVelocity();
+  
 }
 

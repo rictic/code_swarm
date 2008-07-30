@@ -428,5 +428,41 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     // Apply drag (reduce Speed for next frame calculation)
     pNode.mSpeed.scale(DRAG);
   }
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting location for a Person Node
+   */
+  public Vector2f pStartLocation() {
+    Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
+    return vec;
+  }
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting location for a File Node
+   */
+  public Vector2f fStartLocation() {
+    Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
+    return vec;
+  }
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting velocity for a Person Node
+   */
+  public Vector2f pStartVelocity() {
+    Vector2f vec = new Vector2f((float)Math.random()*2 - 1, (float)Math.random()*2 -1);
+    return vec;
+  }
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting velocity for a File Node
+   */
+  public Vector2f fStartVelocity() {
+    Vector2f vec = new Vector2f((float)Math.random()*2 - 1, (float)Math.random()*2 -1);
+    return vec;
+  }
 }
 

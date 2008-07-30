@@ -1154,10 +1154,6 @@ public class code_swarm extends PApplet {
      */
     Node(int lifeInit, int lifeDecrement) {
       super(lifeInit, lifeDecrement);
-      /** TODO: implement new sort of (random or not) arrival, with configuration
-                => to permit things like "injection points", circular arrival, and so on */
-      mPosition = new Vector2f((float)Math.random()*width, (float)Math.random()*height);
-      mSpeed = new Vector2f(mass*(float)Math.random()-mass,mass*(float)Math.random()-mass);
     }
 
     /**
@@ -1201,6 +1197,8 @@ public class code_swarm extends PApplet {
       nodeHue = colorAssigner.getColor(name);
       mass = FILE_MASS;
       maxSpeed = DEFAULT_FILE_SPEED;
+      mPosition = mPhysicsEngine.fStartLocation();
+      mSpeed = mPhysicsEngine.fStartVelocity();
     }
 
     /**
@@ -1317,9 +1315,11 @@ public class code_swarm extends PApplet {
       super(PERSON_LIFE_INIT, PERSON_LIFE_DECREMENT); // -1
       maxSpeed = DEFAULT_PERSON_SPEED;
       name = n;
-      minBold = (int)(PERSON_LIFE_INIT * ((100.0f - HIGHLIGHT_PCT)/100));
+      minBold = (int)(PERSON_LIFE_INIT * (1 - (HIGHLIGHT_PCT)/100));
       mass = PERSON_MASS; // bigger mass to person then to node, to stabilize them
       touches = 1;
+      mPosition = mPhysicsEngine.pStartLocation();
+      mSpeed = mPhysicsEngine.pStartVelocity();
     }
 
     /**
