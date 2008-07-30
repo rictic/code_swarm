@@ -451,8 +451,8 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * 
    * @return Vector2f vector holding the starting velocity for a Person Node
    */
-  public Vector2f pStartVelocity() {
-    Vector2f vec = new Vector2f((float)Math.random()*2 - 1, (float)Math.random()*2 -1);
+  public Vector2f pStartVelocity(float mass) {
+    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
     return vec;
   }
   
@@ -460,8 +460,8 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * 
    * @return Vector2f vector holding the starting velocity for a File Node
    */
-  public Vector2f fStartVelocity() {
-    Vector2f vec = new Vector2f((float)Math.random()*2 - 1, (float)Math.random()*2 -1);
+  public Vector2f fStartVelocity(float mass) {
+    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
     return vec;
   }
 }

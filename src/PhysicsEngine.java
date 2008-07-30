@@ -106,13 +106,13 @@ public interface PhysicsEngine
    * 
    * @return Vector2f vector holding the starting velocity for a Person Node
    */
-  public Vector2f pStartVelocity();
+  public Vector2f pStartVelocity(float mass);
   
   /**
    * 
    * @return Vector2f vector holding the starting velocity for a File Node
    */
-  public Vector2f fStartVelocity();
+  public Vector2f fStartVelocity(float mass);
   
 }
 

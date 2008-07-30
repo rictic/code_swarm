@@ -1198,7 +1198,7 @@ public class code_swarm extends PApplet {
       mass = FILE_MASS;
       maxSpeed = DEFAULT_FILE_SPEED;
       mPosition = mPhysicsEngine.fStartLocation();
-      mSpeed = mPhysicsEngine.fStartVelocity();
+      mSpeed = mPhysicsEngine.fStartVelocity(mass);
     }
 
     /**
@@ -1319,7 +1319,7 @@ public class code_swarm extends PApplet {
       mass = PERSON_MASS; // bigger mass to person then to node, to stabilize them
       touches = 1;
       mPosition = mPhysicsEngine.pStartLocation();
-      mSpeed = mPhysicsEngine.pStartVelocity();
+      mSpeed = mPhysicsEngine.pStartVelocity(mass);
     }
 
     /**
