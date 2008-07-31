@@ -1154,6 +1154,8 @@ public class code_swarm extends PApplet {
      */
     Node(int lifeInit, int lifeDecrement) {
       super(lifeInit, lifeDecrement);
+      mPosition = new Vector2f();
+      mSpeed = new Vector2f();
     }
 
     /**
@@ -1197,8 +1199,8 @@ public class code_swarm extends PApplet {
       nodeHue = colorAssigner.getColor(name);
       mass = FILE_MASS;
       maxSpeed = DEFAULT_FILE_SPEED;
-      mPosition = mPhysicsEngine.fStartLocation();
-      mSpeed = mPhysicsEngine.fStartVelocity(mass);
+      mPosition.set(mPhysicsEngine.fStartLocation());
+      mSpeed.set(mPhysicsEngine.fStartVelocity(mass));
     }
 
     /**
@@ -1318,8 +1320,8 @@ public class code_swarm extends PApplet {
       minBold = (int)(PERSON_LIFE_INIT * (1 - (HIGHLIGHT_PCT)/100));
       mass = PERSON_MASS; // bigger mass to person then to node, to stabilize them
       touches = 1;
-      mPosition = mPhysicsEngine.pStartLocation();
-      mSpeed = mPhysicsEngine.pStartVelocity(mass);
+      mPosition.set(mPhysicsEngine.pStartLocation());
+      mSpeed.set(mPhysicsEngine.pStartVelocity(mass));
     }
 
     /**
