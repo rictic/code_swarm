@@ -65,6 +65,11 @@ def parse_args(argv):
         metavar="<log file>",
         help="specify standard log output file")
 
+    p.add_option( "-p", "--perforce-path", dest="perforce_path",
+        metavar="<log file>",
+        help="get data from perforce and save it to standard event xml")
+
+
     (options, args) = p.parse_args(argv)
 
     return (options, args)
@@ -297,9 +302,40 @@ def main():
 
         create_event_xml(event_list, log_file, opts.output_log)
         
-    if opts.wikimedia_log:
-        print "Not yet implemented."
+    if opts.perforce_path:
+        import re
         
+        event_list = []
+        changelists = run_marshal('p4 -G changelists "' + opts.perforce_path + '"')
+        file_key_re = re.compile("^depotFile")
+        for changelist in changelists:
+            files = run_marshal('p4 -G describe -s "' + changelist['change'] + '"')
+            for file in files:
+                for key_name, file_name in file.iteritems():
+                    if file_key_re.match(key_name):
+                        event_list.append(Event(file_name, int(changelist['time'] + '000'), changelist['user']))
+                        #print file_name, changelist['time'], changelist['user']
+
+
+        create_event_xml(event_list, 'depot', opts.output_log)
+
+    #if opts.wikimedia_log:
+    #    print "Not yet implemented."
+
+def run_marshal(command):
+    import marshal
+
+    # run marshal.load in a loop
+    results=[]
+    stream=os.popen(command,'rb')
+    try:
+        while 1:
+                results.append(marshal.load(stream))
+    except EOFError:
+        pass
+    stream.close()
+    return results
+
 def create_event_xml(events, base_log, output_log=None):
     """ Write out the final XML output log file based on an input
     list of events and input log files.
