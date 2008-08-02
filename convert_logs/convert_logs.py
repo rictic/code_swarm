@@ -12,7 +12,7 @@ svn_sep = "---------------------------------------------------------------------
 cvs_sep = "----------------------------"
 
 # Event to hold all of the separate events as we parse them from the logs.
-class Event():
+class Event:
     filename = ""
     date = "0"
     author = "(no author)"
