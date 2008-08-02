@@ -136,12 +136,24 @@ public class code_swarm extends PApplet {
   private String loadingMessage = "Reading input file";
   protected static int width=0;
   protected static int height=0;
+  
+  /**
+   *  Used for utility functions
+   *  current members:
+   *      drawPoint: Pass coords and color
+   *      drawLine: Pass coords and color
+   */
+  public static Utils utils = null;
 
   /**
    * Initialization
    */
   public void setup() {
+    
+    utils = new Utils();
+    
     width=cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
+    
     if (width <= 0) {
       width = 640;
     }
@@ -515,7 +527,8 @@ public class code_swarm extends PApplet {
     long end = System.currentTimeMillis();
     lastDrawDuration = end - start;
   }
-
+  
+  
   /**
    * Surround names with aura
    */
@@ -770,6 +783,10 @@ public class code_swarm extends PApplet {
 
     // Do not allow toggle Physics Engine yet.
     safeToToggle = false;
+
+    // Init frame:
+    mPhysicsEngine.initializeFrame();
+
     // update velocity
     for (Edge edge : edges) {
       mPhysicsEngine.onRelaxEdge(edge);
@@ -799,6 +816,9 @@ public class code_swarm extends PApplet {
     for (PersonNode person : people) {
       mPhysicsEngine.onUpdatePerson(person);
     }
+    
+    // Finalize frame:
+    mPhysicsEngine.finalizeFrame();
     
     safeToToggle = true;
     if (wantToToggle == true) {
@@ -998,6 +1018,43 @@ public class code_swarm extends PApplet {
     looping = !looping;
   }
   
+  class Utils {
+    Utils () {
+    }
+    /**
+       * Draws a point.
+       * @param x
+       * @param y
+       * @param red
+       * @param green
+       * @param blue
+       */
+    public void drawPoint (int x, int y, int red, int green, int blue) {
+      noStroke();
+      colorMode(RGB);
+      stroke(red, green, blue);
+      point(x, y);
+    }
+    
+    /**
+       * Draws a line.
+       * @param fromX
+       * @param fromY
+       * @param toX
+       * @param toY
+       * @param red
+       * @param green
+       * @param blue
+       */
+    public void drawLine (int fromX, int fromY, int toX, int toY, int red, int green, int blue) {
+      noStroke();
+      colorMode(RGB);
+      stroke(red, green, blue);
+      strokeWeight(1.5f);
+      line(fromX, fromY, toX, toY);
+    }
+  }
+  
   /**
    * Class to associate the Physics Engine name to the
    * Physics Engine interface
@@ -1011,6 +1068,7 @@ public class code_swarm extends PApplet {
       pe = p;
     }
   }
+  
 
   /**
    * Describe an event on a file

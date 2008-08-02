@@ -37,6 +37,18 @@ public interface PhysicsEngine
   public void setup (Properties p);
   
   /**
+   * Method that allows Physics Engine to initialize the Frame
+   * 
+   */
+  public void initializeFrame();
+  
+  /**
+   * Method that allows Physics Engine to finalize the Frame
+   * 
+   */
+  public void finalizeFrame();
+  
+  /**
    * Method that allows Physics Engine to modify Speed / Position during the relax phase.
    * 
    * @param edge the node to which the force apply

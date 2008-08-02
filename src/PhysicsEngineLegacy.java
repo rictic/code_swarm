@@ -183,6 +183,18 @@ public class PhysicsEngineLegacy implements PhysicsEngine
   }
   
   /**
+   *  Do nothing.
+   */
+  public void initializeFrame() {
+  }
+  
+  /**
+   *  Do nothing.
+   */
+  public void finalizeFrame() {
+  }
+  
+  /**
    * Method that allows Physics Engine to modify forces between files and people during the relax stage
    * 
    * @param edge the edge to which the force apply (both ends)
