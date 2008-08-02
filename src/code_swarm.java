@@ -46,7 +46,7 @@ import javax.vecmath.Vector2f;
 public class code_swarm extends PApplet {
   /** @remark needed for any serializable class */ 
   public static final long serialVersionUID = 0;
-  
+
   // User-defined variables
   CodeSwarmConfig config;
   int FRAME_RATE = 24;
@@ -54,7 +54,7 @@ public class code_swarm extends PApplet {
   String SPRITE_FILE = "particle.png";
   String SCREENSHOT_FILE;
   int background;
- 
+
   // Data storage
   PriorityBlockingQueue<FileEvent> eventsQueue; // USE PROCESSING 0142 or higher
   protected static CopyOnWriteArrayList<FileNode> nodes;
@@ -104,16 +104,16 @@ public class code_swarm extends PApplet {
   private int EDGE_LIFE_DECREMENT = -1;
   private int FILE_LIFE_DECREMENT = -1;
   private int PERSON_LIFE_DECREMENT = -1;
-  
+
   private float DEFAULT_NODE_SPEED = 7.0f;
   private float DEFAULT_FILE_SPEED = 7.0f;
   private float DEFAULT_PERSON_SPEED = 2.0f;
-  
+
   private float FILE_MASS = 1.0f;
   private float PERSON_MASS = 10.0f;
-  
+
   private int HIGHLIGHT_PCT = 5;
-  
+
   // Physics engine configuration
   String          physicsEngineConfigDir;
   String          physicsEngineSelection;
@@ -122,11 +122,11 @@ public class code_swarm extends PApplet {
   private boolean safeToToggle = false;
   private boolean wantToToggle = false;
   private boolean toggleDirection = false;
-  
+
 
   // Default Physics Engine (class) name
   static final String PHYSICS_ENGINE_LEGACY  = "PhysicsEngineLegacy";
-  
+
   // Formats the date string nicely
   DateFormat formatter = DateFormat.getDateInstance();
 
@@ -136,7 +136,7 @@ public class code_swarm extends PApplet {
   private String loadingMessage = "Reading input file";
   protected static int width=0;
   protected static int height=0;
-  
+
   /**
    *  Used for utility functions
    *  current members:
@@ -149,26 +149,26 @@ public class code_swarm extends PApplet {
    * Initialization
    */
   public void setup() {
-    
+
     utils = new Utils();
-    
+
     width=cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
-    
+
     if (width <= 0) {
       width = 640;
     }
-    
+
     height=cfg.getIntProperty(CodeSwarmConfig.HEIGHT_KEY,480);
     if (height <= 0) {
       height = 480;
     }
-    
+
     if (cfg.getBooleanProperty(CodeSwarmConfig.USE_OPEN_GL, false)) {
       size(width, height, OPENGL);
     } else {
       size(width, height);
     }
-    
+
     if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND, false)) {
       showLegend = true;
     } else {
@@ -180,37 +180,37 @@ public class code_swarm extends PApplet {
     } else {
       showHistogram = false;
     }
-    
+
     if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DATE, false)) {
       showDate = true;
     } else {
       showDate = false;
     }
-    
+
     if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_EDGES, false)) {
       showEdges = true;
     } else {
       showEdges = false;
     }
-    
+
     if (cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DEBUG, false)) {
       showDebug = true;
     } else {
       showDebug = false;
     }
-    
+
     if (cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY,false)) {
       takeSnapshots = true;
     } else {
       takeSnapshots = false;
     }
-    
+
     if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_SHARP, true)) {
       drawNamesSharp = true;
     } else {
       drawNamesSharp = false;
     }   
-    
+
     if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS, false)) {
       drawNamesHalos = true;
     } else {
@@ -222,37 +222,37 @@ public class code_swarm extends PApplet {
     } else {
       drawFilesSharp = false;
     }   
-    
+
     if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_FUZZY, true)) {
       drawFilesFuzzy = true;
     } else {
       drawFilesFuzzy = false;
     }   
-    
+
     if (cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY, false)) {
       drawFilesJelly = true;
     } else {
       drawFilesJelly = false;
     }   
-    
+
     background = cfg.getBackground().getRGB();
-    
+
     // Ensure we have sane values.
     EDGE_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.EDGE_LIFE_KEY,255);
     if (EDGE_LIFE_INIT <= 0) {
       EDGE_LIFE_INIT = 255;
     }
-    
+
     FILE_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.FILE_LIFE_KEY,255);
     if (FILE_LIFE_INIT <= 0) {
       FILE_LIFE_INIT = 255;
     }
-    
+
     PERSON_LIFE_INIT = cfg.getIntProperty(CodeSwarmConfig.PERSON_LIFE_KEY,255);
     if (PERSON_LIFE_INIT <= 0) {
       PERSON_LIFE_INIT = 255;
     }
-    
+
     /* enforce decrements < 0 */
     EDGE_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.EDGE_DECREMENT_KEY,-2);
     if (EDGE_LIFE_DECREMENT >= 0) {
@@ -266,19 +266,19 @@ public class code_swarm extends PApplet {
     if (PERSON_LIFE_DECREMENT >= 0) {
       PERSON_LIFE_DECREMENT = -1;
     }
-    
+
     DEFAULT_NODE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.NODE_SPEED_KEY, 7.0f);
     DEFAULT_FILE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.FILE_SPEED_KEY, DEFAULT_NODE_SPEED);
     DEFAULT_PERSON_SPEED = cfg.getFloatProperty(CodeSwarmConfig.PERSON_SPEED_KEY, DEFAULT_NODE_SPEED);
-    
+
     FILE_MASS = cfg.getFloatProperty(CodeSwarmConfig.FILE_MASS_KEY,1.0f);
     PERSON_MASS = cfg.getFloatProperty(CodeSwarmConfig.PERSON_MASS_KEY,1.0f);
-    
+
     HIGHLIGHT_PCT = cfg.getIntProperty(CodeSwarmConfig.HIGHLIGHT_PCT_KEY,5);
     if (HIGHLIGHT_PCT < 0 || HIGHLIGHT_PCT > 100) {
       HIGHLIGHT_PCT = 5;
     }
-    
+
     UPDATE_DELTA = cfg.getIntProperty(CodeSwarmConfig.MSEC_PER_FRAME_KEY, -1);
     if (UPDATE_DELTA == -1) {
       int framesperday = cfg.getIntProperty(CodeSwarmConfig.FRAMES_PER_DAY_KEY, 4);
@@ -290,7 +290,7 @@ public class code_swarm extends PApplet {
       // Default to 4 frames per day.
       UPDATE_DELTA = 21600000;
     }
-    
+
     /**
      * This section loads config files and calls the setup method for all physics engines.
      */
@@ -355,15 +355,15 @@ public class code_swarm extends PApplet {
         }
       }
     }
-    
+
     if (mPhysicsEngineChoices.size() == 0) {
       System.out.println("No physics engine config files found in '" + physicsEngineConfigDir + "'.");
       System.exit(1);
     }
-    
+
     // Physics engine configuration and instantiation
     physicsEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_SELECTION, PHYSICS_ENGINE_LEGACY );
-    
+
     ListIterator<peConfig> peIterator = mPhysicsEngineChoices.listIterator();
     while (peIterator.hasNext()) {
       peConfig p = peIterator.next();
@@ -371,12 +371,12 @@ public class code_swarm extends PApplet {
         mPhysicsEngine = p.pe;
       }
     }
-    
+
     if (mPhysicsEngine == null) {
       System.out.println("No physics engine matches your choice of '" + physicsEngineSelection + "'. Check '" + physicsEngineConfigDir + "' for options.");
       System.exit(1);
     }
-    
+
     smooth();
     frameRate(FRAME_RATE);
 
@@ -416,7 +416,7 @@ public class code_swarm extends PApplet {
     Integer fontSizeBold = cfg.getIntProperty(CodeSwarmConfig.FONT_SIZE_BOLD, 14);
     font = createFont(fontName, fontSize);
     boldFont = createFont(fontName + ".bold", fontSizeBold);
-    
+
     textFont(font);
 
     String SPRITE_FILE = cfg.getStringProperty(CodeSwarmConfig.SPRITE_FILE_KEY);
@@ -457,7 +457,7 @@ public class code_swarm extends PApplet {
     }
     else {
       this.update(); // update state to next frame
-      
+
       // Draw edges (for debugging only)
       if (showEdges) {
         for (Edge edge : edges) {
@@ -470,7 +470,7 @@ public class code_swarm extends PApplet {
       if (drawNamesHalos) {
         drawPeopleNodesBlur();
       }
-      
+
       // Then draw names again, but sharp
       if (drawNamesSharp) {
         drawPeopleNodesSharp();
@@ -487,7 +487,7 @@ public class code_swarm extends PApplet {
       if (showEngine) {
         drawEngine();
       }
-      
+
       // help, legend and debug information are exclusive
       if (showHelp) {
         // help override legend and debug information
@@ -501,7 +501,7 @@ public class code_swarm extends PApplet {
         // legend only if nothing "more important"
         drawLegend();
       }
-      
+
       if (showPopular) {
         drawPopular();
       }
@@ -527,8 +527,8 @@ public class code_swarm extends PApplet {
     long end = System.currentTimeMillis();
     lastDrawDuration = end - start;
   }
-  
-  
+
+
   /**
    * Surround names with aura
    */
@@ -586,7 +586,7 @@ public class code_swarm extends PApplet {
       counter++;
     }
   }
-  
+
   /**
    * Show the Loading screen.
    */
@@ -614,7 +614,7 @@ public class code_swarm extends PApplet {
       text(t.label, 10, (i + 1) * 10);
     }
   }
-  
+
   /**
    *  Show physics engine name
    */
@@ -696,7 +696,7 @@ public class code_swarm extends PApplet {
         }
       }
     }
-    
+
     int i = 1;
     ListIterator<FileNode> it = al.listIterator();
     while (it.hasNext()) {
@@ -766,7 +766,7 @@ public class code_swarm extends PApplet {
        * ); if ( e == null ) { e = new Edge( n, prevNode ); edges.add( e ); } else {
        * e.freshen(); } }
        */
-      
+
       // prevDate = currentEvent.date;
       prevNode = n;
       currentEvent = eventsQueue.peek();
@@ -816,10 +816,10 @@ public class code_swarm extends PApplet {
     for (PersonNode person : people) {
       mPhysicsEngine.onUpdatePerson(person);
     }
-    
+
     // Finalize frame:
     mPhysicsEngine.finalizeFrame();
-    
+
     safeToToggle = true;
     if (wantToToggle == true) {
       switchPhysicsEngine(toggleDirection);
@@ -973,7 +973,7 @@ public class code_swarm extends PApplet {
       }
     }
   }
-  
+
   /**
    * Method to switch between Physics Engines
    * @param direction Indicates whether or not to go left or right on the list
@@ -1017,7 +1017,7 @@ public class code_swarm extends PApplet {
       loop();
     looping = !looping;
   }
-  
+
   class Utils {
     Utils () {
     }
@@ -1035,7 +1035,7 @@ public class code_swarm extends PApplet {
       stroke(red, green, blue);
       point(x, y);
     }
-    
+
     /**
        * Draws a line.
        * @param fromX
@@ -1054,7 +1054,7 @@ public class code_swarm extends PApplet {
       line(fromX, fromY, toX, toY);
     }
   }
-  
+
   /**
    * Class to associate the Physics Engine name to the
    * Physics Engine interface
@@ -1062,13 +1062,13 @@ public class code_swarm extends PApplet {
   class peConfig {
     protected String name;
     protected PhysicsEngine pe;
-    
+
     peConfig(String n, PhysicsEngine p) {
       name = n;
       pe = p;
     }
   }
-  
+
 
   /**
    * Describe an event on a file
@@ -1145,7 +1145,7 @@ public class code_swarm extends PApplet {
         }
       }
     }
-    
+
     /**
      * 5) drawing the new state => done in derived class.
      */
@@ -1187,7 +1187,7 @@ public class code_swarm extends PApplet {
         line(nodeFrom.mPosition.x, nodeFrom.mPosition.y, nodeTo.mPosition.x, nodeTo.mPosition.y);
       }
     }
-    
+
     public void freshen() {
       life = EDGE_LIFE_INIT;
     }
@@ -1206,7 +1206,7 @@ public class code_swarm extends PApplet {
      * mass of the node
      */
     protected float mass;
-    
+
     /**
      * 1) constructor.
      */
@@ -1275,7 +1275,7 @@ public class code_swarm extends PApplet {
         if (drawFilesJelly) {
           drawJelly();
         }
-        
+
         /** TODO : this would become interesting on some special event, or for special materials
          * colorMode( RGB ); fill( 0, life ); textAlign( CENTER, CENTER ); text( name, x, y );
          * Example below:
@@ -1288,7 +1288,7 @@ public class code_swarm extends PApplet {
         }
       }
     }
-    
+
     /**
      * 6) reseting life as if new.
      */
@@ -1298,14 +1298,14 @@ public class code_swarm extends PApplet {
         maxTouches = touches;
       }
     }
-    
+
     public boolean qualifies() {
       if (this.touches >= (maxTouches * 0.5f)) {
         return true;
       }
       return false;
     }
-    
+
     public int compareTo(FileNode fn) {
       int retval = 0;
       if (this.touches < fn.touches) {
@@ -1327,7 +1327,7 @@ public class code_swarm extends PApplet {
       } else {
         noStroke();
       }
-      
+
       ellipseMode(CENTER);
       ellipse(mPosition.x, mPosition.y, w, w);
     }
@@ -1400,12 +1400,12 @@ public class code_swarm extends PApplet {
 
       text(name, mPosition.x, mPosition.y);
     }
-    
+
     public void freshen () {
       life = PERSON_LIFE_INIT;
       touches++;
     }
-    
+
     public void addColor(int c) {
       colorMode(RGB);
       flavor = lerpColor(flavor, c, 1.0f / colorCount);

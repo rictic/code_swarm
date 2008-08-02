@@ -250,14 +250,11 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
           nodeB.mSpeed.negate();
         }
       }
-      boolean rightSide = false;
       while (distance <= (nodeA.mass + nodeB.mass)) {
-        rightSide = whichSide(nodeA);
         applySpeedTo(nodeA);
-        constrainNode(nodeA, rightSide);
-        rightSide = whichSide(nodeB);
+        constrainNode(nodeA, whichSide(nodeA));
         applySpeedTo(nodeB);
-        constrainNode(nodeB, rightSide);
+        constrainNode(nodeB, whichSide(nodeB));
         tmp.sub(nodeA.mPosition, nodeB.mPosition);
         distance = Math.sqrt(tmp.lengthSquared());
       }
@@ -323,23 +320,23 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
         node.mPosition.set(constrain(node.mPosition.x, 0.0f, (float)code_swarm.width),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
       } else {
         if (rightSide) {
-          node.mPosition.set(constrain(node.mPosition.x, (float)(code_swarm.width/2)+1, (float)code_swarm.width),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
+          node.mPosition.set(constrain(node.mPosition.x, (float)(midWayX + 8), (float)code_swarm.width),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
         } else {
-          node.mPosition.set(constrain(node.mPosition.x, 0.0f, (float)(code_swarm.width/2)-1),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
+          node.mPosition.set(constrain(node.mPosition.x, 0.0f, (float)(midWayX - 8)),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
         }
       }
     } else { // not near the door.
       if (rightSide) {
-        node.mPosition.set(constrain(node.mPosition.x, (float)(code_swarm.width/2)+1, (float)code_swarm.width),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
+        node.mPosition.set(constrain(node.mPosition.x, (float)(midWayX + 8), (float)code_swarm.width),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
       } else {
-        node.mPosition.set(constrain(node.mPosition.x, 0.0f, (float)(code_swarm.width/2)-1),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
+        node.mPosition.set(constrain(node.mPosition.x, 0.0f, (float)(midWayX - 8)),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
       }
     }
   }
   
   private boolean whichSide(code_swarm.Node node) {
     // which half of the screen are we on?
-    if (node.mPosition.x >= code_swarm.width/2) {
+    if (node.mPosition.x >= midWayX) {
       return true;
     }
     
@@ -355,8 +352,20 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * draw the wall opened or closed, depending on closeness of people.
    */
   public void initializeFrame() {
-    drawWall();
     doorOpen = false;
+    
+    for (int i = 0; i < code_swarm.people.size(); i++) {
+      code_swarm.PersonNode p = code_swarm.people.get(i);
+      if (p.life > 0) {
+        if (nearDoor(p)) {
+          if (p.mSpeed.x < 0.0f) {
+            doorOpen = true;
+          }
+        }
+      }
+    }
+    
+    drawWall();
   }
   
   /**
@@ -377,11 +386,14 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
     if (edge.life <= 0) {
       return;
     }
+
     boolean fSide = whichSide(edge.nodeFrom);
     boolean pSide = whichSide(edge.nodeTo);
-    if (!doorOpen && fSide != pSide) {
+
+    if ((!doorOpen && fSide != pSide) || (doorOpen && !nearDoor(edge.nodeFrom))) {
       return;
     }
+
     // Calculate force between the node "from" and the node "to"
     Vector2f force = calculateForceAlongAnEdge(edge);
 
@@ -415,7 +427,6 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxNode(code_swarm.FileNode fNode ) {
-
     if (fNode.life <= 0) {
       return;
     }
@@ -470,7 +481,6 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxPerson(code_swarm.PersonNode pNode) {
-
     if (pNode.life <= 0) {
       return;
     }
@@ -481,7 +491,7 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
 
     pNode.mSpeed.scale(pNode.mass);
     pNode.mSpeed.normalize();
-    pNode.mSpeed.scale(4);
+    pNode.mSpeed.scale(5);
 
     float distance = pNode.mSpeed.length();
     if (distance > 0) {
@@ -500,7 +510,6 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdatePerson(code_swarm.PersonNode pNode) {
-    
     if (pNode.life <= 0) {
       return;
     }
@@ -517,11 +526,6 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
       }
     }
 
-    // Are we near the door?  If so, open it if we are headed left.
-    if ((pNode.mSpeed.x < 0.0f) && nearDoor(pNode)) {
-      doorOpen = true;
-    }
-
     constrainNode(pNode, rightSide); // Keep it in bounds.
 
     if (doorOpen) {
@@ -534,25 +538,33 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
       //  |  |  |
       if (pNode.mPosition.y < startDoorY || pNode.mPosition.y > midWayY) { // Above the door, and below the door.
         if (rightSide) {
-          if (pNode.mPosition.x < (code_swarm.width/2 + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
+          if (pNode.mPosition.x < (midWayX + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
             pNode.mSpeed.x = -pNode.mSpeed.x;
-            while (pNode.mPosition.x < (code_swarm.width/2 + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
-              pNode.mPosition.x += pNode.mSpeed.x;
+            int i = 0;
+            while (pNode.mPosition.x < (midWayX + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
+              pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
             }
           }
         } else { // left side
-          if (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width/2 - pNode.mass)) {
+          if (pNode.mPosition.x < pNode.mass || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
             pNode.mSpeed.x = -pNode.mSpeed.x;
-            while (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width/2 - pNode.mass)) {
-              pNode.mPosition.x += pNode.mSpeed.x;
+            int i = 0;
+            while (pNode.mPosition.x < pNode.mass || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
+              pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
+            }
+          } else if (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x < 0.0f) {
+            int i = 0;
+            while (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x < 0.0f) {
+              pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
             }
           }
         }
       } else { // Same level as the door
         if (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
           pNode.mSpeed.x = -pNode.mSpeed.x;
+          int i = 0;
           while (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
-            pNode.mPosition.x += pNode.mSpeed.x;
+            pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
           }
         }
       }
@@ -566,17 +578,24 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
       //  |  |  |
       
       if (rightSide) {
-        if (pNode.mPosition.x < (code_swarm.width/2 + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
+        if (pNode.mPosition.x < (midWayX + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
           pNode.mSpeed.x = -pNode.mSpeed.x;
-          while (pNode.mPosition.x < (code_swarm.width/2 + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
-            pNode.mPosition.x += pNode.mSpeed.x;
+          int i = 0;
+          while (pNode.mPosition.x < (midWayX + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
+            pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
           }
         }
       } else { // left side
-        if (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width/2 - pNode.mass)) {
+        if (pNode.mPosition.x < pNode.mass || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
           pNode.mSpeed.x = -pNode.mSpeed.x;
-          while (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width/2 - pNode.mass)) {
-            pNode.mPosition.x += pNode.mSpeed.x;
+          int i = 0;
+          while (pNode.mPosition.x < pNode.mass || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
+            pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
+          }
+        } else if (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x < 0.0f) {
+          int i = 0;
+          while (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x < 0.0f) {
+            pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
           }
         }
       }
@@ -592,8 +611,9 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
     
     if(pNode.mPosition.y < pNode.mass || pNode.mPosition.y > (code_swarm.height - pNode.mass)) {
       pNode.mSpeed.y = -pNode.mSpeed.y;
+      int i = 0;
       while (pNode.mPosition.y < pNode.mass || pNode.mPosition.y > (code_swarm.height - pNode.mass)) {
-        pNode.mPosition.y += pNode.mSpeed.y;
+        pNode.mPosition.y += pNode.mSpeed.y * (i++ % 10);
       }
     }
     // shortening life
@@ -626,8 +646,10 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
   public Vector2f fStartLocation() {
     float x = (float)Math.random() * midWayX + midWayX;
     float y = (float)Math.random() * code_swarm.height;
-    constrain(x, midWayX + 10, code_swarm.width - 10);
-    constrain(y, 10, code_swarm.height - 10);
+    
+    constrain(x, (midWayX + 10), (code_swarm.width - 10));
+    constrain(y, 10, (code_swarm.height - 10));
+    
     Vector2f vec = new Vector2f(x, y);
 
     return vec;
