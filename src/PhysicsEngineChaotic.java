@@ -420,14 +420,14 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     // ensure coherent resulting position
     pNode.mPosition.set(constrain(pNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(pNode.mPosition.y, 0.0f, (float)code_swarm.height));
     
-    if(pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
+    if ((pNode.mPosition.x < pNode.mass && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (code_swarm.width - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
       // we hit a vertical wall
       pNode.mSpeed.x = -pNode.mSpeed.x;
       while (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
         pNode.mPosition.x += pNode.mSpeed.x;
       }
     }
-    if(pNode.mPosition.y < pNode.mass || pNode.mPosition.y > (code_swarm.height - pNode.mass)) {
+    if ((pNode.mPosition.y < pNode.mass && pNode.mSpeed.y < 0.0f) || (pNode.mPosition.y > (code_swarm.height - pNode.mass) && pNode.mSpeed.y > 0.0f)) {
       // we hit a horizontal wall
       pNode.mSpeed.y = -pNode.mSpeed.y;
       while (pNode.mPosition.y < pNode.mass || pNode.mPosition.y > (code_swarm.height - pNode.mass)) {

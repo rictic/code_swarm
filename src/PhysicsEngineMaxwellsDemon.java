@@ -430,6 +430,8 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
     if (fNode.life <= 0) {
       return;
     }
+    
+    boolean mySide = whichSide(fNode);
 
     Vector2f forceBetweenFiles = new Vector2f();
     Vector2f forceSummation    = new Vector2f();
@@ -440,7 +442,7 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
       if (n.life <= 0)
         continue;
 
-      if (n != fNode) {
+      if (n != fNode && mySide == whichSide(n)) {
         // elemental force calculation, and summation
         forceBetweenFiles = calculateForceBetweenfNodes(fNode, n);
         forceSummation.add(forceBetweenFiles);
@@ -538,7 +540,7 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
       //  |  |  |
       if (pNode.mPosition.y < startDoorY || pNode.mPosition.y > midWayY) { // Above the door, and below the door.
         if (rightSide) {
-          if (pNode.mPosition.x < (midWayX + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
+          if ((pNode.mPosition.x < (midWayX + pNode.mass) && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (code_swarm.width - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
             pNode.mSpeed.x = -pNode.mSpeed.x;
             int i = 0;
             while (pNode.mPosition.x < (midWayX + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
@@ -546,21 +548,16 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
             }
           }
         } else { // left side
-          if (pNode.mPosition.x < pNode.mass || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
+          if ((pNode.mPosition.x < pNode.mass && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
             pNode.mSpeed.x = -pNode.mSpeed.x;
             int i = 0;
-            while (pNode.mPosition.x < pNode.mass || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
-              pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
-            }
-          } else if (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x < 0.0f) {
-            int i = 0;
-            while (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x < 0.0f) {
+            while (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (midWayX - pNode.mass)) {
               pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
             }
           }
         }
       } else { // Same level as the door
-        if (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
+        if ((pNode.mPosition.x < pNode.mass && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (code_swarm.width - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
           pNode.mSpeed.x = -pNode.mSpeed.x;
           int i = 0;
           while (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
@@ -578,7 +575,7 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
       //  |  |  |
       
       if (rightSide) {
-        if (pNode.mPosition.x < (midWayX + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
+        if ((pNode.mPosition.x < (midWayX + pNode.mass) && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (code_swarm.width - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
           pNode.mSpeed.x = -pNode.mSpeed.x;
           int i = 0;
           while (pNode.mPosition.x < (midWayX + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
@@ -586,15 +583,10 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
           }
         }
       } else { // left side
-        if (pNode.mPosition.x < pNode.mass || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
+        if ((pNode.mPosition.x < pNode.mass && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
           pNode.mSpeed.x = -pNode.mSpeed.x;
           int i = 0;
-          while (pNode.mPosition.x < pNode.mass || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
-            pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
-          }
-        } else if (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x < 0.0f) {
-          int i = 0;
-          while (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x < 0.0f) {
+          while (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (midWayX - pNode.mass)) {
             pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
           }
         }
@@ -609,7 +601,7 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
     //
     //  _______
     
-    if(pNode.mPosition.y < pNode.mass || pNode.mPosition.y > (code_swarm.height - pNode.mass)) {
+    if ((pNode.mPosition.y < pNode.mass && pNode.mSpeed.y < 0.0f) || ((pNode.mPosition.y > (code_swarm.height - pNode.mass) && pNode.mSpeed.y > 0.0f))) {
       pNode.mSpeed.y = -pNode.mSpeed.y;
       int i = 0;
       while (pNode.mPosition.y < pNode.mass || pNode.mPosition.y > (code_swarm.height - pNode.mass)) {
