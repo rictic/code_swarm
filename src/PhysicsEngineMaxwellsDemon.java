@@ -26,23 +26,67 @@ import javax.vecmath.Vector2f;
  * @see PhysicsEngine for interface information
  * @author Desmond Daignault  <nawglan at gmail>
  */
-public class PhysicsEngineChaotic implements PhysicsEngine
+public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
 {
-  private CodeSwarmConfig cfg;
-  
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
+  private Properties cfg;
+
   private float DRAG;
-  
-  
+  private Integer doorSize;
+  private boolean doorOpen;
+  private int midWayX;
+  private int midWayY;
+  private int startDoorY;
+  Vector2f doorCenter;
+  private int doorWayLeft;
+  private int doorWayRight;
+
+
   /**
    * Method for initializing parameters.
    * @param p Properties from the config file.
    */
-  public void setup (CodeSwarmConfig p)
+  public void setup (Properties p)
   {
     cfg = p;
-    DRAG = cfg.getFloatProperty("drag",0.00001);
+    DRAG = Float.parseFloat(cfg.getProperty("drag","0.00001"));
+    doorSize = Integer.parseInt(cfg.getProperty("doorSize","100"));
+    doorOpen = false;
+    midWayX = code_swarm.width / 2;
+    midWayY = code_swarm.height / 2;
+    startDoorY = midWayY - doorSize;
+    doorCenter = new Vector2f(midWayX, midWayY);
+    doorWayLeft = Integer.parseInt(cfg.getProperty("doorWayLeft","35"));
+    doorWayRight = Integer.parseInt(cfg.getProperty("doorWayRight","50"));
   }
-  
+
+  /**
+   * 
+   * @param opened Is door open or closed?
+   */
+  private void drawWall() {
+    // Draw the wall.
+    int midWayX = code_swarm.width / 2;
+    int midWayY = code_swarm.height / 2;
+    int startDoorY = midWayY - doorSize;
+
+    // draw top of wall
+    code_swarm.utils.drawLine(midWayX, 0, midWayX, midWayY, 255, 255, 255);
+
+    // draw door
+    if (doorOpen) {
+      code_swarm.utils.drawLine(midWayX, startDoorY, midWayX, midWayY, 0, 255, 0);
+    } else {
+      code_swarm.utils.drawLine(midWayX, startDoorY, midWayX, midWayY, 255, 0, 0);
+    }
+    // draw bottom of wall
+    code_swarm.utils.drawLine(midWayX, midWayY, midWayX, code_swarm.height, 255, 255, 255);
+  }
+
   /**
    * Method to ensure upper and lower bounds
    * @param value Value to check
@@ -56,15 +100,16 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     } else if (value > max) {
       return max;
     }
-    
+
     return value;
   }
-  
+
   /**
-   * Legacy method that calculate the attractive/repulsive force between a person and one of its file along their link (the edge).
+   * Calculate the attractive/repulsive force between a person and one of its file
+   * along their link (the edge).
    * 
    * @param edge the link between a person and one of its file 
-   * @return force force calculated between those two nodes
+   * @return Vector2f force calculated between those two nodes
    */
   private Vector2f calculateForceAlongAnEdge( code_swarm.Edge edge )
   {
@@ -72,7 +117,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     float deltaDistance;
     Vector2f force = new Vector2f();
     Vector2f tforce = new Vector2f();
-    
+
     // distance calculation
     tforce.sub(edge.nodeTo.mPosition, edge.nodeFrom.mPosition);
     distance = tforce.length();
@@ -88,23 +133,23 @@ public class PhysicsEngineChaotic implements PhysicsEngine
       
       force.set(tforce);
     }
-    
+
     return force;
   }
   
   /**
-   * Legacy method that calculate the repulsive force between two similar nodes (either files or persons).
+   * Calculate the repulsive force between two similar file nodes.
    * 
-   * @param nodeA [in]
-   * @param nodeB [in]
-   * @return force force calculated between those two nodes
+   * @param nodeA
+   * @param nodeB
+   * @return Vector2f force calculated between those two nodes
    */
   private Vector2f calculateForceBetweenfNodes( code_swarm.FileNode nodeA, code_swarm.FileNode nodeB )
   {
     float distance;
     Vector2f force = new Vector2f();
     Vector2f normVec = new Vector2f();
-    
+
     /**
      * Get the distance between nodeA and nodeB
      */
@@ -124,26 +169,27 @@ public class PhysicsEngineChaotic implements PhysicsEngine
       normVec.scale(1/distance);
       force.set(normVec);
     }
-    
+
     return force;
   }
-  
+
   /**
-   * Legacy method that calculate the repulsive force between two similar nodes (either files or persons).
+   * Calculate the repulsive force between two similar person nodes
+   * People ricochet off of each other and walls.
    * 
-   * @param nodeA [in]
-   * @param nodeB [in]
-   * @return force force calculated between those two nodes
+   * @param nodeA
+   * @param nodeB
+   * @return Vector2f force calculated between those two nodes
    */
   private Vector2f calculateForceBetweenpNodes( code_swarm.PersonNode nodeA, code_swarm.PersonNode nodeB )
   {
     Vector2f force = new Vector2f();
     Vector2f tmp = new Vector2f();
-    
+
     if ((nodeA.life <= 0) || (nodeB.life <= 0)) {
       return  force;
     }
-    
+
     tmp.sub(nodeA.mPosition, nodeB.mPosition);
     double distance = Math.sqrt(tmp.lengthSquared());
     if (distance <= (nodeA.mass + nodeB.mass)) {
@@ -206,7 +252,9 @@ public class PhysicsEngineChaotic implements PhysicsEngine
       }
       while (distance <= (nodeA.mass + nodeB.mass)) {
         applySpeedTo(nodeA);
+        constrainNode(nodeA, whichSide(nodeA));
         applySpeedTo(nodeB);
+        constrainNode(nodeB, whichSide(nodeB));
         tmp.sub(nodeA.mPosition, nodeB.mPosition);
         distance = Math.sqrt(tmp.lengthSquared());
       }
@@ -216,13 +264,12 @@ public class PhysicsEngineChaotic implements PhysicsEngine
      */
     return force;
   }
-  
-  
+
   /**
-   * Legacy method that apply a force to a node, converting acceleration to speed.
+   * Apply force to a node, converting acceleration to speed.
    * 
-   * @param node [in] Node the node to which the force apply
-   * @param force [in] force a force Vector representing the force on a node
+   * @param node Node the node to which the force apply
+   * @param force force a force Vector representing the force on a node
    * 
    * TODO: does force should be a property of the node (or not?)
    */
@@ -242,7 +289,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
   }
 
   /**
-   * Legacy method that apply a force to a node, converting acceleration to speed.
+   * Apply force to a node, converting speed to position.
    * 
    * @param node the node to which the force apply
     */
@@ -258,18 +305,76 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     node.mPosition.add(node.mSpeed);
   }
   
+  private boolean nearDoor(code_swarm.Node node) {
+    if (node.mPosition.x > (midWayX - doorWayLeft) && node.mPosition.x < (midWayX + doorWayRight)) {
+      if (node.mPosition.y >= startDoorY && node.mPosition.y <= midWayY) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  private void constrainNode(code_swarm.Node node, boolean rightSide) {
+    if (nearDoor(node)) {
+      if (doorOpen) {
+        node.mPosition.set(constrain(node.mPosition.x, 0.0f, (float)code_swarm.width),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
+      } else {
+        if (rightSide) {
+          node.mPosition.set(constrain(node.mPosition.x, (float)(midWayX + 8), (float)code_swarm.width),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
+        } else {
+          node.mPosition.set(constrain(node.mPosition.x, 0.0f, (float)(midWayX - 8)),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
+        }
+      }
+    } else { // not near the door.
+      if (rightSide) {
+        node.mPosition.set(constrain(node.mPosition.x, (float)(midWayX + 8), (float)code_swarm.width),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
+      } else {
+        node.mPosition.set(constrain(node.mPosition.x, 0.0f, (float)(midWayX - 8)),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
+      }
+    }
+  }
+  
+  private boolean whichSide(code_swarm.Node node) {
+    // which half of the screen are we on?
+    if (node.mPosition.x >= midWayX) {
+      return true;
+    }
+    
+    // left side
+    return false;
+  }
+
   /**
-   *  Do nothing.
+   *  Interface methods below.
+   */
+
+  /**
+   * draw the wall opened or closed, depending on closeness of people.
    */
   public void initializeFrame() {
+    doorOpen = false;
+    
+    for (int i = 0; i < code_swarm.people.size(); i++) {
+      code_swarm.PersonNode p = code_swarm.people.get(i);
+      if (p.life > 0) {
+        if (nearDoor(p)) {
+          if (p.mSpeed.x < 0.0f) {
+            doorOpen = true;
+          }
+        }
+      }
+    }
+    
+    drawWall();
   }
   
   /**
-   *  Do nothing.
+   * close the door until next iteration
    */
   public void finalizeFrame() {
   }
-  
+
+
   /**
    * Method that allows Physics Engine to modify forces between files and people during the relax stage
    * 
@@ -278,11 +383,16 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxEdge(code_swarm.Edge edge) {
-    
     if (edge.life <= 0) {
       return;
     }
-    //Vector2f force    = new Vector2f();
+
+    boolean fSide = whichSide(edge.nodeFrom);
+    boolean pSide = whichSide(edge.nodeTo);
+
+    if ((!doorOpen && fSide != pSide) || (doorOpen && !nearDoor(edge.nodeFrom))) {
+      return;
+    }
 
     // Calculate force between the node "from" and the node "to"
     Vector2f force = calculateForceAlongAnEdge(edge);
@@ -290,11 +400,11 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     // transmit force projection to file and person nodes
     force.negate();
     applyForceTo(edge.nodeFrom, force); // fNode: attract fNode to pNode
+    // which half of the screen are we on?
     applySpeedTo(edge.nodeFrom); // fNode: move it.
-    //force.negate(); // force is inverted for the other end of the edge: repel pNodes from fNodes
-    //applyForceTo(edge.nodeTo, force); // pNode
+    constrainNode(edge.nodeFrom, whichSide(edge.nodeFrom)); // Keep it in bounds.
   }
-  
+
   /**
    * Method that allows Physics Engine to modify Speed / Position during the update phase.
    * 
@@ -308,7 +418,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     }
     edge.decay();
   }
-  
+
   /**
    * Method that allows Physics Engine to modify Speed / Position during the relax phase.
    * 
@@ -317,21 +427,22 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxNode(code_swarm.FileNode fNode ) {
-    
     if (fNode.life <= 0) {
       return;
     }
     
+    boolean mySide = whichSide(fNode);
+
     Vector2f forceBetweenFiles = new Vector2f();
     Vector2f forceSummation    = new Vector2f();
-      
+
     // Calculation of repulsive force between persons
     for (int j = 0; j < code_swarm.nodes.size(); j++) {
       code_swarm.FileNode n = (code_swarm.FileNode) code_swarm.nodes.get(j);
       if (n.life <= 0)
         continue;
 
-      if (n != fNode) {
+      if (n != fNode && mySide == whichSide(n)) {
         // elemental force calculation, and summation
         forceBetweenFiles = calculateForceBetweenfNodes(fNode, n);
         forceSummation.add(forceBetweenFiles);
@@ -340,7 +451,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     // Apply repulsive force from other files to this Node
     applyForceTo(fNode, forceSummation);
   }
-  
+
   /**
    * Method that allows Physics Engine to modify Speed / Position during the update phase.
    * 
@@ -352,19 +463,18 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     if (fNode.life <= 0) {
       return;
     }
+    
     // Apply Speed to Position on nodes
     applySpeedTo(fNode);
-    
-    // ensure coherent resulting position
-    fNode.mPosition.set(constrain(fNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(fNode.mPosition.y, 0.0f, (float)code_swarm.height));
+    constrainNode(fNode, whichSide(fNode)); // Keep it in bounds.
     
     // shortening life
     fNode.decay();
-    
+
     // Apply drag (reduce Speed for next frame calculation)
     fNode.mSpeed.scale(DRAG);
   }
-  
+
   /**
    * Method that allows Physics Engine to modify Speed / Position during the relax phase.
    * 
@@ -373,7 +483,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxPerson(code_swarm.PersonNode pNode) {
-
     if (pNode.life <= 0) {
       return;
     }
@@ -381,22 +490,20 @@ public class PhysicsEngineChaotic implements PhysicsEngine
       // Range (-1,1)
       pNode.mSpeed.set(pNode.mass*((float)Math.random()-pNode.mass),pNode.mass*((float)Math.random()-pNode.mass));
     }
-    
+
     pNode.mSpeed.scale(pNode.mass);
     pNode.mSpeed.normalize();
-    pNode.mSpeed.scale(4);
-    
+    pNode.mSpeed.scale(5);
+
     float distance = pNode.mSpeed.length();
     if (distance > 0) {
       float deltaDistance = (pNode.mass - distance) / (distance * 2);
       deltaDistance *= ((float)pNode.life / pNode.LIFE_INIT);
-      
+
       pNode.mSpeed.scale(deltaDistance);
     }
-    
-    applySpeedTo(pNode);
   }
-  
+
   /**
    * Method that allows Physics Engine to modify Speed / Position during the update phase.
    * 
@@ -409,6 +516,10 @@ public class PhysicsEngineChaotic implements PhysicsEngine
       return;
     }
     
+    boolean rightSide = whichSide(pNode);
+    
+    applySpeedTo(pNode);
+
     // Check for collisions with neighbors.
     for (int i = 0; i < code_swarm.people.size(); i++) {
       if (pNode != code_swarm.people.get(i)) {
@@ -416,60 +527,139 @@ public class PhysicsEngineChaotic implements PhysicsEngine
         pNode.mPosition.add(force);
       }
     }
-    
-    // ensure coherent resulting position
-    pNode.mPosition.set(constrain(pNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(pNode.mPosition.y, 0.0f, (float)code_swarm.height));
-    
-    if ((pNode.mPosition.x < pNode.mass && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (code_swarm.width - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
-      // we hit a vertical wall
-      pNode.mSpeed.x = -pNode.mSpeed.x;
-      while (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
-        pNode.mPosition.x += pNode.mSpeed.x;
+
+    constrainNode(pNode, rightSide); // Keep it in bounds.
+
+    if (doorOpen) {
+      // Check for vertical wall collisions
+      // 4 walls to check.
+      //  |  |  |
+      //  |  |  |
+      //  |     |
+      //  |  |  |
+      //  |  |  |
+      if (pNode.mPosition.y < startDoorY || pNode.mPosition.y > midWayY) { // Above the door, and below the door.
+        if (rightSide) {
+          if ((pNode.mPosition.x < (midWayX + pNode.mass) && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (code_swarm.width - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
+            pNode.mSpeed.x = -pNode.mSpeed.x;
+            int i = 0;
+            while (pNode.mPosition.x < (midWayX + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
+              pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
+            }
+          }
+        } else { // left side
+          if ((pNode.mPosition.x < pNode.mass && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
+            pNode.mSpeed.x = -pNode.mSpeed.x;
+            int i = 0;
+            while (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (midWayX - pNode.mass)) {
+              pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
+            }
+          }
+        }
+      } else { // Same level as the door
+        if ((pNode.mPosition.x < pNode.mass && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (code_swarm.width - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
+          pNode.mSpeed.x = -pNode.mSpeed.x;
+          int i = 0;
+          while (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
+            pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
+          }
+        }
+      }
+    } else { // Door is closed.
+      // Check for vertical wall collisions
+      // 3 walls to check.
+      //  |  |  |
+      //  |  |  |
+      //  |  |  |
+      //  |  |  |
+      //  |  |  |
+      
+      if (rightSide) {
+        if ((pNode.mPosition.x < (midWayX + pNode.mass) && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (code_swarm.width - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
+          pNode.mSpeed.x = -pNode.mSpeed.x;
+          int i = 0;
+          while (pNode.mPosition.x < (midWayX + pNode.mass) || pNode.mPosition.x > (code_swarm.width - pNode.mass)) {
+            pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
+          }
+        }
+      } else { // left side
+        if ((pNode.mPosition.x < pNode.mass && pNode.mSpeed.x < 0.0f) || (pNode.mPosition.x > (midWayX - pNode.mass) && pNode.mSpeed.x > 0.0f)) {
+          pNode.mSpeed.x = -pNode.mSpeed.x;
+          int i = 0;
+          while (pNode.mPosition.x < pNode.mass || pNode.mPosition.x > (midWayX - pNode.mass)) {
+            pNode.mPosition.x += pNode.mSpeed.x * (i++ % 10);
+          }
+        }
       }
     }
-    if ((pNode.mPosition.y < pNode.mass && pNode.mSpeed.y < 0.0f) || (pNode.mPosition.y > (code_swarm.height - pNode.mass) && pNode.mSpeed.y > 0.0f)) {
-      // we hit a horizontal wall
+
+    // Check for horizontal wall collisions
+    // 2 walls to check.
+    //  _______
+    //
+    //
+    //
+    //  _______
+    
+    if ((pNode.mPosition.y < pNode.mass && pNode.mSpeed.y < 0.0f) || ((pNode.mPosition.y > (code_swarm.height - pNode.mass) && pNode.mSpeed.y > 0.0f))) {
       pNode.mSpeed.y = -pNode.mSpeed.y;
+      int i = 0;
       while (pNode.mPosition.y < pNode.mass || pNode.mPosition.y > (code_swarm.height - pNode.mass)) {
-        pNode.mPosition.y += pNode.mSpeed.y;
+        pNode.mPosition.y += pNode.mSpeed.y * (i++ % 10);
       }
     }
     // shortening life
     pNode.decay();
-    
+
     // Apply drag (reduce Speed for next frame calculation)
     pNode.mSpeed.scale(DRAG);
   }
-  
+
   /**
    * 
    * @return Vector2f vector holding the starting location for a Person Node
    */
   public Vector2f pStartLocation() {
-    Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
+    float x = (float)Math.random() * midWayX + midWayX;
+    float y = (float)Math.random() * code_swarm.height;
+    
+    constrain(x, (midWayX + 10), (code_swarm.width - 10));
+    constrain(y, 10, (code_swarm.height - 10));
+    
+    Vector2f vec = new Vector2f(x, y);
+
     return vec;
   }
-  
+
   /**
    * 
    * @return Vector2f vector holding the starting location for a File Node
    */
   public Vector2f fStartLocation() {
-    Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
+    float x = (float)Math.random() * midWayX + midWayX;
+    float y = (float)Math.random() * code_swarm.height;
+    
+    constrain(x, (midWayX + 10), (code_swarm.width - 10));
+    constrain(y, 10, (code_swarm.height - 10));
+    
+    Vector2f vec = new Vector2f(x, y);
+
     return vec;
   }
-  
+
   /**
    * 
+   * @param mass 
    * @return Vector2f vector holding the starting velocity for a Person Node
    */
   public Vector2f pStartVelocity(float mass) {
     Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
     return vec;
   }
-  
+
   /**
    * 
+   * @param mass 
    * @return Vector2f vector holding the starting velocity for a File Node
    */
   public Vector2f fStartVelocity(float mass) {

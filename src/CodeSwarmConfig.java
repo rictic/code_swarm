@@ -42,6 +42,12 @@ public class CodeSwarmConfig
   public static final String TAKE_SNAPSHOTS_KEY = "TakeSnapshots";
   /** R,G,B Determines the background color */
   public static final String BACKGROUND_KEY = "Background";
+  /** R,G,B Determines the background color */
+  public static final String FONT_KEY = "Font";
+  /** R,G,B Determines the background color */
+  public static final String FONT_SIZE = "FontSize";
+  /** R,G,B Determines the background color */
+  public static final String FONT_SIZE_BOLD = "BoldFontSize";
   /** Rules for color coding nodes */
   public static final String COLOR_ASSIGN_KEY  =  "ColorAssign";
   /** Location to save snapshots. TakeSnapshots must be true to use */
@@ -51,6 +57,22 @@ public class CodeSwarmConfig
   /** Path to sprite file for nodes */
   public static final String SPRITE_FILE_KEY = "ParticleSpriteFile";
   /** How long to keep edges alive */
+  public static final String EDGE_DECREMENT_KEY = "EdgeDecrement";
+  /** How long to keep files alive */
+  public static final String FILE_DECREMENT_KEY = "FileDecrement";
+  /** How long to keep person alive */
+  public static final String PERSON_DECREMENT_KEY = "PersonDecrement";
+  /** Node Speed */
+  public static final String NODE_SPEED_KEY = "NodeSpeed";
+  /** File Speed */
+  public static final String FILE_SPEED_KEY = "FileSpeed";
+  /** Person Speed */
+  public static final String PERSON_SPEED_KEY = "PersonSpeed";
+  /** File Mass */
+  public static final String FILE_MASS_KEY = "FileMass";
+  /** Person Mass */
+  public static final String PERSON_MASS_KEY = "PersonMass";
+  /** How long to keep edges alive */
   public static final String EDGE_LIFE_KEY = "EdgeLife";
   /** How long to keep nodes alive */
   public static final String FILE_LIFE_KEY = "FileLife";
@@ -58,6 +80,8 @@ public class CodeSwarmConfig
   public static final String PERSON_LIFE_KEY = "PersonLife";
   /** Boolean value, controls using the OpenGL library (experimental) */
   public static final String USE_OPEN_GL = "UseOpenGL";
+  /** Percentage of life to highlight */
+  public static final String HIGHLIGHT_PCT_KEY = "HighlightPct";
   /** Boolean value, controls showing the Legend */
   public static final String SHOW_LEGEND = "ShowLegend";
   /** Boolean value, controls showing the Histogram */
@@ -104,10 +128,6 @@ public class CodeSwarmConfig
   {
     Properties def = new Properties();
     def.setProperty( INPUT_FILE_KEY, "data/sample-repevents.xml");
-  /*
-   * default is forbidden because it is the only way to specify a FRAMES_PER_DAY_KEY
-   * def.setProperty( MSEC_PER_FRAME_KEY, "21600000");
-   */
     def.setProperty( BACKGROUND_KEY, "0,0,0" );
     def.setProperty( TAKE_SNAPSHOTS_KEY, "false");
     def.setProperty( SNAPSHOT_LOCATION_KEY, "frames/snap-#####.png" );
@@ -217,6 +237,27 @@ public class CodeSwarmConfig
   public long getLongProperty( String key, long defValue )
   {
     return Long.parseLong( p.getProperty(key, String.valueOf(defValue)) );
+  }
+  
+  /**
+   * 
+   * @param key
+   * @return value of property if found, 0 if not found.
+   */
+  public float getFloatProperty( String key )
+  {
+    return Float.parseFloat( p.getProperty(key) );
+  }
+  
+  /**
+   * 
+   * @param key
+   * @param defValue
+   * @return defValue if not found, Value of property if found.
+   */
+  public float getFloatProperty( String key, float defValue )
+  {
+    return Float.parseFloat( p.getProperty(key, String.valueOf(defValue)) );
   }
   
   /**

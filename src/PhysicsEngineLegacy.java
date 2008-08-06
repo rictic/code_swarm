@@ -24,7 +24,7 @@ import javax.vecmath.Vector2f;
  * 
  * This is only a rewriting of the initial code_swarm prototype.
  * 
- * @see other Physical Engine for more methods 
+ * @see PhysicsEngine Physical Engine Interface
  */
 public class PhysicsEngineLegacy implements PhysicsEngine
 {
@@ -182,6 +182,18 @@ public class PhysicsEngineLegacy implements PhysicsEngine
   }
   
   /**
+   *  Do nothing.
+   */
+  public void initializeFrame() {
+  }
+  
+  /**
+   *  Do nothing.
+   */
+  public void finalizeFrame() {
+  }
+  
+  /**
    * Method that allows Physics Engine to modify forces between files and people during the relax stage
    * 
    * @param edge the edge to which the force apply (both ends)
@@ -325,6 +337,42 @@ public class PhysicsEngineLegacy implements PhysicsEngine
     
     // shortening life
     pNode.decay();
+  }
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting location for a Person Node
+   */
+  public Vector2f pStartLocation() {
+    Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
+    return vec;
+  }
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting location for a File Node
+   */
+  public Vector2f fStartLocation() {
+    Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
+    return vec;
+  }
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting velocity for a Person Node
+   */
+  public Vector2f pStartVelocity(float mass) {
+    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
+    return vec;
+  }
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting velocity for a File Node
+   */
+  public Vector2f fStartVelocity(float mass) {
+    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
+    return vec;
   }
 }
 

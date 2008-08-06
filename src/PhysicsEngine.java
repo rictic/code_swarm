@@ -34,6 +34,18 @@ public interface PhysicsEngine
   public void setup (CodeSwarmConfig p);
   
   /**
+   * Method that allows Physics Engine to initialize the Frame
+   * 
+   */
+  public void initializeFrame();
+  
+  /**
+   * Method that allows Physics Engine to finalize the Frame
+   * 
+   */
+  public void finalizeFrame();
+  
+  /**
    * Method that allows Physics Engine to modify Speed / Position during the relax phase.
    * 
    * @param edge the node to which the force apply
@@ -86,5 +98,30 @@ public interface PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdatePerson(code_swarm.PersonNode pNode);
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting location for a Person Node
+   */
+  public Vector2f pStartLocation();
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting location for a File Node
+   */
+  public Vector2f fStartLocation();
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting velocity for a Person Node
+   */
+  public Vector2f pStartVelocity(float mass);
+  
+  /**
+   * 
+   * @return Vector2f vector holding the starting velocity for a File Node
+   */
+  public Vector2f fStartVelocity(float mass);
+  
 }
 
