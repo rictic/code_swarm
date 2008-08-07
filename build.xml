@@ -20,8 +20,17 @@
   <target name="build" depends="init" description="Compiles">
     <echo>Running BUILD</echo>
     <mkdir dir="${build}" />
-    <javac destdir="${build}" srcdir="${src}"
-classpath="${lib}/core.jar;${lib}/xml.jar;${lib}/jogl.jar;${lib}/opengl.jar;${lib}/vecmath.jar" debug="true" deprecation="false" />
+    <path id="library.classpath">
+        <pathelement path="lib/" />
+        <pathelement location="lib/core.jar" />
+        <pathelement location="lib/xml.jar" />
+        <pathelement location="lib/jogl.jar" />
+        <pathelement location="lib/opengl.jar" />
+        <pathelement location="lib/vecmath.jar" />
+        <pathelement location="lib/svnkit.jar" />
+        <pathelement location="lib/swing-layout-1.0.3.jar" />
+    </path>
+    <javac destdir="${build}" srcdir="${src}" classpathref="library.classpath" debug="true" deprecation="false" />
     <copy file="${src}/particle.png" todir="${build}" />
   </target>
 
@@ -43,7 +52,7 @@ classpath="${lib}/core.jar;${lib}/xml.jar;${lib}/jogl.jar;${lib}/opengl.jar;${li
 
   <target name="run" depends="jar" description="Runs the program">
     <echo>Running code_swarm</echo>
-    <java classname="code_swarm" fork="true">
+    <java classname="MainView" fork="true">
       <jvmarg value="-Xmx1000m" />
       <arg value="data/sample.config"/>
       <classpath>

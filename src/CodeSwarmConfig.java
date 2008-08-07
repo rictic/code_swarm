@@ -123,7 +123,7 @@ public class CodeSwarmConfig
     p = new Properties( this.createDefaults() );
     p.load( new FileInputStream(configFileName) );
   }
-
+        
   private Properties createDefaults()
   {
     Properties def = new Properties();
@@ -154,6 +154,17 @@ public class CodeSwarmConfig
     return _background;
   }
 
+  /**
+   * Specify the path to the Xml-input file containing the repository
+   * entries.<br />
+   * Further versions should not use input-file but an abstract view
+   * of the repository-entries.
+   * @see EventList
+   * @param filePath the path to the Xml-input file.
+   */
+  public void setInputFile(String filePath){
+    p.setProperty(INPUT_FILE_KEY, filePath);
+  }
   /**
    * 
    * @param key

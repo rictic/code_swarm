@@ -1133,7 +1133,7 @@ public class code_swarm extends PApplet {
       // init life relative vars
       life           = LIFE_INIT;
     }
-
+        
     /**
      *  4) shortening life.
      */
@@ -1433,5 +1433,16 @@ public class code_swarm extends PApplet {
     } catch (IOException e) {
       System.err.println("Failed due to exception: " + e.getMessage());
     }
+  }
+  /**
+   * the alternative entry-point for code_swarm. It gets called from
+   * {@link MainView} after fetching the repository log.
+   * @param config the modified config 
+   *        (it's InputFile-property has been changed to reflect the 
+   *        fetched repository-log)
+   */
+  public static void start(CodeSwarmConfig config){
+    cfg = config;
+    PApplet.main(new String[]{"code_swarm"});
   }
 }
