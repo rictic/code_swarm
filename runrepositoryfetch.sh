@@ -19,7 +19,7 @@ if [ $# = 0 ]; then
 else
     if [ $1 == "-h" ] || [ $1 == "--help" ]; then
         # if help needed, print it and exit
-        echo "usage: run.sh <configfile>"
+        echo "usage: $0 <configfile>"
         echo ""
         echo "   data/sample.config  is the default config file"
         echo ""
@@ -35,9 +35,8 @@ if [ ! -f $code_swarm_jar ]; then
     echo "needing to build it with 'ant' and 'javac' (java-sdk)"
     echo ""
     echo "auto-trying the ant command..."
-    if ant; then
-        echo ""
-    else
+    ant
+    if [[ $? -ne 0 ]]; then
         echo ""
         echo "ERROR, please verify 'ant' and 'java-sdk' installation"
         echo -n "press a key to exit"
@@ -48,7 +47,8 @@ if [ ! -f $code_swarm_jar ]; then
 fi
 
 # running
-if java -Xmx1000m -classpath dist/code_swarm.jar;lib/core.jar;lib/xml.jar;lib/vecmath.jar;lib/svnkit.jar;lib/swing-layout-1.0.3.jar;. MainView $params then
+java -Xmx1000m -classpath dist/code_swarm.jar:lib/core.jar:lib/xml.jar:lib/vecmath.jar:lib/swing-layout-1.0.3.jar:lib/svnkit.jar:. MainView $params
+if [[ $? -ne 0 ]]; then
 # always on error due to no "exit buton" on rendering window
     echo "bye"
 #    echo -n "error, press a key to exit"
