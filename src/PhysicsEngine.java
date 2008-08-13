@@ -1,3 +1,5 @@
+import javax.vecmath.Vector2f;
+
 /**
  * Copyright 2008 code_swarm project team
  *

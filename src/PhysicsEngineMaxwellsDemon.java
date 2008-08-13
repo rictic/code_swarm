@@ -33,7 +33,7 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    */
   private static final long serialVersionUID = 1L;
 
-  private Properties cfg;
+  private CodeSwarmConfig cfg;
 
   private float DRAG;
   private Integer doorSize;
@@ -50,18 +50,18 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * Method for initializing parameters.
    * @param p Properties from the config file.
    */
-  public void setup (Properties p)
+  public void setup (CodeSwarmConfig p)
   {
     cfg = p;
-    DRAG = Float.parseFloat(cfg.getProperty("drag","0.00001"));
-    doorSize = Integer.parseInt(cfg.getProperty("doorSize","100"));
+    DRAG = cfg.getFloatProperty("drag",0.00001);
+    doorSize = cfg.getIntProperty("doorSize",100);
     doorOpen = false;
     midWayX = code_swarm.width / 2;
     midWayY = code_swarm.height / 2;
     startDoorY = midWayY - doorSize;
     doorCenter = new Vector2f(midWayX, midWayY);
-    doorWayLeft = Integer.parseInt(cfg.getProperty("doorWayLeft","35"));
-    doorWayRight = Integer.parseInt(cfg.getProperty("doorWayRight","50"));
+    doorWayLeft = cfg.getIntProperty("doorWayLeft",35);
+    doorWayRight = cfg.getIntProperty("doorWayRight",50);
   }
 
   /**
