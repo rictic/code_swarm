@@ -221,13 +221,32 @@ public class CodeSwarmConfig
   public int getPositiveIntProperty( String key, int defValue)
   {
 	if (p.containsKey(key)){
-	  int value = Integer.parseInt(p.getProperty(key));
+	  int value = getIntProperty(key);
 	  if (value > 0)
 	    return value;
 	}
 
 	return defValue;
   }
+  
+  /**
+   * 
+   * @param key
+   * @param defValue
+   * @return defValue if not found or found value isn't negative, Value of property if found.
+   */
+  public int getNegativeIntProperty( String key, int defValue)
+  {
+	if (p.containsKey(key)){
+	  int value = getIntProperty(key);
+	  if (value >= 0)
+	    return value;
+	}
+
+	return defValue;
+  }
+  
+  
   
   /**
    * 

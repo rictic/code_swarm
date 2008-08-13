@@ -17,7 +17,6 @@
  * along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Properties;
 import javax.vecmath.Vector2f;
 
 /**

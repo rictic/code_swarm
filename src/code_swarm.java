@@ -23,11 +23,9 @@ import processing.core.PImage;
 import processing.xml.XMLElement;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 //import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Date;
@@ -36,7 +34,6 @@ import java.util.ListIterator;
 import java.util.LinkedList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.Properties;
 import javax.vecmath.Vector2f;
 
 /**
@@ -190,18 +187,9 @@ public class code_swarm extends PApplet {
     UPDATE_DELTA = cfg.getIntProperty("testsets"/*CodeSwarmConfig.MSEC_PER_FRAME_KEY*/, -1);
 
     /* enforce decrements < 0 */
-    EDGE_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.EDGE_DECREMENT_KEY,-2);
-    if (EDGE_LIFE_DECREMENT >= 0) {
-      EDGE_LIFE_DECREMENT = -2;
-    }
-    FILE_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.FILE_DECREMENT_KEY,-2);
-    if (FILE_LIFE_DECREMENT >= 0) {
-      FILE_LIFE_DECREMENT = -2;
-    }
-    PERSON_LIFE_DECREMENT = cfg.getIntProperty(CodeSwarmConfig.PERSON_DECREMENT_KEY,-1);
-    if (PERSON_LIFE_DECREMENT >= 0) {
-      PERSON_LIFE_DECREMENT = -1;
-    }
+    EDGE_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.EDGE_DECREMENT_KEY,-2);
+    FILE_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.FILE_DECREMENT_KEY,-2);
+    PERSON_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.PERSON_DECREMENT_KEY,-1);
 
     DEFAULT_NODE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.NODE_SPEED_KEY, 7.0f);
     DEFAULT_FILE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.FILE_SPEED_KEY, DEFAULT_NODE_SPEED);
@@ -252,37 +240,8 @@ public class code_swarm extends PApplet {
         }
         String ClassName = physicsConfig.getStringProperty("name", "__DEFAULT__");
         if ( ! ClassName.equals("__DEFAULT__")) {
-          Class<PhysicsEngine> c = null;
-          try {
-            c = (Class<PhysicsEngine>)Class.forName(ClassName);
-          } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.exit(1);
-          }
-          PhysicsEngine pe = null;
-          try {
-            Constructor<PhysicsEngine> peConstructor = c.getConstructor();
-            pe = peConstructor.newInstance();
-            pe.setup(physicsConfig);
-          } catch (InstantiationException e) {
-            e.printStackTrace();
-            System.exit(1);
-          } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            System.exit(1);
-          } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            System.exit(1);
-          } catch (InvocationTargetException e) {
-            e.printStackTrace();
-            System.exit(1);
-          } catch (SecurityException e) {
-            e.printStackTrace();
-            System.exit(1);
-          } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            System.exit(1);
-          }
+          PhysicsEngine pe = getPhysicsEngine(ClassName);
+          pe.setup(physicsConfig);
           peConfig pec = new peConfig(ClassName,pe);
           mPhysicsEngineChoices.add(pec);
         } else {
@@ -643,6 +602,20 @@ public class code_swarm extends PApplet {
     }
   }
 
+  @SuppressWarnings("unchecked")
+public PhysicsEngine getPhysicsEngine(String name) {
+      PhysicsEngine pe = null;
+	  try {
+        Class<PhysicsEngine> c = (Class<PhysicsEngine>)Class.forName(name);
+        Constructor<PhysicsEngine> peConstructor = c.getConstructor();
+        pe = peConstructor.newInstance();
+      } catch (Exception e) {
+        e.printStackTrace();
+        System.exit(1);
+      }
+      return pe;
+  }
+  
   /**
    *  Take screenshot
    */
