@@ -359,6 +359,7 @@ public class PhysicsEngineLegacy implements PhysicsEngine
   
   /**
    * 
+   * @param mass Mass of person
    * @return Vector2f vector holding the starting velocity for a Person Node
    */
   public Vector2f pStartVelocity(float mass) {
@@ -368,6 +369,7 @@ public class PhysicsEngineLegacy implements PhysicsEngine
   
   /**
    * 
+   * @param mass Mass of File Node
    * @return Vector2f vector holding the starting velocity for a File Node
    */
   public Vector2f fStartVelocity(float mass) {

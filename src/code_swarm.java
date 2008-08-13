@@ -48,7 +48,6 @@ public class code_swarm extends PApplet {
   public static final long serialVersionUID = 0;
 
   // User-defined variables
-  CodeSwarmConfig config;
   int FRAME_RATE = 24;
   long UPDATE_DELTA = -1;
   String SPRITE_FILE = "particle.png";
@@ -96,7 +95,7 @@ public class code_swarm extends PApplet {
   int currentColor;
 
   // Edge Length
-  protected int EDGE_LEN = 25;
+  protected static int EDGE_LEN = 25;
   // Drawable object life decrement
   private int EDGE_LIFE_INIT = 255;
   private int FILE_LIFE_INIT = 255;
@@ -130,7 +129,7 @@ public class code_swarm extends PApplet {
   // Formats the date string nicely
   DateFormat formatter = DateFormat.getDateInstance();
 
-  private static CodeSwarmConfig cfg;
+  protected static CodeSwarmConfig cfg;
   private long lastDrawDuration = 0;
   private boolean loading = true;
   private String loadingMessage = "Reading input file";
@@ -498,7 +497,7 @@ public class code_swarm extends PApplet {
     fill(255);
     String dateText = formatter.format(prevDate);
     textAlign(RIGHT, BASELINE);
-    textSize(10);
+    textSize(font.size);
     text(dateText, width - 1, height - textDescent());
   }
 
@@ -545,7 +544,7 @@ public class code_swarm extends PApplet {
     for (int i = 0; i < colorAssigner.tests.size(); i++) {
       ColorTest t = colorAssigner.tests.get(i);
       fill(t.c1, 200);
-      text(t.label, 10, (i + 1) * 10);
+      text(t.label, font.size, (i + 1) * font.size);
     }
   }
 
@@ -560,7 +559,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   *  Show short help on avaible commands
+   *  Show short help on available commands
    */
   public void drawHelp() {
     int line = 0;
@@ -1067,7 +1066,7 @@ public class code_swarm extends PApplet {
       // init life relative vars
       life           = LIFE_INIT;
     }
-
+        
     /**
      *  4) shortening life.
      */
@@ -1367,5 +1366,16 @@ public class code_swarm extends PApplet {
     } catch (IOException e) {
       System.err.println("Failed due to exception: " + e.getMessage());
     }
+  }
+  /**
+   * the alternative entry-point for code_swarm. It gets called from
+   * {@link MainView} after fetching the repository log.
+   * @param config the modified config 
+   *        (it's InputFile-property has been changed to reflect the 
+   *        fetched repository-log)
+   */
+  public static void start(CodeSwarmConfig config){
+    cfg = config;
+    PApplet.main(new String[]{"code_swarm"});
   }
 }
