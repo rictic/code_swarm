@@ -23,7 +23,6 @@ import processing.core.PImage;
 import processing.xml.XMLElement;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 //import java.sql.Timestamp;
@@ -231,9 +230,6 @@ public class code_swarm extends PApplet {
         CodeSwarmConfig physicsConfig = null;
         try {
           physicsConfig = new CodeSwarmConfig(ConfigPath);
-        } catch (FileNotFoundException e) {
-          e.printStackTrace();
-          System.exit(1);
         } catch (IOException e) {
           e.printStackTrace();
           System.exit(1);
