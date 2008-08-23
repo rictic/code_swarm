@@ -19,7 +19,6 @@ along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
 package org.codeswarm.repository.svn;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.codeswarm.repository.RepositoryHistoryVisitor;
 import org.tmatesoft.svn.core.SVNException;
@@ -128,7 +127,7 @@ public abstract class AbstractSVNHistoryVisitor implements RepositoryHistoryVisi
             }
         }
 
-        Collection logEntries = null;
+        Collection<SVNLogEntry> logEntries = null;
         try {
             /*
              * Collects SVNLogEntry objects for all revisions in the range
@@ -168,12 +167,7 @@ public abstract class AbstractSVNHistoryVisitor implements RepositoryHistoryVisi
         } catch (SVNException svne) {
             handleCollectingLogInformationException(svne,url);
         }
-        for (Iterator entries = logEntries.iterator(); entries.hasNext();) {
-            
-            /*
-             * gets a next SVNLogEntry
-             */
-            SVNLogEntry logEntry = (SVNLogEntry) entries.next();
+        for (SVNLogEntry logEntry : logEntries) {
             handleLogEntry(logEntry);
         }
         finishLogEntries();

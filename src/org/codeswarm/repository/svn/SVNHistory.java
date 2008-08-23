@@ -21,7 +21,6 @@ package org.codeswarm.repository.svn;
 import org.codeswarm.repositoryevents.CodeSwarmEventsSerializer;
 import org.codeswarm.repositoryevents.Event;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -105,10 +104,8 @@ public class SVNHistory extends AbstractSVNHistoryVisitor {
      * @param logEntry the entry to process
      */
     public void handleLogEntry(SVNLogEntry logEntry) {
-        Set keySet = logEntry.getChangedPaths().keySet();
-        Iterator i = keySet.iterator();
-        while(i.hasNext()){
-            String key = (String)i.next();
+        Set<String> keySet = logEntry.getChangedPaths().keySet();
+        for(String key : keySet){
             SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths().get(key);
             list.addEvent(new Event(entryPath.getPath(),logEntry.getDate().getTime(),logEntry.getAuthor()));    
             if(LOGGER.isLoggable(Level.FINE)){
@@ -123,13 +120,10 @@ public class SVNHistory extends AbstractSVNHistoryVisitor {
             /*
              * keys are changed paths
              */
-            Set changedPathsSet = logEntry.getChangedPaths().keySet();
+            Set<String> changedPathsSet = logEntry.getChangedPaths().keySet();
 
-            for (Iterator changedPaths = changedPathsSet.iterator(); changedPaths.hasNext();) {
-                /*
-                 * obtains a next SVNLogEntryPath
-                 */
-                SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths().get(changedPaths.next());
+            for (String changedPath : changedPathsSet) {
+                SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths().get(changedPath);
                 /*
                  * SVNLogEntryPath.getPath returns the changed path itself;
                  * 

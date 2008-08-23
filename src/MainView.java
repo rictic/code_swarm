@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.LogManager;
 import java.util.prefs.Preferences;
-import javax.swing.JRootPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -45,6 +44,10 @@ public class MainView extends javax.swing.JFrame {
     // depending on the URL and/or other settings.
     
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
      * initializes the Dialog and sets the dialog-values according to the 
      * user's preferences (the last values entered).
      * @param args java arguments passed to the main method. The first parameter
