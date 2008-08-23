@@ -773,7 +773,13 @@ public PhysicsEngine getPhysicsEngine(String name) {
    *  @param filename
    */
   public void loadRepEvents(String filename) {
-    XMLElement doc = new XMLElement(this, filename);
+    if (cfg.filename != null) {
+    	String parentPath = new File(cfg.filename).getParentFile().getAbsolutePath();
+    	File fileInConfigDir = new File(parentPath, filename); 
+    	if (fileInConfigDir.exists())
+    		filename = fileInConfigDir.getAbsolutePath();
+    }
+	XMLElement doc = new XMLElement(this, filename);
     for (int i = 0; i < doc.getChildCount(); i++) {
       XMLElement xml = doc.getChild(i);
       String eventFilename = xml.getStringAttribute("filename");

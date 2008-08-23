@@ -111,15 +111,18 @@ public class CodeSwarmConfig
 
   private Properties p = null;
 
+  public String filename;
+  
   // Cache variables
   private Color _background = null;
   /**
    * Constructor
    * @param configFileName passed from command line
    * @throws IOException
-   */
+   */  
   public CodeSwarmConfig(String configFileName) throws IOException
   {
+	filename = configFileName;
     p = new Properties( this.createDefaults() );
     p.load( new FileInputStream(configFileName) );
   }
