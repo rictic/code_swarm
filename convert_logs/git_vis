@@ -1,0 +1,21 @@
+# a single command to visualize a git project
+
+# requires the convert_logs dir to be in the PATH
+
+if ! [ -d .git ]; then
+    echo "the current directory isn't a git repository";
+    exit 1;
+fi
+
+mkdir -p .git/.code_swarm
+git-log --name-status --pretty=format:'%n------------------------------------------------------------------------%nr%h | %ae | %ai (%aD) | x lines%nChanged paths:' > .git/.code_swarm/project.log
+
+convert_logs.py -g .git/.code_swarm/project.log -o .git/.code_swarm/project.xml
+
+if ! [ -a .git/.code_swarm/project.config ]; then
+    cp `dirname $0`/config.template .git/.code_swarm/project.config
+fi
+
+f=`pwd`/.git/.code_swarm/project.config
+cd `dirname $0`/../
+./run.sh $f
