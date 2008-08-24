@@ -21,18 +21,20 @@ import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
 import processing.xml.XMLElement;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-//import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.LinkedList;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import javax.vecmath.Vector2f;
 
 /**
@@ -131,7 +133,10 @@ public class code_swarm extends PApplet {
   private String loadingMessage = "Reading input file";
   protected static int width=0;
   protected static int height=0;
-
+  
+  protected int maxBackgroundThreads = 4 * Runtime.getRuntime().availableProcessors();
+  protected ExecutorService backgroundExecutor = new ThreadPoolExecutor(1, maxBackgroundThreads, Long.MAX_VALUE, TimeUnit.NANOSECONDS, new ArrayBlockingQueue<Runnable>(4 * maxBackgroundThreads), new ThreadPoolExecutor.CallerRunsPolicy());
+  
   /**
    *  Used for utility functions
    *  current members:
@@ -409,6 +414,10 @@ public class code_swarm extends PApplet {
       // Stop animation when we run out of data
       if (eventsQueue.isEmpty()) {
         // noLoop();
+        backgroundExecutor.shutdown();
+        try {
+          backgroundExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        } catch (InterruptedException e) { /* Do nothing, just exit */}
         exit();
       }
     }
@@ -616,8 +625,14 @@ public PhysicsEngine getPhysicsEngine(String name) {
    *  Take screenshot
    */
   public void dumpFrame() {
-    if (frameCount < 100000)
-      saveFrame(SCREENSHOT_FILE);
+	final String outputFileName = insertFrame(SCREENSHOT_FILE);
+	final PImage image = get();
+     
+	backgroundExecutor.execute(new Runnable() {
+		public void run() {
+			image.save(new File(outputFileName).getAbsolutePath());
+		}
+	});
   }
 
   /**
