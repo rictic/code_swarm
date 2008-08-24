@@ -469,18 +469,27 @@ public class code_swarm extends PApplet {
    *  Draw histogram in lower-left
    */
   public void drawHistory() {
-    Iterator<ColorBins> itr = history.iterator();
     int counter = 0;
-
-    while (itr.hasNext()) {
-      ColorBins cb = itr.next();
-
-      for (int i = 0; i < cb.num; i++) {
-        int c = cb.colorList[i];
-        stroke(c, 200);
-        point(counter, height - i - 3);
+    
+    for (ColorBins cb : history) {
+      if (cb.num > 0) {
+        int color = cb.colorList[0];
+        int start = 0;
+        int end = 0;
+        for (int nextColor : cb.colorList) {
+          if (nextColor == color)
+            end++;
+          else {
+            stroke(color, 255);
+            fill(color, 255);
+            rectMode(CORNERS);
+            rect(counter, height - start - 3, counter+1, height-end - 3);
+            start = end;
+            color = nextColor;
+          }
+        }
       }
-      counter++;
+      counter+=2;
     }
   }
 
