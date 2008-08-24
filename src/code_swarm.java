@@ -481,15 +481,14 @@ public class code_swarm extends PApplet {
             end++;
           else {
             stroke(color, 255);
-            fill(color, 255);
             rectMode(CORNERS);
-            rect(counter, height - start - 3, counter+1, height-end - 3);
+            rect(counter, height - start - 3, counter, height - end - 3);
             start = end;
             color = nextColor;
           }
         }
       }
-      counter+=2;
+      counter+=1;
     }
   }
 
