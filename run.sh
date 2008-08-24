@@ -23,9 +23,7 @@ else
         echo ""
         echo "   data/sample.config  is the default config file"
         echo ""
-        exit
-    else
-        echo "code_swarm project !"
+        exit 1
     fi
 fi
 
@@ -43,18 +41,11 @@ if [ ! -f $code_swarm_jar ]; then
         echo -n "press a key to exit"
         read key
         echo "bye"
-        exit
+        exit 2
     fi
 fi
 
 # running
-if java -Xmx1000m -classpath dist/code_swarm.jar:`ls lib/*.jar | tr '\n' ':'`:. code_swarm $params; then
-# always on error due to no "exit buton" on rendering window
-    echo "bye"
-#    echo -n "error, press a key to exit"
-#    read key
-else
-    echo "bye"
-fi
+java -Xmx1000m -classpath dist/code_swarm.jar:`ls lib/*.jar | tr '\n' ':'`:. code_swarm $params
 
 

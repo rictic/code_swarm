@@ -27,7 +27,6 @@ import java.lang.reflect.Constructor;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -1355,17 +1354,14 @@ public PhysicsEngine getPhysicsEngine(String name) {
   static public void main(String args[]) {
     try {
       if (args.length > 0) {
-        System.out.println("code_swarm is free software: you can redistribute it and/or modify");
-        System.out.println("it under the terms of the GNU General Public License as published by");
-        System.out.println("the Free Software Foundation, either version 3 of the License, or");
-        System.out.println("(at your option) any later version.");
-        System.out.flush();
         start(new CodeSwarmConfig(args[0]));
       } else {
         System.err.println("Specify a config file.");
+        System.exit(2);
       }
     } catch (IOException e) {
       System.err.println("Failed due to exception: " + e.getMessage());
+      System.exit(2);
     }
   }
   /**
