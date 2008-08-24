@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -432,8 +433,7 @@ public class code_swarm extends PApplet {
   public void drawPeopleNodesBlur() {
     colorMode(HSB);
     // First draw the name
-    for (int i = 0; i < people.size(); i++) {
-      PersonNode p = (PersonNode) people.get(i);
+    for (PersonNode p : people) {
       fill(hue(p.flavor), 64, 255, p.life);
       p.draw();
     }
@@ -704,35 +704,26 @@ public PhysicsEngine getPhysicsEngine(String name) {
     // Init frame:
     mPhysicsEngine.initializeFrame();
 
+    Iterable<Edge> livingEdges = getLivingEdges();
+    Iterable<FileNode> livingNodes = getLivingNodes();
+    Iterable<PersonNode> livingPeople = getLivingPeople();
+    
     // update velocity
-    for (Edge edge : edges) {
+    for (Edge edge : livingEdges)
       mPhysicsEngine.onRelaxEdge(edge);
-    }
-
-    // update velocity
-    for (FileNode node : nodes) {
+    for (FileNode node : livingNodes)
       mPhysicsEngine.onRelaxNode(node);
-    }
-
-    // update velocity
-    for (PersonNode person : people) {
+    for (PersonNode person : livingPeople)
       mPhysicsEngine.onRelaxPerson(person);
-    }
 
+    
     // update position
-    for (Edge edge : edges) {
+    for (Edge edge : livingEdges)
       mPhysicsEngine.onUpdateEdge(edge);
-    }
-
-    // update position
-    for (FileNode node : nodes) {
+    for (FileNode node : livingNodes)
       mPhysicsEngine.onUpdateNode(node);
-    }
-
-    // update position
-    for (PersonNode person : people) {
+    for (PersonNode person : livingPeople)
       mPhysicsEngine.onUpdatePerson(person);
-    }
 
     // Finalize frame:
     mPhysicsEngine.finalizeFrame();
@@ -742,7 +733,26 @@ public PhysicsEngine getPhysicsEngine(String name) {
       switchPhysicsEngine(toggleDirection);
     }
   }
-
+  
+  public static Iterable<PersonNode> getLivingPeople() {
+    return filterLiving(people);
+  }
+  
+  public static Iterable<Edge> getLivingEdges(){
+    return filterLiving(edges);
+  }
+  
+  public static Iterable<FileNode> getLivingNodes(){
+    return filterLiving(nodes);
+  }
+  
+  private static <T extends Drawable> Iterable<T> filterLiving(Iterable<T> iter) {
+    ArrayList<T> livingThings = new ArrayList<T>();
+    for (T thing : iter)
+      if (thing.isAlive())
+        livingThings.add(thing);
+    return livingThings;
+  }
   /**
    * Searches the nodes array for a given name
    * @param name
@@ -1061,7 +1071,7 @@ public PhysicsEngine getPhysicsEngine(String name) {
      *  4) shortening life.
      */
     public void decay() {
-      if (life > 0) {
+      if (isAlive()) {
         life += LIFE_DECREMENT;
         if (life < 0) {
           life = 0;
@@ -1078,6 +1088,10 @@ public PhysicsEngine getPhysicsEngine(String name) {
      * 6) reseting life as if new.
      */
     public abstract void freshen();
+    
+    public boolean isAlive() {
+      return life > 0;
+    }
   }
 
   /**
@@ -1088,6 +1102,7 @@ public PhysicsEngine getPhysicsEngine(String name) {
     protected PersonNode nodeTo;
     protected float len;
 
+    
     /**
      * 1) constructor.
      * @param from FileNode
@@ -1139,17 +1154,6 @@ public PhysicsEngine getPhysicsEngine(String name) {
       mSpeed = new Vector2f();
     }
 
-    /**
-     *  4) shortening life.
-     */
-    public void decay() {
-      if (life > 0) {
-        life += LIFE_DECREMENT;
-        if (life < 0) {
-          life = 0;
-        }
-      }
-    }
   }
 
   /**
@@ -1188,7 +1192,7 @@ public PhysicsEngine getPhysicsEngine(String name) {
      * 5) drawing the new state.
      */
     public void draw() {
-      if (life > 0) {
+      if (isAlive()) {
         if (drawFilesSharp) {
           drawSharp();
         }

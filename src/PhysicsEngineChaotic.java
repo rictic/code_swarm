@@ -50,11 +50,10 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @return value if between min and max, min if < max if >
    */
   private float constrain(float value, float min, float max) {
-    if (value < min) {
+    if (value < min)
       return min;
-    } else if (value > max) {
+    else if (value > max)
       return max;
-    }
     
     return value;
   }
@@ -138,11 +137,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
   {
     Vector2f force = new Vector2f();
     Vector2f tmp = new Vector2f();
-    
-    if ((nodeA.life <= 0) || (nodeB.life <= 0)) {
-      return  force;
-    }
-    
+        
     tmp.sub(nodeA.mPosition, nodeB.mPosition);
     double distance = Math.sqrt(tmp.lengthSquared());
     if (distance <= (nodeA.mass + nodeB.mass)) {
@@ -277,12 +272,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxEdge(code_swarm.Edge edge) {
-    
-    if (edge.life <= 0) {
-      return;
-    }
-    //Vector2f force    = new Vector2f();
-
     // Calculate force between the node "from" and the node "to"
     Vector2f force = calculateForceAlongAnEdge(edge);
 
@@ -302,9 +291,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdateEdge(code_swarm.Edge edge) {
-    if (edge.life <= 0) {
-      return;
-    }
     edge.decay();
   }
   
@@ -316,20 +302,11 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxNode(code_swarm.FileNode fNode ) {
-    
-    if (fNode.life <= 0) {
-      return;
-    }
-    
     Vector2f forceBetweenFiles = new Vector2f();
     Vector2f forceSummation    = new Vector2f();
       
     // Calculation of repulsive force between persons
-    for (int j = 0; j < code_swarm.nodes.size(); j++) {
-      code_swarm.FileNode n = (code_swarm.FileNode) code_swarm.nodes.get(j);
-      if (n.life <= 0)
-        continue;
-
+    for (code_swarm.FileNode n : code_swarm.getLivingNodes()) {
       if (n != fNode) {
         // elemental force calculation, and summation
         forceBetweenFiles = calculateForceBetweenfNodes(fNode, n);
@@ -348,9 +325,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdateNode(code_swarm.FileNode fNode) {
-    if (fNode.life <= 0) {
-      return;
-    }
     // Apply Speed to Position on nodes
     applySpeedTo(fNode);
     
@@ -372,10 +346,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxPerson(code_swarm.PersonNode pNode) {
-
-    if (pNode.life <= 0) {
-      return;
-    }
     if (pNode.mSpeed.length() == 0) {
       // Range (-1,1)
       pNode.mSpeed.set(pNode.mass*((float)Math.random()-pNode.mass),pNode.mass*((float)Math.random()-pNode.mass));
@@ -404,14 +374,10 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdatePerson(code_swarm.PersonNode pNode) {
-    if (pNode.life <= 0) {
-      return;
-    }
-    
     // Check for collisions with neighbors.
-    for (int i = 0; i < code_swarm.people.size(); i++) {
-      if (pNode != code_swarm.people.get(i)) {
-        Vector2f force = calculateForceBetweenpNodes(pNode,code_swarm.people.get(i));
+    for (code_swarm.PersonNode otherPerson : code_swarm.getLivingPeople()) {
+      if (pNode != otherPerson) {
+        Vector2f force = calculateForceBetweenpNodes(pNode, otherPerson);
         pNode.mPosition.add(force);
       }
     }
