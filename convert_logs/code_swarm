@@ -18,26 +18,31 @@ if [ -d .git ]; then
     dir=`pwd`/.git/.code_swarm
     log() {
         git-log --name-status --pretty=format:"%n------------------------------------------------------------------------%nr%h | %ae | %ai (%aD) | x lines%nChanged paths:" > $dir/temp.log
+        convert_logs.py -g $dir/temp.log -o $dir/log.xml
+        rm $dir/temp.log
     }
-    convert="convert_logs.py -g"
 elif [ -d .svn ]; then
     dir=`pwd`/.svn/.code_swarm
     log() {
-        svn log -v
+        svn log -v > $dir/temp.log
+        convert_logs.py -s $dir/temp.log -o $dir/log.xml
+        rm $dir/temp.log
     }
     convert="convert_logs.py -s"
+elif [ -d .hg ]; then
+    dir=`pwd`/.hg/.code_swarm
+    log() {
+        hg_log.py -o $dir/log.xml .
+    }
 else
-    echo "This directory isn't a svn or git project.  Run in the base directory of a svn or git project."
+    echo "This directory isn't an svn, git, or hg project.  Run in the base directory of source-controlled project."
     exit 2
 fi
 
 mkdir -p $dir
 
-
 if [ $reload ] || ! [ -a $dir/log.xml ]; then
-    log > $dir/temp.log
-    $convert $dir/temp.log -o $dir/log.xml
-    rm $dir/temp.log
+    log
 fi
 
 if ! [ -a $dir/project.config ]; then

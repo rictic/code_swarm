@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 # coding=utf8
 """
 Get the log from a mercurial repository and save it in a code_swarm-readable
@@ -66,7 +67,7 @@ def getLog(repo, useUser):
 		...
 	
 	@return: StringIO object with the log data
-	"""	
+	""" 
 	# We don't want the output on std streams
 	output = StringIO.StringIO()
 	errors = StringIO.StringIO()
@@ -77,8 +78,9 @@ def getLog(repo, useUser):
 	oldCwd = os.getcwd()
 	os.chdir(repo)
 	try:
-		args = ['log', '-v', '--template', '{author|%s}\n{date}\n{files}\n\n' \
-				% 'user' if useUser else 'person']
+		s = "person"
+		if useUser: s = "user"
+		args = ['log', '-v', '--template', '{author|%s}\n{date}\n{files}\n\n' % s]
 		mercurial.dispatch.dispatch(args)
 	finally:
 		sys.stdout = sys.__stdout__
@@ -98,10 +100,10 @@ def writeLogToXml(log, filename):
 	Write the log data into a file.
 	
 	@param log: The log data
-	@type log:  StringIO
+	@type log:	StringIO
 	@param filename: The output filename
-	@type filename:  string
-	"""	
+	@type filename:	 string
+	""" 
 	outfile = open(filename, 'w')
 	outfile.write('<?xml version="1.0"?>\n')
 	outfile.write('<file_events>\n')
