@@ -80,8 +80,8 @@ FileLife=150
 PersonLife=255
 
 ## Physical engine selection and configuration
-# Force calculation algorithms ("PhysicalEngineLegacy", "PhysicalEngineSimple"...) :
-PhysicalEngineSelection=PhysicalEngineChaotic
+# Force calculation algorithms (PhysicsEngineLegacy, PhysicsEngineSimple...) :
+PhysicsEngineSelection=PhysicsEngineChaotic
 
 # OpenGL is experimental. Use at your own risk.
 UseOpenGL=true
