@@ -27,9 +27,9 @@ Background=0,0,0
 # will be used.
 #
 ColorAssign1="Tests",".*test.*", 90,225,90, 110,200,90
-ColorAssign4="Localizations","(.*(\.mo|\.po))|(.*\.lproj.*)", 90,225,225, 110,200,200
-ColorAssign2="Source Code",".*(\.py|\.rb|\.erb|\.hs|\.sql|\.c|\.cpp|\.h|\.m|\.d|\.js|\.pl|\.sh|\.java|\.lhs|\.hi)", 225,90,90, 200,90,110
-ColorAssign3="Documents/Images",".*(\.txt|\.html|\.tex|\.tmpl|\.css|\.xml|\.yml|\.json|\.png|\.jpg|\.gif|\.jpeg|README|COPYING|LICENSE|AUTHORS)", 90,90,225, 90,110,200
+ColorAssign2="Localizations","(.*(\.mo|\.po))|(.*\.lproj.*)", 90,225,225, 110,200,200
+ColorAssign3="Source Code",".*(\.py|\.rb|\.erb|\.hs|\.sql|\.c|\.cpp|\.h|\.m|\.d|\.js|\.pl|\.sh|\.java|\.lhs|\.hi)", 225,90,90, 200,90,110
+ColorAssign4="Documents/Images",".*(\.txt|\.html|\.tex|\.tmpl|\.css|\.xml|\.yml|\.json|\.png|\.jpg|\.gif|\.jpeg|README|COPYING|LICENSE|AUTHORS)", 90,90,225, 90,110,200
 
 
 # Save each frame to an image?
