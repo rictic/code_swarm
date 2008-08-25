@@ -38,9 +38,6 @@ if [ ! -f $code_swarm_jar ]; then
     else
         echo ""
         echo "ERROR, please verify 'ant' and 'java-sdk' installation"
-        echo -n "press a key to exit"
-        read key
-        echo "bye"
         exit 2
     fi
 fi
