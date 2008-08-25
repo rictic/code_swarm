@@ -7,7 +7,7 @@ Width=1024
 Height=640
 
 # Input file
-InputFile=project.xml
+InputFile=log.xml
 
 # Particle sprite file
 ParticleSpriteFile=src/particle.png

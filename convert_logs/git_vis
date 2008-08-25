@@ -7,15 +7,15 @@ if ! [ -d .git ]; then
     exit 1;
 fi
 
-mkdir -p .git/.code_swarm
-git-log --name-status --pretty=format:'%n------------------------------------------------------------------------%nr%h | %ae | %ai (%aD) | x lines%nChanged paths:' > .git/.code_swarm/project.log
+dir=`pwd`/.git/.code_swarm
+mkdir -p $dir
+git-log --name-status --pretty=format:'%n------------------------------------------------------------------------%nr%h | %ae | %ai (%aD) | x lines%nChanged paths:' > $dir/git.log
 
-convert_logs.py -g .git/.code_swarm/project.log -o .git/.code_swarm/project.xml
+convert_logs.py -g $dir/git.log -o $dir/log.xml
 
-if ! [ -a .git/.code_swarm/project.config ]; then
-    cp `dirname $0`/config.template .git/.code_swarm/project.config
+if ! [ -a $dir/project.config ]; then
+    cp `dirname $0`/config.template $dir/project.config
 fi
 
-f=`pwd`/.git/.code_swarm/project.config
 cd `dirname $0`/../
-./run.sh $f
+./run.sh $dir/project.config
