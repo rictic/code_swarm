@@ -632,14 +632,15 @@ public PhysicsEngine getPhysicsEngine(String name) {
    *  Take screenshot
    */
   public void dumpFrame() {
-	final String outputFileName = insertFrame(SCREENSHOT_FILE);
-	final PImage image = get();
-     
-	backgroundExecutor.execute(new Runnable() {
-		public void run() {
-			image.save(new File(outputFileName).getAbsolutePath());
-		}
-	});
+    final File outputFile = new File(insertFrame(SCREENSHOT_FILE));
+    final PImage image = get();
+    outputFile.getParentFile().mkdirs();
+
+    backgroundExecutor.execute(new Runnable() {
+      public void run() {
+        image.save(outputFile.getAbsolutePath());
+      }
+    });
   }
 
   /**
