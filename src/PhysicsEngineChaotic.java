@@ -92,40 +92,90 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     return force;
   }
   
+  private void checkCollisionNew(code_swarm.Node nodeA, code_swarm.Node nodeB, float maxD)
+  {
+    Vector2f tmp = new Vector2f();
+    tmp.sub(nodeA.mPosition, nodeB.mPosition);
+    double distance = tmp.length();
+    if (distance <= (nodeA.mass + nodeB.mass)) {
+      float dx = nodeA.mPosition.x - nodeB.mPosition.x;
+      float dy = nodeA.mPosition.y - nodeB.mPosition.y;
+      float collision_angle = (float)Math.atan2(dx,dy);
+      float magnitude1 = nodeA.mSpeed.length();
+      float magnitude2 = nodeB.mSpeed.length();
+      float direction1 = (float)Math.atan2(nodeA.mSpeed.y, nodeA.mSpeed.x);
+      float direction2 = (float)Math.atan2(nodeB.mSpeed.y, nodeB.mSpeed.x);
+      float new_xspeed1 = magnitude1 * (float)Math.cos(direction1 - collision_angle);
+      float final_yspeed1 = magnitude1 * (float)Math.sin(direction1 - collision_angle);
+      float new_xspeed2 = magnitude2 * (float)Math.cos(direction2 - collision_angle);
+      float final_yspeed2 = magnitude2 * (float)Math.sin(direction2 - collision_angle);
+      float final_xspeed1 = ((nodeA.mass-nodeB.mass)*new_xspeed1+(nodeB.mass+nodeB.mass)*new_xspeed2)/(nodeA.mass+nodeB.mass);
+      float final_xspeed2 = ((nodeA.mass+nodeA.mass)*new_xspeed1+(nodeB.mass-nodeA.mass)*new_xspeed2)/(nodeA.mass+nodeB.mass);
+
+      float nodeA_xspeed = (float)(Math.cos(collision_angle)*final_xspeed1+Math.cos(collision_angle+Math.PI/2)*final_yspeed1);
+      float nodeA_yspeed = (float)(Math.sin(collision_angle)*final_xspeed1+Math.sin(collision_angle+Math.PI/2)*final_yspeed1);
+      float nodeB_xspeed = (float)(Math.cos(collision_angle)*final_xspeed2+Math.cos(collision_angle+Math.PI/2)*final_yspeed2);
+      float nodeB_yspeed = (float)(Math.sin(collision_angle)*final_xspeed2+Math.sin(collision_angle+Math.PI/2)*final_yspeed2);
+      
+      nodeA.mSpeed.set(nodeA_xspeed,nodeA_yspeed);
+      nodeB.mSpeed.set(nodeB_xspeed,nodeB_yspeed);
+    }
+  }
+  
+  private void checkCollision(code_swarm.Node nodeA, code_swarm.Node nodeB, float maxD)
+  {
+    Vector2f dVec = new Vector2f();
+    
+    dVec.sub(nodeB.mPosition, nodeA.mPosition);
+    double d = dVec.length();
+    if (d <= (maxD)) { // Yep, a collision
+      dVec.normalize();
+      float Vp1 = nodeA.mSpeed.dot(dVec);
+      float Vp2 = nodeB.mSpeed.dot(dVec);
+      float dt = (float) ((nodeA.mass + nodeB.mass - d)/(Vp1 + Vp2));
+      nodeA.mPosition.set(nodeA.mPosition.x - nodeA.mSpeed.x * dt, nodeA.mPosition.y - nodeA.mSpeed.y * dt);
+      nodeB.mPosition.set(nodeB.mPosition.x - nodeB.mSpeed.x * dt, nodeB.mPosition.y - nodeB.mSpeed.y * dt);
+      dVec.sub(nodeB.mPosition, nodeA.mPosition);
+      d = dVec.length();
+      dVec.normalize();
+      float Va1 = nodeA.mSpeed.dot(dVec);
+      float Va2 = nodeB.mSpeed.dot(dVec);
+      float Vb1 = (-nodeA.mSpeed.x * dVec.y + nodeA.mSpeed.y * dVec.x);
+      float Vb2 = (-nodeB.mSpeed.x * dVec.y + nodeB.mSpeed.y * dVec.x);
+      
+      float ed = 1; // ed <= 1, for elastic collision ed = 1
+      float vap1 = Va1 + (1 + ed) * (Va2 - Va1) / (1 + nodeA.mass / nodeB.mass);
+      float vap2 = Va2 + (1 + ed) * (Va1 - Va2) / (1 + nodeB.mass / nodeA.mass);
+      
+      nodeA.mSpeed.x = vap1*dVec.x - Vb1*dVec.y;
+      nodeA.mSpeed.y = vap1*dVec.y + Vb1*dVec.x;
+      nodeB.mSpeed.x = vap2*dVec.x - Vb2*dVec.y;
+      nodeB.mSpeed.y = vap2*dVec.y + Vb2*dVec.x;
+      
+      nodeA.mPosition.x += nodeA.mSpeed.x * dt;
+      nodeA.mPosition.y += nodeA.mSpeed.y * dt;
+      nodeB.mPosition.x += nodeB.mSpeed.x * dt;
+      nodeB.mPosition.y += nodeB.mSpeed.y * dt;
+    }
+  }
+  
+  
   /**
    * Legacy method that calculate the repulsive force between two similar nodes (either files or persons).
    * 
    * @param nodeA [in]
    * @param nodeB [in]
-   * @return force force calculated between those two nodes
    */
-  private Vector2f calculateForceBetweenfNodes( code_swarm.FileNode nodeA, code_swarm.FileNode nodeB )
+  private void calculateForceBetweenfNodes( code_swarm.FileNode nodeA, code_swarm.FileNode nodeB )
   {
-    float distance;
-    Vector2f force = new Vector2f();
-    Vector2f normVec = new Vector2f();
-    
-    /**
-     * Get the distance between nodeA and nodeB
-     */
-    normVec.sub(nodeA.mPosition, nodeB.mPosition);
-    distance = normVec.lengthSquared();
-    /**
-     * If there is a Collision.  This is assuming a radius of zero.
-     * if (lensq == (radius1 + radius2)) is what to use if we have radius 
-     * could use touches for files and edge_length for people?
-     */
-    if (distance == (nodeA.touches + nodeB.touches)) {
-      force.set(0.01f* (((float)Math.random()*2)-1), (0.01f* ((float)Math.random()*2)-1));
-    } else if (distance < 10000) {
-      /**
-       * No collision and distance is close enough to actually matter.
-       */
-      normVec.scale(1/distance);
-      force.set(normVec);
+    if ((nodeA.life <= 0) || (nodeB.life <= 0)) {
+      return;
     }
     
-    return force;
+    //float nodeA_mass = nodeA.mass + nodeA.touches;
+    //float nodeB_mass = nodeB.mass + nodeB.touches;
+    
+    checkCollisionNew(nodeA, nodeB, 5);
   }
   
   /**
@@ -133,88 +183,14 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * 
    * @param nodeA [in]
    * @param nodeB [in]
-   * @return force force calculated between those two nodes
    */
-  private Vector2f calculateForceBetweenpNodes( code_swarm.PersonNode nodeA, code_swarm.PersonNode nodeB )
+  private void calculateForceBetweenpNodes( code_swarm.PersonNode nodeA, code_swarm.PersonNode nodeB )
   {
-    Vector2f force = new Vector2f();
-    Vector2f tmp = new Vector2f();
-    
     if ((nodeA.life <= 0) || (nodeB.life <= 0)) {
-      return  force;
+      return;
     }
     
-    tmp.sub(nodeA.mPosition, nodeB.mPosition);
-    double distance = Math.sqrt(tmp.lengthSquared());
-    if (distance <= (nodeA.mass + nodeB.mass)) {
-      if (nodeA.mSpeed.x > 0 && nodeA.mSpeed.y > 0) {          // Node A down and right
-        if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y > 0) {        // Node B down and left
-          nodeA.mSpeed.x *= -1;
-          nodeB.mSpeed.x *= -1;
-        } else if (nodeB.mSpeed.x > 0 && nodeB.mSpeed.y < 0) { // Node B up and right
-          nodeA.mSpeed.y *= -1;
-          nodeB.mSpeed.y *= -1;
-        } else if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y < 0) { // Node B up and left
-          nodeA.mSpeed.negate();
-          nodeB.mSpeed.negate();
-        } else {                                               // Node B down and right
-          nodeB.mSpeed.x *= -1;
-          nodeA.mSpeed.x *= 2;
-        }
-      } else if (nodeA.mSpeed.x > 0 && nodeA.mSpeed.y < 0) {   // Node A up and right
-        if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y > 0) {        // Node B down and left
-          nodeA.mSpeed.negate();
-          nodeB.mSpeed.negate();
-        } else if (nodeB.mSpeed.x > 0 && nodeB.mSpeed.y < 0) { // Node B up and right
-          nodeA.mSpeed.x *= -1;
-          nodeB.mSpeed.x *= 2;
-        } else if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y < 0) { // Node B up and left
-          nodeA.mSpeed.x *= -1;
-          nodeB.mSpeed.x *= -1;
-        } else {                                               // Node B down and right
-          nodeA.mSpeed.y *= -1;
-          nodeB.mSpeed.y *= -1;
-        }
-      } else if (nodeA.mSpeed.x < 0 && nodeA.mSpeed.y > 0) {   // Node A down and left
-        if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y > 0) {        // Node B down and left
-          nodeB.mSpeed.x *= -1;
-          nodeA.mSpeed.x *= 2;
-        } else if (nodeB.mSpeed.x > 0 && nodeB.mSpeed.y < 0) { // Node B up and right
-          nodeA.mSpeed.negate();
-          nodeB.mSpeed.negate();
-        } else if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y < 0) { // Node B up and left
-          nodeA.mSpeed.y *= -1;
-          nodeB.mSpeed.y *= -1;
-        } else {                                               // Node B down and right
-          nodeA.mSpeed.x *= -1;
-          nodeB.mSpeed.x *= -1;
-        }
-      } else {                                                 // Node A up and left
-        if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y > 0) {        // Node B down and left
-          nodeA.mSpeed.y *= -1;
-          nodeB.mSpeed.y *= -1;
-        } else if (nodeB.mSpeed.x > 0 && nodeB.mSpeed.y < 0) { // Node B up and right
-          nodeA.mSpeed.x *= -1;
-          nodeB.mSpeed.x *= -1;
-        } else if (nodeB.mSpeed.x < 0 && nodeB.mSpeed.y < 0) { // Node B up and left
-          nodeA.mSpeed.x *= -1;
-          nodeB.mSpeed.x *= 2;
-        } else {                                               // Node B down and right
-          nodeA.mSpeed.negate();
-          nodeB.mSpeed.negate();
-        }
-      }
-      while (distance <= (nodeA.mass + nodeB.mass)) {
-        applySpeedTo(nodeA);
-        applySpeedTo(nodeB);
-        tmp.sub(nodeA.mPosition, nodeB.mPosition);
-        distance = Math.sqrt(tmp.lengthSquared());
-      }
-    }
-    /**
-     * No collision
-     */
-    return force;
+    checkCollisionNew(nodeA, nodeB, 50);
   }
   
   
@@ -306,7 +282,21 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     if (edge.life <= 0) {
       return;
     }
+    // shortening life
     edge.decay();
+/*    Vector2f d = new Vector2f();
+    if (edge.nodeFrom.life > 0 && edge.nodeTo.life > 0) {
+      d.sub(edge.nodeFrom.mPosition,edge.nodeTo.mPosition);
+      if (d.length() < edge.len*1.5) {
+        edge.decay();
+        edge.nodeFrom.decay();
+      }
+    } else {
+      edge.decay();
+      if (edge.nodeTo.life <= 0 && edge.nodeFrom.life > 0) {
+        edge.nodeFrom.decay();
+      }
+    }*/
   }
   
   /**
@@ -322,9 +312,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
       return;
     }
     
-    Vector2f forceBetweenFiles = new Vector2f();
-    Vector2f forceSummation    = new Vector2f();
-      
     // Calculation of repulsive force between persons
     for (int j = 0; j < code_swarm.nodes.size(); j++) {
       code_swarm.FileNode n = (code_swarm.FileNode) code_swarm.nodes.get(j);
@@ -333,12 +320,9 @@ public class PhysicsEngineChaotic implements PhysicsEngine
 
       if (n != fNode) {
         // elemental force calculation, and summation
-        forceBetweenFiles = calculateForceBetweenfNodes(fNode, n);
-        forceSummation.add(forceBetweenFiles);
+        calculateForceBetweenfNodes(fNode, n);
       }
     }
-    // Apply repulsive force from other files to this Node
-    applyForceTo(fNode, forceSummation);
   }
   
   /**
@@ -358,8 +342,8 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     // ensure coherent resulting position
     fNode.mPosition.set(constrain(fNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(fNode.mPosition.y, 0.0f, (float)code_swarm.height));
     
-    // shortening life
     fNode.decay();
+    //fNode.life += Math.sqrt(fNode.touches / 2);
     
     // Apply drag (reduce Speed for next frame calculation)
     fNode.mSpeed.scale(DRAG);
@@ -412,8 +396,7 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     // Check for collisions with neighbors.
     for (int i = 0; i < code_swarm.people.size(); i++) {
       if (pNode != code_swarm.people.get(i)) {
-        Vector2f force = calculateForceBetweenpNodes(pNode,code_swarm.people.get(i));
-        pNode.mPosition.add(force);
+        calculateForceBetweenpNodes(pNode,code_swarm.people.get(i));
       }
     }
     
