@@ -27,7 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+//import java.lang.reflect.InvocationTargetException;
 //import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -35,8 +35,12 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.LinkedList;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.Properties;
 import javax.vecmath.Vector2f;
 
@@ -136,7 +140,10 @@ public class code_swarm extends PApplet {
   private String loadingMessage = "Reading input file";
   protected static int width=0;
   protected static int height=0;
+  private int maxFramesSaved;
 
+  protected int maxBackgroundThreads;
+  protected ExecutorService backgroundExecutor;
   /**
    *  Used for utility functions
    *  current members:
@@ -162,6 +169,12 @@ public class code_swarm extends PApplet {
     if (height <= 0) {
       height = 480;
     }
+    
+    maxBackgroundThreads=cfg.getIntProperty(CodeSwarmConfig.MAX_THREADS_KEY,4);
+    if (maxBackgroundThreads <= 0) {
+      maxBackgroundThreads = 4;
+    }
+    backgroundExecutor = new ThreadPoolExecutor(1, maxBackgroundThreads, Long.MAX_VALUE, TimeUnit.NANOSECONDS, new ArrayBlockingQueue<Runnable>(4 * maxBackgroundThreads), new ThreadPoolExecutor.CallerRunsPolicy());
 
     if (cfg.getBooleanProperty(CodeSwarmConfig.USE_OPEN_GL, false)) {
       size(width, height, OPENGL);
@@ -368,14 +381,17 @@ public class code_swarm extends PApplet {
      */
 //    Thread t = new Thread(new Runnable() {
 //      public void run() {
-        loadRepEvents(cfg.getStringProperty(CodeSwarmConfig.INPUT_FILE_KEY)); // event formatted (this is the standard)
-        prevDate = eventsQueue.peek().date;
+      loadRepEvents(cfg.getStringProperty(CodeSwarmConfig.INPUT_FILE_KEY)); // event formatted (this is the standard)
+      prevDate = eventsQueue.peek().date;
 //      }
 //    });
 //    t.setDaemon(true);
 //    t.start();
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
+    
+    maxFramesSaved = (int) Math.pow(10, SCREENSHOT_FILE.replaceAll("[^#]","").length());
+    
     EDGE_LEN = cfg.getIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY);
     if (EDGE_LEN <= 0) {
       EDGE_LEN = 25;
@@ -492,6 +508,10 @@ public class code_swarm extends PApplet {
       // Stop animation when we run out of data
       if (eventsQueue.isEmpty()) {
         // noLoop();
+        backgroundExecutor.shutdown();
+        try {
+          backgroundExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        } catch (InterruptedException e) { /* Do nothing, just exit */}
         exit();
       }
     }
@@ -699,14 +719,23 @@ public class code_swarm extends PApplet {
     return pe;
   }
 
+  /**
+   * @return list of people whose life is > 0
+   */
   public static Iterable<PersonNode> getLivingPeople() {
     return filterLiving(people);
   }
   
+  /**
+   * @return list of edges whose life is > 0
+   */
   public static Iterable<Edge> getLivingEdges() {
     return filterLiving(edges);
   }
   
+  /**
+   * @return list of file nodes whose life is > 0
+   */
   public static Iterable<FileNode> getLivingNodes() {
     return filterLiving(nodes);
   }
@@ -723,8 +752,17 @@ public class code_swarm extends PApplet {
    *  Take screenshot
    */
   public void dumpFrame() {
-    if (frameCount < 100000)
-      saveFrame(SCREENSHOT_FILE);
+    if (frameCount < maxFramesSaved) {
+      final String outputFileName = insertFrame(SCREENSHOT_FILE);
+      final PImage image = get();
+      
+      backgroundExecutor.execute(new Runnable() {
+        public void run() {
+          image.save(new File(outputFileName).getAbsolutePath());
+        }
+      });
+    //  saveFrame(SCREENSHOT_FILE);
+    }
   }
 
   /**
@@ -899,8 +937,8 @@ public class code_swarm extends PApplet {
         loadingMessage = "Creating events: " + eventsQueue.size();
     }
     loading = false;
-    // reset the Frame Counter. Only needed if Threaded.
-    // frameCount = 0;
+    // reset the Frame Counter.
+    frameCount = 0;
   }
 
   /*
@@ -1396,19 +1434,18 @@ public class code_swarm extends PApplet {
      * 5) drawing the new state.
      */
     public void draw() {
-      if (life <= 0)
-        return;
+      if (isAlive()) {
+        textAlign(CENTER, CENTER);
 
-      textAlign(CENTER, CENTER);
+        /** TODO: proportional font size, or light intensity,
+                  or some sort of thing to disable the flashing */
+        if (life >= minBold)
+          textFont(boldFont);
+        else
+          textFont(font);
 
-      /** TODO: proportional font size, or light intensity,
-                or some sort of thing to disable the flashing */
-      if (life >= minBold)
-        textFont(boldFont);
-      else
-        textFont(font);
-
-      text(name, mPosition.x, mPosition.y);
+        text(name, mPosition.x, mPosition.y);
+      }
     }
 
     public void freshen () {

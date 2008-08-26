@@ -32,6 +32,8 @@ public class CodeSwarmConfig
   public static final String WIDTH_KEY = "Width";
   /** The height of window */
   public static final String HEIGHT_KEY = "Height";
+  /** The maximum number of background threads */
+  public static final String MAX_THREADS_KEY = "MaxThreads";
   /** The input file */
   public static final String INPUT_FILE_KEY = "InputFile";
   /** The amount of time between frames */
