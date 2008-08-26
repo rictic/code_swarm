@@ -17,25 +17,32 @@
  * along with code_swarm.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import processing.core.PApplet;
-import processing.core.PFont;
-import processing.core.PImage;
-import processing.xml.XMLElement;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.ListIterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import javax.vecmath.Vector2f;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import processing.core.PApplet;
+import processing.core.PFont;
+import processing.core.PImage;
 
 /**
  * 
@@ -53,12 +60,13 @@ public class code_swarm extends PApplet {
   int background;
 
   // Data storage
-  PriorityBlockingQueue<FileEvent> eventsQueue; // USE PROCESSING 0142 or higher
+  ArrayBlockingQueue<FileEvent> eventsQueue;
   protected static CopyOnWriteArrayList<FileNode> nodes;
   protected static CopyOnWriteArrayList<Edge> edges;
   protected static CopyOnWriteArrayList<PersonNode> people;
   LinkedList<ColorBins> history;
-
+  boolean finishedLoading = false;
+  
   // Temporary variables
   FileEvent currentEvent;
   Date nextDate;
@@ -129,7 +137,6 @@ public class code_swarm extends PApplet {
 
   protected static CodeSwarmConfig cfg;
   private long lastDrawDuration = 0;
-  private boolean loading = true;
   private String loadingMessage = "Reading input file";
   protected static int width=0;
   protected static int height=0;
@@ -277,7 +284,7 @@ public class code_swarm extends PApplet {
     frameRate(FRAME_RATE);
 
     // init data structures
-    eventsQueue = new PriorityBlockingQueue<FileEvent>();
+    eventsQueue = new ArrayBlockingQueue<FileEvent>(5000);
     nodes       = new CopyOnWriteArrayList<FileNode>();
     edges       = new CopyOnWriteArrayList<Edge>();
     people      = new CopyOnWriteArrayList<PersonNode>();
@@ -286,19 +293,9 @@ public class code_swarm extends PApplet {
     // Init color map
     initColors();
 
-    /**
-     * TODO Fix this Thread code.  It is broken somehow.
-     * TODO It causes valid setups to exit with no message.
-     * TODO Only after several attempts will it eventually work.
-     */
-//    Thread t = new Thread(new Runnable() {
-//      public void run() {
-        loadRepEvents(cfg.getStringProperty(CodeSwarmConfig.INPUT_FILE_KEY)); // event formatted (this is the standard)
-        prevDate = eventsQueue.peek().date;
-//      }
-//    });
-//    t.setDaemon(true);
-//    t.start();
+    loadRepEvents(cfg.getStringProperty(CodeSwarmConfig.INPUT_FILE_KEY)); // event formatted (this is the standard)
+    while(eventsQueue.isEmpty());
+    prevDate = eventsQueue.peek().date;
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
     EDGE_LEN = cfg.getPositiveIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY, 25);
@@ -345,82 +342,79 @@ public class code_swarm extends PApplet {
     long start = System.currentTimeMillis();
     background(background); // clear screen with background color
 
-    if (loading) {
-      drawLoading();
-    }
-    else {
-      this.update(); // update state to next frame
+    this.update(); // update state to next frame
 
-      // Draw edges (for debugging only)
-      if (showEdges) {
-        for (Edge edge : edges) {
-          edge.draw();
-        }
-      }
-
-      // Surround names with aura
-      // Then blur it
-      if (drawNamesHalos) {
-        drawPeopleNodesBlur();
-      }
-
-      // Then draw names again, but sharp
-      if (drawNamesSharp) {
-        drawPeopleNodesSharp();
-      }
-
-      // Draw file particles
-      for (FileNode node : nodes) {
-        node.draw();
-      }
-
-      textFont(font);
-
-      // Show the physics engine name
-      if (showEngine) {
-        drawEngine();
-      }
-
-      // help, legend and debug information are exclusive
-      if (showHelp) {
-        // help override legend and debug information
-        drawHelp();
-      }
-      else if (showDebug) {
-        // debug override legend information
-        drawDebugData();
-      }
-      else if (showLegend) {
-        // legend only if nothing "more important"
-        drawLegend();
-      }
-
-      if (showPopular) {
-        drawPopular();
-      }
-
-      if (showHistogram) {
-        drawHistory();
-      }
-
-      if (showDate) {
-        drawDate();
-      }
-
-      if (takeSnapshots) {
-        dumpFrame();
-      }
-
-      // Stop animation when we run out of data
-      if (eventsQueue.isEmpty()) {
-        // noLoop();
-        backgroundExecutor.shutdown();
-        try {
-          backgroundExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (InterruptedException e) { /* Do nothing, just exit */}
-        exit();
+    // Draw edges (for debugging only)
+    if (showEdges) {
+      for (Edge edge : edges) {
+        edge.draw();
       }
     }
+
+    // Surround names with aura
+    // Then blur it
+    if (drawNamesHalos) {
+      drawPeopleNodesBlur();
+    }
+
+    // Then draw names again, but sharp
+    if (drawNamesSharp) {
+      drawPeopleNodesSharp();
+    }
+
+    // Draw file particles
+    for (FileNode node : nodes) {
+      node.draw();
+    }
+
+    textFont(font);
+
+    // Show the physics engine name
+    if (showEngine) {
+      drawEngine();
+    }
+
+    // help, legend and debug information are exclusive
+    if (showHelp) {
+      // help override legend and debug information
+      drawHelp();
+    }
+    else if (showDebug) {
+      // debug override legend information
+      drawDebugData();
+    }
+    else if (showLegend) {
+      // legend only if nothing "more important"
+      drawLegend();
+    }
+
+    if (showPopular) {
+      drawPopular();
+    }
+
+    if (showHistogram) {
+      drawHistory();
+    }
+
+    if (showDate) {
+      drawDate();
+    }
+
+    if (takeSnapshots) {
+      dumpFrame();
+    }
+
+    // Stop animation when we run out of data
+    
+    if (finishedLoading && eventsQueue.isEmpty()) {
+      // noLoop();
+      backgroundExecutor.shutdown();
+      try {
+        backgroundExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+      } catch (InterruptedException e) { /* Do nothing, just exit */}
+      exit();
+    }
+
     long end = System.currentTimeMillis();
     lastDrawDuration = end - start;
   }
@@ -655,10 +649,22 @@ public PhysicsEngine getPhysicsEngine(String name) {
     currentEvent = eventsQueue.peek();
 
     while (currentEvent != null && currentEvent.date.before(nextDate)) {
-      currentEvent = eventsQueue.poll();
-      if (currentEvent == null)
-        return;
-
+      if (finishedLoading){
+        currentEvent = eventsQueue.poll();
+        if (currentEvent == null)
+          return; 
+      }
+      else {
+        try {
+          currentEvent = eventsQueue.take();
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          System.out.println("Interrupted while fetching current event from eventsQueue");
+          e.printStackTrace();
+          continue;
+        }
+      }
+      
       FileNode n = findNode(currentEvent.path + currentEvent.filename);
       if (n == null) {
         n = new FileNode(currentEvent);
@@ -694,7 +700,13 @@ public PhysicsEngine getPhysicsEngine(String name) {
 
       // prevDate = currentEvent.date;
       prevNode = n;
-      currentEvent = eventsQueue.peek();
+      if (finishedLoading)
+        currentEvent = eventsQueue.peek();
+      else{
+        while(eventsQueue.isEmpty());
+        currentEvent = eventsQueue.peek();
+      }
+        
     }
 
     prevDate = nextDate;
@@ -812,23 +824,54 @@ public PhysicsEngine getPhysicsEngine(String name) {
       if (fileInConfigDir.exists())
         filename = fileInConfigDir.getAbsolutePath();
     }
-    XMLElement doc = new XMLElement(this, filename);
-    for (int i = 0; i < doc.getChildCount(); i++) {
-      XMLElement xml = doc.getChild(i);
-      String eventFilename = xml.getStringAttribute("filename");
-      String eventDatestr = xml.getStringAttribute("date");
-      long eventDate = Long.parseLong(eventDatestr);
-      String eventAuthor = xml.getStringAttribute("author");
-      // int eventLinesAdded = xml.getIntAttribute( "linesadded" );
-      // int eventLinesRemoved = xml.getIntAttribute( "linesremoved" );
-      FileEvent evt = new FileEvent(eventDate, eventAuthor, "", eventFilename);
-      eventsQueue.add(evt);
-      if (eventsQueue.size() % 100 == 0)
-        loadingMessage = "Creating events: " + eventsQueue.size();
-    }
-    loading = false;
-    // reset the Frame Counter. Only needed if Threaded.
-    // frameCount = 0;
+    
+    final String fullFilename = filename;
+    backgroundExecutor.execute(new Runnable(){
+      public void run(){
+        XMLReader reader = null;
+        try {
+          reader = XMLReaderFactory.createXMLReader();
+        } catch (SAXException e) {
+          System.out.println("Couldn't find/create an XML SAX Reader");
+          e.printStackTrace();
+          System.exit(1);
+        }
+        reader.setContentHandler(new DefaultHandler(){
+          public void startElement(String uri, String localName, String name,
+              Attributes atts) throws SAXException {
+            if (name.equals("event")){
+              String eventFilename = atts.getValue("filename");
+              String eventDatestr = atts.getValue("date");
+              long eventDate = Long.parseLong(eventDatestr);
+              String eventAuthor = atts.getValue("author");
+              // int eventLinesAdded = atts.getValue( "linesadded" );
+              // int eventLinesRemoved = atts.getValue( "linesremoved" );
+              
+              FileEvent evt = new FileEvent(eventDate, eventAuthor, "", eventFilename);
+              try {
+                eventsQueue.put(evt);
+              } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                System.out.println("Interrupted while trying to put into eventsQueue");
+                e.printStackTrace();
+                System.exit(1);
+              }
+            }
+          }
+          public void endDocument(){
+            finishedLoading = true;
+          }
+        });
+        try {
+          reader.parse(fullFilename);
+        } catch (Exception e) {
+          // TODO Auto-generated catch block
+          System.out.println("Error parsing xml:");
+          e.printStackTrace();
+          System.exit(1);
+        }
+      }
+    });
   }
 
   /*
