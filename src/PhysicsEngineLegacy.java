@@ -202,10 +202,6 @@ public class PhysicsEngineLegacy implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxEdge(code_swarm.Edge edge) {
-    
-    if (edge.life <= 0) {
-      return;
-    }
     Vector2f force    = new Vector2f();
 
     // Calculate force between the node "from" and the node "to"
@@ -225,20 +221,11 @@ public class PhysicsEngineLegacy implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxNode(code_swarm.FileNode fNode ) {
-    
-    if (fNode.life <= 0) {
-      return;
-    }
-    
     Vector2f forceBetweenFiles = new Vector2f();
     Vector2f forceSummation    = new Vector2f();
       
     // Calculation of repulsive force between persons
-    for (int j = 0; j < code_swarm.nodes.size(); j++) {
-      code_swarm.FileNode n = (code_swarm.FileNode) code_swarm.nodes.get(j);
-      if (n.life <= 0)
-        continue;
-
+    for (code_swarm.FileNode n : code_swarm.getLivingNodes()) {
       if (n != fNode) {
         // elemental force calculation, and summation
         forceBetweenFiles = calculateForceBetweenNodes(fNode, n);
@@ -257,23 +244,14 @@ public class PhysicsEngineLegacy implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxPerson(code_swarm.PersonNode pNode) {
-
-    if (pNode.life <= 0) {
-      return;
-    }
-    
     Vector2f forceBetweenPersons = new Vector2f();
     Vector2f forceSummation      = new Vector2f();
 
     // Calculation of repulsive force between persons
-    for (int j = 0; j < code_swarm.people.size(); j++) {
-      code_swarm.Node n = (code_swarm.Node) code_swarm.people.get(j);
-      if (n.life <= 0)
-        continue;
-
-      if (n != pNode) {
+    for (code_swarm.PersonNode p : code_swarm.getLivingPeople()) {
+      if (p != pNode) {
         // elemental force calculation, and summation
-        forceBetweenPersons = calculateForceBetweenNodes(pNode, n);
+        forceBetweenPersons = calculateForceBetweenNodes(pNode, p);
         forceSummation.add(forceBetweenPersons);
       }
     }
@@ -292,9 +270,6 @@ public class PhysicsEngineLegacy implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdateEdge(code_swarm.Edge edge) {
-    if (edge.life <= 0) {
-      return;
-    }
     edge.decay();
   }
   
@@ -306,9 +281,6 @@ public class PhysicsEngineLegacy implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdateNode(code_swarm.FileNode fNode) {
-    if (fNode.life <= 0) {
-      return;
-    }
     // Apply Speed to Position on nodes
     applySpeedTo(fNode);
     
@@ -327,9 +299,6 @@ public class PhysicsEngineLegacy implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdatePerson(code_swarm.PersonNode pNode) {
-    if (pNode.life <= 0) {
-      return;
-    }
     // Apply Speed to Position on nodes
     applySpeedTo(pNode);
     

@@ -186,10 +186,6 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
     Vector2f force = new Vector2f();
     Vector2f tmp = new Vector2f();
 
-    if ((nodeA.life <= 0) || (nodeB.life <= 0)) {
-      return  force;
-    }
-
     tmp.sub(nodeA.mPosition, nodeB.mPosition);
     double distance = Math.sqrt(tmp.lengthSquared());
     if (distance <= (nodeA.mass + nodeB.mass)) {
@@ -336,12 +332,8 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
   
   private boolean whichSide(code_swarm.Node node) {
     // which half of the screen are we on?
-    if (node.mPosition.x >= midWayX) {
-      return true;
-    }
-    
-    // left side
-    return false;
+    // true = right side
+    return (node.mPosition.x >= midWayX);
   }
 
   /**
@@ -354,14 +346,10 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
   public void initializeFrame() {
     doorOpen = false;
     
-    for (int i = 0; i < code_swarm.people.size(); i++) {
-      code_swarm.PersonNode p = code_swarm.people.get(i);
-      if (p.life > 0) {
-        if (nearDoor(p)) {
-          if (p.mSpeed.x < 0.0f) {
-            doorOpen = true;
-          }
-        }
+    for (code_swarm.PersonNode p : code_swarm.getLivingPeople()) {
+      if (p.mSpeed.x < 0.0f && nearDoor(p)) {
+        doorOpen = true;
+        break;
       }
     }
     
@@ -383,14 +371,10 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxEdge(code_swarm.Edge edge) {
-    if (edge.life <= 0) {
-      return;
-    }
-
     boolean fSide = whichSide(edge.nodeFrom);
     boolean pSide = whichSide(edge.nodeTo);
 
-    if ((!doorOpen && fSide != pSide) || (doorOpen && !nearDoor(edge.nodeFrom))) {
+    if ((!doorOpen && fSide != pSide) || ((doorOpen && edge.nodeFrom.mPosition.y < startDoorY) || (doorOpen && edge.nodeFrom.mPosition.y > startDoorY + doorSize))) {
       return;
     }
 
@@ -413,9 +397,6 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdateEdge(code_swarm.Edge edge) {
-    if (edge.life <= 0) {
-      return;
-    }
     edge.decay();
   }
 
@@ -427,21 +408,13 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxNode(code_swarm.FileNode fNode ) {
-    if (fNode.life <= 0) {
-      return;
-    }
-    
     boolean mySide = whichSide(fNode);
 
     Vector2f forceBetweenFiles = new Vector2f();
     Vector2f forceSummation    = new Vector2f();
 
     // Calculation of repulsive force between persons
-    for (int j = 0; j < code_swarm.nodes.size(); j++) {
-      code_swarm.FileNode n = (code_swarm.FileNode) code_swarm.nodes.get(j);
-      if (n.life <= 0)
-        continue;
-
+    for (code_swarm.FileNode n : code_swarm.getLivingNodes()) {
       if (n != fNode && mySide == whichSide(n)) {
         // elemental force calculation, and summation
         forceBetweenFiles = calculateForceBetweenfNodes(fNode, n);
@@ -460,10 +433,6 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdateNode(code_swarm.FileNode fNode) {
-    if (fNode.life <= 0) {
-      return;
-    }
-    
     // Apply Speed to Position on nodes
     applySpeedTo(fNode);
     constrainNode(fNode, whichSide(fNode)); // Keep it in bounds.
@@ -483,9 +452,6 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxPerson(code_swarm.PersonNode pNode) {
-    if (pNode.life <= 0) {
-      return;
-    }
     if (pNode.mSpeed.length() == 0) {
       // Range (-1,1)
       pNode.mSpeed.set(pNode.mass*((float)Math.random()-pNode.mass),pNode.mass*((float)Math.random()-pNode.mass));
@@ -512,18 +478,14 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdatePerson(code_swarm.PersonNode pNode) {
-    if (pNode.life <= 0) {
-      return;
-    }
-    
     boolean rightSide = whichSide(pNode);
     
     applySpeedTo(pNode);
 
     // Check for collisions with neighbors.
-    for (int i = 0; i < code_swarm.people.size(); i++) {
-      if (pNode != code_swarm.people.get(i)) {
-        Vector2f force = calculateForceBetweenpNodes(pNode,code_swarm.people.get(i));
+    for (code_swarm.PersonNode p : code_swarm.getLivingPeople()) {
+      if (pNode != p) {
+        Vector2f force = calculateForceBetweenpNodes(pNode,p);
         pNode.mPosition.add(force);
       }
     }

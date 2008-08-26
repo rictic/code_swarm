@@ -168,13 +168,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    */
   private void calculateForceBetweenfNodes( code_swarm.FileNode nodeA, code_swarm.FileNode nodeB )
   {
-    if ((nodeA.life <= 0) || (nodeB.life <= 0)) {
-      return;
-    }
-    
-    //float nodeA_mass = nodeA.mass + nodeA.touches;
-    //float nodeB_mass = nodeB.mass + nodeB.touches;
-    
     checkCollisionNew(nodeA, nodeB, 5);
   }
   
@@ -186,10 +179,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    */
   private void calculateForceBetweenpNodes( code_swarm.PersonNode nodeA, code_swarm.PersonNode nodeB )
   {
-    if ((nodeA.life <= 0) || (nodeB.life <= 0)) {
-      return;
-    }
-    
     checkCollisionNew(nodeA, nodeB, 50);
   }
   
@@ -254,12 +243,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxEdge(code_swarm.Edge edge) {
-    
-    if (edge.life <= 0) {
-      return;
-    }
-    //Vector2f force    = new Vector2f();
-
     // Calculate force between the node "from" and the node "to"
     Vector2f force = calculateForceAlongAnEdge(edge);
 
@@ -267,8 +250,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     force.negate();
     applyForceTo(edge.nodeFrom, force); // fNode: attract fNode to pNode
     applySpeedTo(edge.nodeFrom); // fNode: move it.
-    //force.negate(); // force is inverted for the other end of the edge: repel pNodes from fNodes
-    //applyForceTo(edge.nodeTo, force); // pNode
   }
   
   /**
@@ -279,24 +260,8 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdateEdge(code_swarm.Edge edge) {
-    if (edge.life <= 0) {
-      return;
-    }
     // shortening life
     edge.decay();
-/*    Vector2f d = new Vector2f();
-    if (edge.nodeFrom.life > 0 && edge.nodeTo.life > 0) {
-      d.sub(edge.nodeFrom.mPosition,edge.nodeTo.mPosition);
-      if (d.length() < edge.len*1.5) {
-        edge.decay();
-        edge.nodeFrom.decay();
-      }
-    } else {
-      edge.decay();
-      if (edge.nodeTo.life <= 0 && edge.nodeFrom.life > 0) {
-        edge.nodeFrom.decay();
-      }
-    }*/
   }
   
   /**
@@ -307,17 +272,8 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxNode(code_swarm.FileNode fNode ) {
-    
-    if (fNode.life <= 0) {
-      return;
-    }
-    
-    // Calculation of repulsive force between persons
-    for (int j = 0; j < code_swarm.nodes.size(); j++) {
-      code_swarm.FileNode n = (code_swarm.FileNode) code_swarm.nodes.get(j);
-      if (n.life <= 0)
-        continue;
-
+    // Calculation of repulsive force between files
+    for (code_swarm.FileNode n : code_swarm.getLivingNodes()) {  
       if (n != fNode) {
         // elemental force calculation, and summation
         calculateForceBetweenfNodes(fNode, n);
@@ -333,9 +289,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdateNode(code_swarm.FileNode fNode) {
-    if (fNode.life <= 0) {
-      return;
-    }
     // Apply Speed to Position on nodes
     applySpeedTo(fNode);
     
@@ -343,7 +296,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     fNode.mPosition.set(constrain(fNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(fNode.mPosition.y, 0.0f, (float)code_swarm.height));
     
     fNode.decay();
-    //fNode.life += Math.sqrt(fNode.touches / 2);
     
     // Apply drag (reduce Speed for next frame calculation)
     fNode.mSpeed.scale(DRAG);
@@ -357,10 +309,6 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelaxPerson(code_swarm.PersonNode pNode) {
-
-    if (pNode.life <= 0) {
-      return;
-    }
     if (pNode.mSpeed.length() == 0) {
       // Range (-1,1)
       pNode.mSpeed.set(pNode.mass*((float)Math.random()-pNode.mass),pNode.mass*((float)Math.random()-pNode.mass));
@@ -389,14 +337,10 @@ public class PhysicsEngineChaotic implements PhysicsEngine
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onUpdatePerson(code_swarm.PersonNode pNode) {
-    if (pNode.life <= 0) {
-      return;
-    }
-    
     // Check for collisions with neighbors.
-    for (int i = 0; i < code_swarm.people.size(); i++) {
-      if (pNode != code_swarm.people.get(i)) {
-        calculateForceBetweenpNodes(pNode,code_swarm.people.get(i));
+    for (code_swarm.PersonNode p : code_swarm.getLivingPeople()) {  
+      if (pNode != p) {
+        calculateForceBetweenpNodes(pNode,p);
       }
     }
     
@@ -460,4 +404,3 @@ public class PhysicsEngineChaotic implements PhysicsEngine
     return vec;
   }
 }
-

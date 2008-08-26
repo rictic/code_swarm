@@ -30,6 +30,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 //import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -315,37 +316,8 @@ public class code_swarm extends PApplet {
         }
         String ClassName = p.getProperty("name", "__DEFAULT__");
         if ( ! ClassName.equals("__DEFAULT__")) {
-          Class<?> c = null;
-          try {
-            c = Class.forName(ClassName);
-          } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.exit(1);
-          }
-          PhysicsEngine pe = null;
-          try {
-            Constructor peConstructor = c.getConstructor();
-            pe = (PhysicsEngine) peConstructor.newInstance();
-            pe.setup(p);
-          } catch (InstantiationException e) {
-            e.printStackTrace();
-            System.exit(1);
-          } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            System.exit(1);
-          } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            System.exit(1);
-          } catch (InvocationTargetException e) {
-            e.printStackTrace();
-            System.exit(1);
-          } catch (SecurityException e) {
-            e.printStackTrace();
-            System.exit(1);
-          } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            System.exit(1);
-          }
+          PhysicsEngine pe = getPhysicsEngine(ClassName);
+          pe.setup(p);
           peConfig pec = new peConfig(ClassName,pe);
           mPhysicsEngineChoices.add(pec);
         } else {
@@ -534,8 +506,7 @@ public class code_swarm extends PApplet {
   public void drawPeopleNodesBlur() {
     colorMode(HSB);
     // First draw the name
-    for (int i = 0; i < people.size(); i++) {
-      PersonNode p = (PersonNode) people.get(i);
+    for (PersonNode p : people) {
       fill(hue(p.flavor), 64, 255, p.life);
       p.draw();
     }
@@ -708,7 +679,46 @@ public class code_swarm extends PApplet {
       }
     }
   }
+  
+  /**
+   * @param name
+   * @return physics engine instance
+   */
+  @SuppressWarnings("unchecked")
+  public PhysicsEngine getPhysicsEngine(String name) {
+    PhysicsEngine pe = null;
+    try {
+      Class<PhysicsEngine> c = (Class<PhysicsEngine>)Class.forName(name);
+      Constructor<PhysicsEngine> peConstructor = c.getConstructor();
+      pe = peConstructor.newInstance();
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
+    
+    return pe;
+  }
 
+  public static Iterable<PersonNode> getLivingPeople() {
+    return filterLiving(people);
+  }
+  
+  public static Iterable<Edge> getLivingEdges() {
+    return filterLiving(edges);
+  }
+  
+  public static Iterable<FileNode> getLivingNodes() {
+    return filterLiving(nodes);
+  }
+  
+  private static <T extends Drawable> Iterable<T> filterLiving(Iterable<T> iter) {
+    ArrayList<T> livingThings = new ArrayList<T>();
+    for (T thing : iter)
+      if (thing.isAlive())
+        livingThings.add(thing);
+    return livingThings;
+  }
+  
   /**
    *  Take screenshot
    */
@@ -786,33 +796,37 @@ public class code_swarm extends PApplet {
     // Init frame:
     mPhysicsEngine.initializeFrame();
 
+    Iterable<Edge> livingEdges = getLivingEdges();
+    Iterable<FileNode> livingNodes = getLivingNodes();
+    Iterable<PersonNode> livingPeople = getLivingPeople();
+    
     // update velocity
-    for (Edge edge : edges) {
+    for (Edge edge : livingEdges) {
       mPhysicsEngine.onRelaxEdge(edge);
     }
 
     // update velocity
-    for (FileNode node : nodes) {
+    for (FileNode node : livingNodes) {
       mPhysicsEngine.onRelaxNode(node);
     }
 
     // update velocity
-    for (PersonNode person : people) {
+    for (PersonNode person : livingPeople) {
       mPhysicsEngine.onRelaxPerson(person);
     }
 
     // update position
-    for (Edge edge : edges) {
+    for (Edge edge : livingEdges) {
       mPhysicsEngine.onUpdateEdge(edge);
     }
 
     // update position
-    for (FileNode node : nodes) {
+    for (FileNode node : livingNodes) {
       mPhysicsEngine.onUpdateNode(node);
     }
 
     // update position
-    for (PersonNode person : people) {
+    for (PersonNode person : livingPeople) {
       mPhysicsEngine.onUpdatePerson(person);
     }
 
@@ -1137,7 +1151,7 @@ public class code_swarm extends PApplet {
      *  4) shortening life.
      */
     public void decay() {
-      if (life > 0) {
+      if (isAlive()) {
         life += LIFE_DECREMENT;
         if (life < 0) {
           life = 0;
@@ -1154,6 +1168,14 @@ public class code_swarm extends PApplet {
      * 6) reseting life as if new.
      */
     public abstract void freshen();
+    
+    /**
+     * @return true if life > 0
+     */
+    public boolean isAlive() {
+      return life > 0;
+    }
+    
   }
 
   /**
@@ -1215,17 +1237,6 @@ public class code_swarm extends PApplet {
       mSpeed = new Vector2f();
     }
 
-    /**
-     *  4) shortening life.
-     */
-    public void decay() {
-      if (life > 0) {
-        life += LIFE_DECREMENT;
-        if (life < 0) {
-          life = 0;
-        }
-      }
-    }
   }
 
   /**
