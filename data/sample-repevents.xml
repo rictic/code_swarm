@@ -1,6 +1,4 @@
 <?xml version="1.0"?>
-<!-- One commit per day for one month by a documenter and programmer. -->
-
 <file_events>
 	<event filename="/src/hello1.c" date="0" author="programmer" />
 	<event filename="/docs/COPYING" date="0" author="documenter" />
@@ -132,9 +130,9 @@
 	<event filename="/src1/hello9.c" date="5325000000" author="programmer" />
 	<event filename="/src1/hello10.c" date="5345000000" author="helper" />
 	<event filename="/src1/hello12.c" date="5345000000" author="helper" />
-	<event filename="/src1/hello1.c" date="5416000000" author="helper" />
 	<event filename="/docs/README" date="5395000000" author="documenter" />
 	<event filename="/src2/hello13.c" date="5398000000" author="helper" />
+	<event filename="/src1/hello1.c" date="5416000000" author="helper" />
 	<event filename="/src2/hello2.c" date="5416000000" author="programmer" />
 	<event filename="/src2/hello3.c" date="5416000000" author="programmer" />
 	<event filename="/src2/hello4.c" date="5416000000" author="programmer" />
@@ -173,5 +171,5 @@
 	<event filename="/src/hello5.c" date="6130000000" author="helper" />
 	<event filename="/src/hello10.c" date="6130000000" author="helper" />
 	<event filename="/src/hello12.c" date="6195000000" author="helper" />
-</file_events>
 
+</file_events> 

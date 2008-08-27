@@ -83,5 +83,11 @@ PersonLife=255
 # Force calculation algorithms (PhysicsEngineLegacy, PhysicsEngineSimple...) :
 PhysicsEngineSelection=PhysicsEngineChaotic
 
+#Is the input xml sorted by date?  It's faster and uses much less memory if it is
+IsInputSorted=true
+#  - All of the given scripts for producing repository xml files produce sorted data
+#  - Please file a bug if one doesn't
+
+
 # OpenGL is experimental. Use at your own risk.
 UseOpenGL=true
