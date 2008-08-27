@@ -106,6 +106,7 @@ public class CodeSwarmConfig
   public static final String PHYSICS_ENGINE_SELECTION = "PhysicsEngineSelection";
   /** Controls where the config files are for the Physical Engine */
   public static final String PHYSICS_ENGINE_CONF_DIR = "PhysicsEngineConfigDir";
+  public static final String IS_INPUT_SORTED_KEY = "IsInputSorted";
   /** Default regex and rgb values used to match anything not caught in the config file */
   public static String DEFAULT_COLOR_ASSIGN = "\"Misc\",\".*\",128,128,128,128,128,128";
 

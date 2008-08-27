@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -60,7 +61,8 @@ public class code_swarm extends PApplet {
   int background;
 
   // Data storage
-  ArrayBlockingQueue<FileEvent> eventsQueue;
+  BlockingQueue<FileEvent> eventsQueue;
+  boolean isInputSorted = false;
   protected static CopyOnWriteArrayList<FileNode> nodes;
   protected static CopyOnWriteArrayList<Edge> edges;
   protected static CopyOnWriteArrayList<PersonNode> people;
@@ -95,7 +97,11 @@ public class code_swarm extends PApplet {
   boolean drawFilesSharp = false;
   boolean drawFilesFuzzy = false;
   boolean drawFilesJelly = false;
-
+  
+  //used to ensure that input is sorted when we're told it is
+  long maximumDateSeenSoFar = 0;
+  
+  
   // Color mapper
   ColorAssigner colorAssigner;
   int currentColor;
@@ -159,16 +165,8 @@ public class code_swarm extends PApplet {
 
     utils = new Utils();
 
-    width=cfg.getIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
-
-    if (width <= 0) {
-      width = 640;
-    }
-
-    height=cfg.getIntProperty(CodeSwarmConfig.HEIGHT_KEY,480);
-    if (height <= 0) {
-      height = 480;
-    }
+    width=cfg.getPositiveIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
+    height=cfg.getPositiveIntProperty(CodeSwarmConfig.HEIGHT_KEY,480);
 
     if (cfg.getBooleanProperty(CodeSwarmConfig.USE_OPEN_GL, false)) {
       size(width, height, OPENGL);
@@ -197,6 +195,8 @@ public class code_swarm extends PApplet {
     
     UPDATE_DELTA = cfg.getIntProperty("testsets"/*CodeSwarmConfig.MSEC_PER_FRAME_KEY*/, -1);
 
+    
+    
     /* enforce decrements < 0 */
     EDGE_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.EDGE_DECREMENT_KEY,-2);
     FILE_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.FILE_DECREMENT_KEY,-2);
@@ -226,6 +226,8 @@ public class code_swarm extends PApplet {
       UPDATE_DELTA = 21600000;
     }
 
+    isInputSorted = cfg.getBooleanProperty(CodeSwarmConfig.IS_INPUT_SORTED_KEY, false);
+    
     /**
      * This section loads config files and calls the setup method for all physics engines.
      */
@@ -267,9 +269,7 @@ public class code_swarm extends PApplet {
     // Physics engine configuration and instantiation
     physicsEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_SELECTION, PHYSICS_ENGINE_LEGACY );
 
-    ListIterator<peConfig> peIterator = mPhysicsEngineChoices.listIterator();
-    while (peIterator.hasNext()) {
-      peConfig p = peIterator.next();
+    for (peConfig p : mPhysicsEngineChoices) {
       if (physicsEngineSelection.equals(p.name)) {
         mPhysicsEngine = p.pe;
       }
@@ -284,17 +284,22 @@ public class code_swarm extends PApplet {
     frameRate(FRAME_RATE);
 
     // init data structures
-    eventsQueue = new ArrayBlockingQueue<FileEvent>(5000);
-    nodes       = new CopyOnWriteArrayList<FileNode>();
-    edges       = new CopyOnWriteArrayList<Edge>();
-    people      = new CopyOnWriteArrayList<PersonNode>();
-    history     = new LinkedList<ColorBins>();
-
+    nodes         = new CopyOnWriteArrayList<FileNode>();
+    edges         = new CopyOnWriteArrayList<Edge>();
+    people        = new CopyOnWriteArrayList<PersonNode>();
+    history       = new LinkedList<ColorBins>(); 
+    if (isInputSorted)
+      //If the input is sorted, we only need to store the next few events
+      eventsQueue = new ArrayBlockingQueue<FileEvent>(5000);
+    else
+      //Otherwise we need to store them all at once in a data structure that will sort them
+      eventsQueue = new PriorityBlockingQueue<FileEvent>();
+    
     // Init color map
     initColors();
 
     loadRepEvents(cfg.getStringProperty(CodeSwarmConfig.INPUT_FILE_KEY)); // event formatted (this is the standard)
-    while(eventsQueue.isEmpty());
+    while(!finishedLoading && eventsQueue.isEmpty());
     prevDate = eventsQueue.peek().date;
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
@@ -826,7 +831,7 @@ public PhysicsEngine getPhysicsEngine(String name) {
     }
     
     final String fullFilename = filename;
-    backgroundExecutor.execute(new Runnable(){
+    Runnable eventLoader = new Runnable(){
       public void run(){
         XMLReader reader = null;
         try {
@@ -843,6 +848,18 @@ public PhysicsEngine getPhysicsEngine(String name) {
               String eventFilename = atts.getValue("filename");
               String eventDatestr = atts.getValue("date");
               long eventDate = Long.parseLong(eventDatestr);
+              
+              //It's difficult for the user to tell that they're missing events,
+              //so we should crash in this case
+              if (isInputSorted){
+                if (eventDate < maximumDateSeenSoFar){
+                  System.out.println("Input not sorted, you must set IsInputSorted to false in your config file");
+                  System.exit(1);
+                }
+                else
+                  maximumDateSeenSoFar = eventDate;
+              }
+              
               String eventAuthor = atts.getValue("author");
               // int eventLinesAdded = atts.getValue( "linesadded" );
               // int eventLinesRemoved = atts.getValue( "linesremoved" );
@@ -871,7 +888,13 @@ public PhysicsEngine getPhysicsEngine(String name) {
           System.exit(1);
         }
       }
-    });
+    };
+    
+    if (isInputSorted)
+      backgroundExecutor.execute(eventLoader);
+    else
+      //we have to load all of the data before we can continue if it isn't sorted
+      eventLoader.run();
   }
 
   /*
