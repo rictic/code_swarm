@@ -32,7 +32,9 @@ elif [ -d .svn ]; then
 elif [ -d .hg ]; then
     dir=`pwd`/.hg/.code_swarm
     log() {
-        hg_log.py -o $dir/log.xml .
+        hg_log.py -o $dir/unsorted_log.xml .
+        sort_code_swarm_input.py < $dir/unsorted_log.xml > $dir/log.xml
+        rm $dir/unsorted_log.xml
     }
 else
     echo "This directory isn't an svn, git, or hg project.  Run in the base directory of source-controlled project."

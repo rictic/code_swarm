@@ -831,64 +831,7 @@ public PhysicsEngine getPhysicsEngine(String name) {
     }
     
     final String fullFilename = filename;
-    Runnable eventLoader = new Runnable(){
-      public void run(){
-        XMLReader reader = null;
-        try {
-          reader = XMLReaderFactory.createXMLReader();
-        } catch (SAXException e) {
-          System.out.println("Couldn't find/create an XML SAX Reader");
-          e.printStackTrace();
-          System.exit(1);
-        }
-        reader.setContentHandler(new DefaultHandler(){
-          public void startElement(String uri, String localName, String name,
-              Attributes atts) throws SAXException {
-            if (name.equals("event")){
-              String eventFilename = atts.getValue("filename");
-              String eventDatestr = atts.getValue("date");
-              long eventDate = Long.parseLong(eventDatestr);
-              
-              //It's difficult for the user to tell that they're missing events,
-              //so we should crash in this case
-              if (isInputSorted){
-                if (eventDate < maximumDateSeenSoFar){
-                  System.out.println("Input not sorted, you must set IsInputSorted to false in your config file");
-                  System.exit(1);
-                }
-                else
-                  maximumDateSeenSoFar = eventDate;
-              }
-              
-              String eventAuthor = atts.getValue("author");
-              // int eventLinesAdded = atts.getValue( "linesadded" );
-              // int eventLinesRemoved = atts.getValue( "linesremoved" );
-              
-              FileEvent evt = new FileEvent(eventDate, eventAuthor, "", eventFilename);
-              try {
-                eventsQueue.put(evt);
-              } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                System.out.println("Interrupted while trying to put into eventsQueue");
-                e.printStackTrace();
-                System.exit(1);
-              }
-            }
-          }
-          public void endDocument(){
-            finishedLoading = true;
-          }
-        });
-        try {
-          reader.parse(fullFilename);
-        } catch (Exception e) {
-          // TODO Auto-generated catch block
-          System.out.println("Error parsing xml:");
-          e.printStackTrace();
-          System.exit(1);
-        }
-      }
-    };
+    Runnable eventLoader = new XMLQueueLoader(fullFilename, eventsQueue, isInputSorted);
     
     if (isInputSorted)
       backgroundExecutor.execute(eventLoader);
@@ -1023,6 +966,75 @@ public PhysicsEngine getPhysicsEngine(String name) {
     else
       loop();
     looping = !looping;
+  }
+
+  private class XMLQueueLoader implements Runnable {
+    private final String fullFilename;
+    private BlockingQueue<FileEvent> queue;
+    boolean isXMLSorted;
+    
+    private XMLQueueLoader(String fullFilename, BlockingQueue<FileEvent> queue, boolean isXMLSorted) {
+      this.fullFilename = fullFilename;
+      this.queue = queue;
+      this.isXMLSorted = isXMLSorted;
+    }
+
+    public void run(){
+      XMLReader reader = null;
+      try {
+        reader = XMLReaderFactory.createXMLReader();
+      } catch (SAXException e) {
+        System.out.println("Couldn't find/create an XML SAX Reader");
+        e.printStackTrace();
+        System.exit(1);
+      }
+      reader.setContentHandler(new DefaultHandler(){
+        public void startElement(String uri, String localName, String name,
+            Attributes atts) throws SAXException {
+          if (name.equals("event")){
+            String eventFilename = atts.getValue("filename");
+            String eventDatestr = atts.getValue("date");
+            long eventDate = Long.parseLong(eventDatestr);
+            
+            //It's difficult for the user to tell that they're missing events,
+            //so we should crash in this case
+            if (isXMLSorted){
+              if (eventDate < maximumDateSeenSoFar){
+                System.out.println("Input not sorted, you must set IsInputSorted to false in your config file");
+                System.exit(1);
+              }
+              else
+                maximumDateSeenSoFar = eventDate;
+            }
+            
+            String eventAuthor = atts.getValue("author");
+            // int eventLinesAdded = atts.getValue( "linesadded" );
+            // int eventLinesRemoved = atts.getValue( "linesremoved" );
+            
+            FileEvent evt = new FileEvent(eventDate, eventAuthor, "", eventFilename);
+            try {
+              queue.put(evt);
+            } catch (InterruptedException e) {
+              // TODO Auto-generated catch block
+              System.out.println("Interrupted while trying to put into eventsQueue");
+              e.printStackTrace();
+              System.exit(1);
+            }
+          }
+        }
+        public void endDocument(){
+          finishedLoading = true;
+        }
+      });
+      try {
+        reader.parse(fullFilename);
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        System.out.println("Error parsing xml:");
+        e.printStackTrace();
+        System.exit(1);
+      }
+    }
   }
 
   class Utils {
