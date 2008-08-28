@@ -146,10 +146,10 @@ public class code_swarm extends PApplet {
   private String loadingMessage = "Reading input file";
   protected static int width=0;
   protected static int height=0;
-  
-  protected int maxBackgroundThreads = 4 * Runtime.getRuntime().availableProcessors();
-  protected ExecutorService backgroundExecutor = new ThreadPoolExecutor(1, maxBackgroundThreads, Long.MAX_VALUE, TimeUnit.NANOSECONDS, new ArrayBlockingQueue<Runnable>(4 * maxBackgroundThreads), new ThreadPoolExecutor.CallerRunsPolicy());
-  
+  private int maxFramesSaved;
+
+  protected int maxBackgroundThreads;
+  protected ExecutorService backgroundExecutor;
   /**
    *  Used for utility functions
    *  current members:
@@ -173,6 +173,9 @@ public class code_swarm extends PApplet {
     } else {
       size(width, height);
     }
+    
+    int maxBackgroundThreads = cfg.getPositiveIntProperty(CodeSwarmConfig.MAX_THREADS_KEY, 8);
+    backgroundExecutor = new ThreadPoolExecutor(1, maxBackgroundThreads, Long.MAX_VALUE, TimeUnit.NANOSECONDS, new ArrayBlockingQueue<Runnable>(4 * maxBackgroundThreads), new ThreadPoolExecutor.CallerRunsPolicy());
     
     showLegend     = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND, false);
     showHistogram  = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY, false); 
@@ -304,7 +307,9 @@ public class code_swarm extends PApplet {
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
     EDGE_LEN = cfg.getPositiveIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY, 25);
-
+    
+    maxFramesSaved = (int) Math.pow(10, SCREENSHOT_FILE.replaceAll("[^#]","").length());
+    
     // Create fonts
     String fontName = cfg.getStringProperty(CodeSwarmConfig.FONT_KEY,"SansSerif");
     Integer fontSize = cfg.getIntProperty(CodeSwarmConfig.FONT_SIZE, 10);
@@ -612,34 +617,70 @@ public class code_swarm extends PApplet {
       }
     }
   }
-
+  
+  /**
+   * @param name
+   * @return physics engine instance
+   */
   @SuppressWarnings("unchecked")
-public PhysicsEngine getPhysicsEngine(String name) {
-      PhysicsEngine pe = null;
-	  try {
-        Class<PhysicsEngine> c = (Class<PhysicsEngine>)Class.forName(name);
-        Constructor<PhysicsEngine> peConstructor = c.getConstructor();
-        pe = peConstructor.newInstance();
-      } catch (Exception e) {
-        e.printStackTrace();
-        System.exit(1);
-      }
-      return pe;
+  public PhysicsEngine getPhysicsEngine(String name) {
+    PhysicsEngine pe = null;
+    try {
+      Class<PhysicsEngine> c = (Class<PhysicsEngine>)Class.forName(name);
+      Constructor<PhysicsEngine> peConstructor = c.getConstructor();
+      pe = peConstructor.newInstance();
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
+    
+    return pe;
+  }
+
+  /**
+   * @return list of people whose life is > 0
+   */
+  public static Iterable<PersonNode> getLivingPeople() {
+    return filterLiving(people);
+  }
+  
+  /**
+   * @return list of edges whose life is > 0
+   */
+  public static Iterable<Edge> getLivingEdges() {
+    return filterLiving(edges);
+  }
+  
+  /**
+   * @return list of file nodes whose life is > 0
+   */
+  public static Iterable<FileNode> getLivingNodes() {
+    return filterLiving(nodes);
+  }
+  
+  private static <T extends Drawable> Iterable<T> filterLiving(Iterable<T> iter) {
+    ArrayList<T> livingThings = new ArrayList<T>();
+    for (T thing : iter)
+      if (thing.isAlive())
+        livingThings.add(thing);
+    return livingThings;
   }
   
   /**
    *  Take screenshot
    */
   public void dumpFrame() {
-    final File outputFile = new File(insertFrame(SCREENSHOT_FILE));
-    final PImage image = get();
-    outputFile.getParentFile().mkdirs();
+    if (frameCount < this.maxFramesSaved){
+      final File outputFile = new File(insertFrame(SCREENSHOT_FILE));
+      final PImage image = get();
+      outputFile.getParentFile().mkdirs();
 
-    backgroundExecutor.execute(new Runnable() {
-      public void run() {
-        image.save(outputFile.getAbsolutePath());
-      }
-    });
+      backgroundExecutor.execute(new Runnable() {
+        public void run() {
+          image.save(outputFile.getAbsolutePath());
+        }
+      });
+    }
   }
 
   /**
@@ -734,21 +775,34 @@ public PhysicsEngine getPhysicsEngine(String name) {
     Iterable<PersonNode> livingPeople = getLivingPeople();
     
     // update velocity
-    for (Edge edge : livingEdges)
+    for (Edge edge : livingEdges) {
       mPhysicsEngine.onRelaxEdge(edge);
-    for (FileNode node : livingNodes)
-      mPhysicsEngine.onRelaxNode(node);
-    for (PersonNode person : livingPeople)
-      mPhysicsEngine.onRelaxPerson(person);
+    }
 
-    
+    // update velocity
+    for (FileNode node : livingNodes) {
+      mPhysicsEngine.onRelaxNode(node);
+    }
+
+    // update velocity
+    for (PersonNode person : livingPeople) {
+      mPhysicsEngine.onRelaxPerson(person);
+    }
+
     // update position
-    for (Edge edge : livingEdges)
+    for (Edge edge : livingEdges) {
       mPhysicsEngine.onUpdateEdge(edge);
-    for (FileNode node : livingNodes)
+    }
+
+    // update position
+    for (FileNode node : livingNodes) {
       mPhysicsEngine.onUpdateNode(node);
-    for (PersonNode person : livingPeople)
+    }
+
+    // update position
+    for (PersonNode person : livingPeople) {
       mPhysicsEngine.onUpdatePerson(person);
+    }
 
     // Finalize frame:
     mPhysicsEngine.finalizeFrame();
@@ -758,26 +812,7 @@ public PhysicsEngine getPhysicsEngine(String name) {
       switchPhysicsEngine(toggleDirection);
     }
   }
-  
-  public static Iterable<PersonNode> getLivingPeople() {
-    return filterLiving(people);
-  }
-  
-  public static Iterable<Edge> getLivingEdges(){
-    return filterLiving(edges);
-  }
-  
-  public static Iterable<FileNode> getLivingNodes(){
-    return filterLiving(nodes);
-  }
-  
-  private static <T extends Drawable> Iterable<T> filterLiving(Iterable<T> iter) {
-    ArrayList<T> livingThings = new ArrayList<T>();
-    for (T thing : iter)
-      if (thing.isAlive())
-        livingThings.add(thing);
-    return livingThings;
-  }
+
   /**
    * Searches the nodes array for a given name
    * @param name
@@ -1175,9 +1210,13 @@ public PhysicsEngine getPhysicsEngine(String name) {
      */
     public abstract void freshen();
     
+    /**
+     * @return true if life > 0
+     */
     public boolean isAlive() {
       return life > 0;
     }
+    
   }
 
   /**
@@ -1399,19 +1438,18 @@ public PhysicsEngine getPhysicsEngine(String name) {
      * 5) drawing the new state.
      */
     public void draw() {
-      if (life <= 0)
-        return;
+      if (isAlive()) {
+        textAlign(CENTER, CENTER);
 
-      textAlign(CENTER, CENTER);
+        /** TODO: proportional font size, or light intensity,
+                  or some sort of thing to disable the flashing */
+        if (life >= minBold)
+          textFont(boldFont);
+        else
+          textFont(font);
 
-      /** TODO: proportional font size, or light intensity,
-                or some sort of thing to disable the flashing */
-      if (life >= minBold)
-        textFont(boldFont);
-      else
-        textFont(font);
-
-      text(name, mPosition.x, mPosition.y);
+        text(name, mPosition.x, mPosition.y);
+      }
     }
 
     public void freshen () {

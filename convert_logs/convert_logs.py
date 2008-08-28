@@ -314,13 +314,10 @@ def main():
                 for key_name, file_name in file.iteritems():
                     if file_key_re.match(key_name):
                         event_list.append(Event(file_name, int(changelist['time'] + '000'), changelist['user']))
-                        #print file_name, changelist['time'], changelist['user']
 
 
         create_event_xml(event_list, 'depot', opts.output_log)
 
-    #if opts.wikimedia_log:
-    #    print "Not yet implemented."
 
 def run_marshal(command):
     import marshal
@@ -361,8 +358,8 @@ def create_event_xml(events, base_log, output_log=None):
     events.sort()
     for event in events:
         try:
-            xml_handle.write('<event filename="%s" date="%s" author="%s" />\n' % \
-                (h(event.filename), event.date, h(event.author)))
+            xml_handle.write('<event date="%s" filename="%s" author="%s" />\n' % \
+                (event.date, h(event.filename), h(event.author)))
         except:
                 print "Error when writing this file: " + str(event)
     xml_handle.write('</file_events>\n')
