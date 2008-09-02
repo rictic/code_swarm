@@ -303,6 +303,10 @@ public class code_swarm extends PApplet {
 
     loadRepEvents(cfg.getStringProperty(CodeSwarmConfig.INPUT_FILE_KEY)); // event formatted (this is the standard)
     while(!finishedLoading && eventsQueue.isEmpty());
+    if(eventsQueue.isEmpty()){
+      System.out.println("No events found in repository xml file.");
+      System.exit(1);
+    }
     prevDate = eventsQueue.peek().date;
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
