@@ -19,6 +19,7 @@
 
 import javax.vecmath.Vector2f;
 
+
 /**
  * @brief Simple algorithms describing all physicals interactions between nodes (files and persons)
  * 
@@ -26,14 +27,13 @@ import javax.vecmath.Vector2f;
  * 
  * @see PhysicsEngine Physics Engine Interface
  */
-public class PhysicsEngineSimple implements PhysicsEngine
+public class PhysicsEngineSimple extends PhysicsEngine
 {
   private CodeSwarmConfig cfg;
   
   private float FORCE_EDGE_MULTIPLIER;
   private float FORCE_NODES_MULTIPLIER;
   private float FORCE_TO_SPEED_MULTIPLIER;
-  private float SPEED_TO_POSITION_MULTIPLIER;
   
   /**
    * Method for initializing parameters.
@@ -123,41 +123,8 @@ public class PhysicsEngineSimple implements PhysicsEngine
     }
   }
 
-  /**
-   * Simple method that apply a force to a node, converting acceleration to speed.
-   * 
-   * @param node the node to which the force apply
-    */
-  private void applySpeedTo( code_swarm.Node node )
-  {
-    float div;
-    // This block enforces a maximum absolute velocity.
-    // TODO : I want to remove all this
-    if (node.mSpeed.length() > node.maxSpeed) {
-      Vector2f mag = new Vector2f(node.mSpeed.x / node.maxSpeed, node.mSpeed.y / node.maxSpeed);
-      div = mag.length();
-      node.mSpeed.scale( 1/div );
-    }
+
     
-    // This block convert Speed to Position
-    node.mPosition.add(node.mSpeed);
-    
-    // Apply drag (reduce Speed for next frame calculation)
-    node.mSpeed.scale( SPEED_TO_POSITION_MULTIPLIER );
-  }
-  
-  /**
-   *  Do nothing.
-   */
-  public void initializeFrame() {
-  }
-  
-  /**
-   *  Do nothing.
-   */
-  public void finalizeFrame() {
-  }
-  
   /**
    * Method that allows Physics Engine to modify forces between files and people during the relax stage
    * 
@@ -165,7 +132,7 @@ public class PhysicsEngineSimple implements PhysicsEngine
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  public void onRelaxEdge(code_swarm.Edge edge) {
+  public void onRelax(code_swarm.Edge edge) {
     Vector2f force    = new Vector2f();
 
     // Calculate force between the node "from" and the node "to"
@@ -184,7 +151,7 @@ public class PhysicsEngineSimple implements PhysicsEngine
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  public void onRelaxNode(code_swarm.FileNode fNode ) {
+  public void onRelax(code_swarm.FileNode fNode ) {
     Vector2f forceBetweenFiles = new Vector2f();
     Vector2f forceSummation    = new Vector2f();
       
@@ -207,7 +174,7 @@ public class PhysicsEngineSimple implements PhysicsEngine
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  public void onRelaxPerson(code_swarm.PersonNode pNode) {
+  public void onRelax(code_swarm.PersonNode pNode) {
     Vector2f forceBetweenPersons = new Vector2f();
     Vector2f forceSummation      = new Vector2f();
 
@@ -224,97 +191,9 @@ public class PhysicsEngineSimple implements PhysicsEngine
     applyForceTo(pNode, forceSummation);
   }
   
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the update phase.
-   * 
-   * @param edge the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onUpdateEdge(code_swarm.Edge edge) {
-    edge.decay();
-  }
+    
   
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the update phase.
-   * 
-   * @param fNode the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onUpdateNode(code_swarm.FileNode fNode) {
-    // Apply Speed to Position on nodes
-    applySpeedTo(fNode);
-    
-    // ensure coherent resulting position
-    fNode.mPosition.set(constrain(fNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(fNode.mPosition.y, 0.0f, (float)code_swarm.height));
-    
-    // shortening life
-    fNode.decay();
-  }
   
-  private float constrain(float value, float min, float max) {
-    if (value < min) {
-      return min;
-    } else if (value > max) {
-      return max;
-    }
-    
-    return value;
-  }
 
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the update phase.
-   * 
-   * @param pNode the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onUpdatePerson(code_swarm.PersonNode pNode) {
-    // Apply Speed to Position on nodes
-    applySpeedTo(pNode);
-    
-    // ensure coherent resulting position
-    pNode.mPosition.set(constrain(pNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(pNode.mPosition.y, 0.0f, (float)code_swarm.height));
-    
-    // shortening life
-    pNode.decay();
-  }
-  
-  /**
-   * 
-   * @return Vector2f vector holding the starting location for a Person Node
-   */
-  public Vector2f pStartLocation() {
-    Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
-    return vec;
-  }
-  
-  /**
-   * 
-   * @return Vector2f vector holding the starting location for a File Node
-   */
-  public Vector2f fStartLocation() {
-    Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
-    return vec;
-  }
-  
-  /**
-   * 
-   * @return Vector2f vector holding the starting velocity for a Person Node
-   */
-  public Vector2f pStartVelocity(float mass) {
-    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
-    return vec;
-  }
-  
-  /**
-   * 
-   * @return Vector2f vector holding the starting velocity for a File Node
-   */
-  public Vector2f fStartVelocity(float mass) {
-    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
-    return vec;
-  }
 }
 

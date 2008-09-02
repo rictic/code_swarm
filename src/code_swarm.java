@@ -787,32 +787,32 @@ public class code_swarm extends PApplet {
     
     // update velocity
     for (Edge edge : livingEdges) {
-      mPhysicsEngine.onRelaxEdge(edge);
+      mPhysicsEngine.onRelax(edge);
     }
 
     // update velocity
     for (FileNode node : livingNodes) {
-      mPhysicsEngine.onRelaxNode(node);
+      mPhysicsEngine.onRelax(node);
     }
 
     // update velocity
     for (PersonNode person : livingPeople) {
-      mPhysicsEngine.onRelaxPerson(person);
+      mPhysicsEngine.onRelax(person);
     }
 
     // update position
     for (Edge edge : livingEdges) {
-      mPhysicsEngine.onUpdateEdge(edge);
+      mPhysicsEngine.onUpdate(edge);
     }
 
     // update position
     for (FileNode node : livingNodes) {
-      mPhysicsEngine.onUpdateNode(node);
+      mPhysicsEngine.onUpdate(node);
     }
 
     // update position
     for (PersonNode person : livingPeople) {
-      mPhysicsEngine.onUpdatePerson(person);
+      mPhysicsEngine.onUpdate(person);
     }
 
     // Finalize frame:

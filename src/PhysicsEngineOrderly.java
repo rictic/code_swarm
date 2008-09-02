@@ -26,7 +26,7 @@ import javax.vecmath.Vector2f;
  * 
  * @see PhysicsEngine Physics Engine Interface
  */
-public class PhysicsEngineOrderly implements PhysicsEngine
+public class PhysicsEngineOrderly extends PhysicsEngine
 {
   private CodeSwarmConfig cfg;
   
@@ -34,7 +34,6 @@ public class PhysicsEngineOrderly implements PhysicsEngine
   private float FORCE_CALCULATION_RANDOMIZER;
   private float FORCE_NODES_MULTIPLIER;
   private float FORCE_TO_SPEED_MULTIPLIER;
-  private float SPEED_TO_POSITION_MULTIPLIER;
   
   /**
    * Method for initializing parameters.
@@ -49,23 +48,6 @@ public class PhysicsEngineOrderly implements PhysicsEngine
     FORCE_NODES_MULTIPLIER = cfg.getFloatProperty("nodesMultiplier",1.0);
     FORCE_TO_SPEED_MULTIPLIER = cfg.getFloatProperty("speedMultiplier",1.0);
     SPEED_TO_POSITION_MULTIPLIER = cfg.getFloatProperty("drag",0.5);
-  }
-  
-  /**
-   * Method to ensure upper and lower bounds
-   * @param value Value to check
-   * @param min Floor value
-   * @param max Ceiling value
-   * @return value if between min and max, min if < max if >
-   */
-  private float constrain(float value, float min, float max) {
-    if (value < min) {
-      return min;
-    } else if (value > max) {
-      return max;
-    }
-    
-    return value;
   }
   
   /**
@@ -158,7 +140,7 @@ public class PhysicsEngineOrderly implements PhysicsEngine
    * 
    * @param node the node to which the force apply
     */
-  private void applySpeedTo( code_swarm.Node node )
+  protected void applySpeedTo( code_swarm.Node node )
   {
     float div;
     // This block enforces a maximum absolute velocity.
@@ -174,19 +156,7 @@ public class PhysicsEngineOrderly implements PhysicsEngine
     // Apply drag (reduce Speed for next frame calculation)
     node.mSpeed.scale( SPEED_TO_POSITION_MULTIPLIER );
   }
-  
-  /**
-   *  Do nothing.
-   */
-  public void initializeFrame() {
-  }
-  
-  /**
-   *  Do nothing.
-   */
-  public void finalizeFrame() {
-  }
-  
+    
   /**
    * Method that allows Physics Engine to modify forces between files and people during the relax stage
    * 
@@ -194,7 +164,7 @@ public class PhysicsEngineOrderly implements PhysicsEngine
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  public void onRelaxEdge(code_swarm.Edge edge) {
+  public void onRelax(code_swarm.Edge edge) {
     Vector2f force    = new Vector2f();
 
     // Calculate force between the node "from" and the node "to"
@@ -206,17 +176,7 @@ public class PhysicsEngineOrderly implements PhysicsEngine
 //    force.negate(); // force is inverted for the other end of the edge
 //    applyForceTo(edge.nodeFrom, force);
   }
-  
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the relax phase.
-   * 
-   * @param fNode the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onRelaxNode(code_swarm.FileNode fNode ) {
-  }
-  
+    
   /**
    * Method that allows Physics Engine to modify Speed / Position during the relax phase.
    * 
@@ -224,7 +184,7 @@ public class PhysicsEngineOrderly implements PhysicsEngine
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  public void onRelaxPerson(code_swarm.PersonNode pNode) {
+  public void onRelax(code_swarm.PersonNode pNode) {
     
     Vector2f forceBetweenPersons = new Vector2f();
     Vector2f forceSummation      = new Vector2f();
@@ -278,40 +238,11 @@ public class PhysicsEngineOrderly implements PhysicsEngine
   /**
    * Method that allows Physics Engine to modify Speed / Position during the update phase.
    * 
-   * @param edge the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onUpdateEdge(code_swarm.Edge edge) {
-    edge.decay();
-  }
-  
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the update phase.
-   * 
-   * @param fNode the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onUpdateNode(code_swarm.FileNode fNode) {
-    // Apply Speed to Position on nodes
-    applySpeedTo(fNode);
-    
-    // ensure coherent resulting position
-    fNode.mPosition.set(constrain(fNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(fNode.mPosition.y, 0.0f, (float)code_swarm.height));
-    
-    // shortening life
-    fNode.decay();
-  }
-  
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the update phase.
-   * 
    * @param pNode the node to which the force apply
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  public void onUpdatePerson(code_swarm.PersonNode pNode) {
+  public void onUpdate(code_swarm.PersonNode pNode) {
     // Apply Speed to Position on nodes
     applySpeedTo(pNode);
     
@@ -330,44 +261,6 @@ public class PhysicsEngineOrderly implements PhysicsEngine
     
     // shortening life
     pNode.decay();
-  }
-  
-  /**
-   * 
-   * @return Vector2f vector holding the starting location for a Person Node
-   */
-  public Vector2f pStartLocation() {
-    Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
-    return vec;
-  }
-  
-  /**
-   * 
-   * @return Vector2f vector holding the starting location for a File Node
-   */
-  public Vector2f fStartLocation() {
-    Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
-    return vec;
-  }
-  
-  /**
-   * 
-   * @param mass Mass of person
-   * @return Vector2f vector holding the starting velocity for a Person Node
-   */
-  public Vector2f pStartVelocity(float mass) {
-    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
-    return vec;
-  }
-  
-  /**
-   * 
-   * @param mass Mass of File Node
-   * @return Vector2f vector holding the starting velocity for a File Node
-   */
-  public Vector2f fStartVelocity(float mass) {
-    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
-    return vec;
   }
 }
 

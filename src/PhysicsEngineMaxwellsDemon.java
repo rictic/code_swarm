@@ -25,7 +25,7 @@ import javax.vecmath.Vector2f;
  * @see PhysicsEngine for interface information
  * @author Desmond Daignault  <nawglan at gmail>
  */
-public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
+public class PhysicsEngineMaxwellsDemon extends PhysicsEngine
 {
   /**
    * 
@@ -84,23 +84,6 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
     }
     // draw bottom of wall
     code_swarm.utils.drawLine(midWayX, midWayY, midWayX, code_swarm.height, 255, 255, 255);
-  }
-
-  /**
-   * Method to ensure upper and lower bounds
-   * @param value Value to check
-   * @param min Floor value
-   * @param max Ceiling value
-   * @return value if between min and max, min if < max if >
-   */
-  private float constrain(float value, float min, float max) {
-    if (value < min) {
-      return min;
-    } else if (value > max) {
-      return max;
-    }
-
-    return value;
   }
 
   /**
@@ -288,7 +271,7 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * 
    * @param node the node to which the force apply
     */
-  private void applySpeedTo( code_swarm.Node node )
+  protected void applySpeedTo( code_swarm.Node node )
   {
     // This block enforces a maximum absolute velocity.
     if (node.mSpeed.length() > node.maxSpeed) {
@@ -355,12 +338,6 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
     drawWall();
   }
   
-  /**
-   * close the door until next iteration
-   */
-  public void finalizeFrame() {
-  }
-
 
   /**
    * Method that allows Physics Engine to modify forces between files and people during the relax stage
@@ -369,7 +346,7 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  public void onRelaxEdge(code_swarm.Edge edge) {
+  public void onRelax(code_swarm.Edge edge) {
     boolean fSide = whichSide(edge.nodeFrom);
     boolean pSide = whichSide(edge.nodeTo);
 
@@ -389,24 +366,13 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
   }
 
   /**
-   * Method that allows Physics Engine to modify Speed / Position during the update phase.
-   * 
-   * @param edge the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onUpdateEdge(code_swarm.Edge edge) {
-    edge.decay();
-  }
-
-  /**
    * Method that allows Physics Engine to modify Speed / Position during the relax phase.
    * 
    * @param fNode the node to which the force apply
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  public void onRelaxNode(code_swarm.FileNode fNode ) {
+  public void onRelax(code_swarm.FileNode fNode ) {
     boolean mySide = whichSide(fNode);
 
     Vector2f forceBetweenFiles = new Vector2f();
@@ -431,7 +397,7 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  public void onUpdateNode(code_swarm.FileNode fNode) {
+  public void onUpdate(code_swarm.FileNode fNode) {
     // Apply Speed to Position on nodes
     applySpeedTo(fNode);
     constrainNode(fNode, whichSide(fNode)); // Keep it in bounds.
@@ -450,7 +416,7 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  public void onRelaxPerson(code_swarm.PersonNode pNode) {
+  public void onRelax(code_swarm.PersonNode pNode) {
     if (pNode.mSpeed.length() == 0) {
       // Range (-1,1)
       pNode.mSpeed.set(pNode.mass*((float)Math.random()-pNode.mass),pNode.mass*((float)Math.random()-pNode.mass));
@@ -476,7 +442,7 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
    * 
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
-  public void onUpdatePerson(code_swarm.PersonNode pNode) {
+  public void onUpdate(code_swarm.PersonNode pNode) {
     boolean rightSide = whichSide(pNode);
     
     applySpeedTo(pNode);
@@ -608,24 +574,5 @@ public class PhysicsEngineMaxwellsDemon implements PhysicsEngine
     return vec;
   }
 
-  /**
-   * 
-   * @param mass 
-   * @return Vector2f vector holding the starting velocity for a Person Node
-   */
-  public Vector2f pStartVelocity(float mass) {
-    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
-    return vec;
-  }
-
-  /**
-   * 
-   * @param mass 
-   * @return Vector2f vector holding the starting velocity for a File Node
-   */
-  public Vector2f fStartVelocity(float mass) {
-    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
-    return vec;
-  }
 }
 

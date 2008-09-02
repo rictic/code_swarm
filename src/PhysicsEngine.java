@@ -1,5 +1,6 @@
 import javax.vecmath.Vector2f;
 
+
 /**
  * Copyright 2008 code_swarm project team
  *
@@ -27,103 +28,126 @@ import javax.vecmath.Vector2f;
  * 
  * @note For portability, no Processing library should be use there, only standard Java packages
  */
-public interface PhysicsEngine
+public abstract class PhysicsEngine
 {
+  protected float SPEED_TO_POSITION_MULTIPLIER;
+
   /**
    * Initialize the Physical Engine
    * @param p Properties file
    */
-  public void setup (CodeSwarmConfig p);
+  public abstract void setup (CodeSwarmConfig p);
   
   /**
    * Method that allows Physics Engine to initialize the Frame
    * 
    */
-  public void initializeFrame();
+  public void initializeFrame() {}
+
   
   /**
    * Method that allows Physics Engine to finalize the Frame
    * 
    */
-  public void finalizeFrame();
+  public void finalizeFrame() {}
   
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the relax phase.
-   * 
-   * @param edge the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onRelaxEdge(code_swarm.Edge edge);
-  
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the relax phase.
-   * 
-   * @param fNode the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onRelaxNode(code_swarm.FileNode fNode);
-  
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the relax phase.
-   * 
-   * @param pNode the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onRelaxPerson(code_swarm.PersonNode pNode);
-  
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the update phase.
-   * 
-   * @param edge the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onUpdateEdge(code_swarm.Edge edge);
-  
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the update phase.
-   * 
-   * @param fNode the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onUpdateNode(code_swarm.FileNode fNode);
-  
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the update phase.
-   * 
-   * @param pNode the node to which the force apply
-   * 
-   * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
-   */
-  public void onUpdatePerson(code_swarm.PersonNode pNode);
+
+  public void onRelax(code_swarm.PersonNode p){}
+  public void onRelax(code_swarm.FileNode f){}
+  public void onRelax(code_swarm.Edge e){}
+
+  public void onUpdate(code_swarm.PersonNode p){
+    updateNode(p);
+  }
+  public void onUpdate(code_swarm.FileNode f){
+    updateNode(f);
+  }
+  public void onUpdate(code_swarm.Edge edge) {
+    edge.decay();
+  }
+  private void updateNode(code_swarm.Node node) {
+    // Apply Speed to Position on nodes
+    applySpeedTo(node);
+    
+    // ensure coherent resulting position
+    node.mPosition.set(constrain(node.mPosition.x, 0.0f, (float)code_swarm.width),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
+    
+    // shortening life
+    node.decay();
+  }
   
   /**
    * 
    * @return Vector2f vector holding the starting location for a Person Node
    */
-  public Vector2f pStartLocation();
+  public Vector2f pStartLocation(){
+    return randomLocation();
+  }
+  
   
   /**
    * 
    * @return Vector2f vector holding the starting location for a File Node
    */
-  public Vector2f fStartLocation();
+  public Vector2f fStartLocation() { 
+    return randomLocation();
+  }
   
   /**
    * 
    * @return Vector2f vector holding the starting velocity for a Person Node
    */
-  public Vector2f pStartVelocity(float mass);
+  public Vector2f pStartVelocity(float mass) {
+    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
+    return vec;
+  }
   
   /**
    * 
    * @return Vector2f vector holding the starting velocity for a File Node
    */
-  public Vector2f fStartVelocity(float mass);
+  public Vector2f fStartVelocity(float mass) {
+    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
+    return vec;
+  }
   
+  private Vector2f randomLocation() {
+    Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
+    return vec;
+  }
+  
+  protected float constrain(float value, float min, float max) {
+    if (value < min) {
+      return min;
+    } else if (value > max) {
+      return max;
+    }
+    
+    return value;
+  }
+
+  
+  /**
+   * Simple method that apply a force to a node, converting acceleration to speed.
+   * 
+   * @param node the node to which the force apply
+    */
+  protected void applySpeedTo( code_swarm.Node node )
+  {
+    float div;
+    // This block enforces a maximum absolute velocity.
+    // TODO : I want to remove all this
+    if (node.mSpeed.length() > node.maxSpeed) {
+      Vector2f mag = new Vector2f(node.mSpeed.x / node.maxSpeed, node.mSpeed.y / node.maxSpeed);
+      div = mag.length();
+      node.mSpeed.scale( 1/div );
+    }
+    
+    // This block convert Speed to Position
+    node.mPosition.add(node.mSpeed);
+    
+    // Apply drag (reduce Speed for next frame calculation)
+    node.mSpeed.scale( SPEED_TO_POSITION_MULTIPLIER );
+  }
 }
 
