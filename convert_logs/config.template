@@ -79,9 +79,19 @@ FileLife=150
 # Life of a Person
 PersonLife=255
 
+
+# Highlight percent.
+# This is the amount of time that the person or
+# file will be highlighted.
+HighlightPct=5
+
+## Physics engine selection and configuration
+# Directory physics engine config files reside in.
+PhysicsEngineConfigDir=physics_engine
+
 ## Physical engine selection and configuration
 # Force calculation algorithms (PhysicsEngineLegacy, PhysicsEngineSimple...) :
-PhysicsEngineSelection=PhysicsEngineChaotic
+PhysicsEngineSelection=PhysicsEngineOrderly
 
 #Is the input xml sorted by date?  It's faster and uses much less memory if it is
 IsInputSorted=true
