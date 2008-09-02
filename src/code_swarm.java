@@ -24,6 +24,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -810,7 +811,7 @@ public class code_swarm extends PApplet {
 
     // Finalize frame:
     mPhysicsEngine.finalizeFrame();
-
+    
     safeToToggle = true;
     if (wantToToggle == true) {
       switchPhysicsEngine(toggleDirection);
@@ -1423,7 +1424,7 @@ public class code_swarm extends PApplet {
     private int colorCount = 1;
     private int minBold;
     protected int touches;
-
+    public List<FileNode> editing = new ArrayList<FileNode>();
     /**
      * 1) constructor.
      */
