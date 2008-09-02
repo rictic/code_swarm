@@ -736,6 +736,12 @@ public class code_swarm extends PApplet {
       }
       p.addColor(n.nodeHue);
 
+      int firstNullIndex = p.editing.indexOf(null);
+      if (firstNullIndex == -1)
+        p.editing.add(n);
+      else
+        p.editing.set(firstNullIndex, n);
+      
       Edge ped = findEdge(n, p);
       if (ped == null) {
         ped = new Edge(n, p);

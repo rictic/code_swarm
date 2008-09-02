@@ -203,7 +203,6 @@ public class PhysicsEngineOrderly implements PhysicsEngine
     // transmit (applying) fake force projection to file and person nodes
     applyForceTo(edge.nodeTo, force);
     
-    edge.nodeTo.editing.add(edge.nodeFrom);
 //    force.negate(); // force is inverted for the other end of the edge
 //    applyForceTo(edge.nodeFrom, force);
   }
@@ -319,7 +318,15 @@ public class PhysicsEngineOrderly implements PhysicsEngine
     // ensure coherent resulting position
     pNode.mPosition.set(constrain(pNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(pNode.mPosition.y, 0.0f, (float)code_swarm.height));
     
-    pNode.editing.clear();
+    int i = 0;
+    Iterator<code_swarm.FileNode> iter = pNode.editing.iterator();
+    while(iter.hasNext()){
+      code_swarm.FileNode file = iter.next();
+      if (file != null && !file.isAlive())
+        pNode.editing.set(i, null);
+      
+      i++;
+    }
     
     // shortening life
     pNode.decay();
