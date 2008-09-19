@@ -23,9 +23,11 @@ import java.lang.reflect.Constructor;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -64,9 +66,9 @@ public class code_swarm extends PApplet {
   // Data storage
   BlockingQueue<FileEvent> eventsQueue;
   boolean isInputSorted = false;
-  protected static CopyOnWriteArrayList<FileNode> nodes;
-  protected static CopyOnWriteArrayList<Edge> edges;
-  protected static CopyOnWriteArrayList<PersonNode> people;
+  protected static Map<String, FileNode> nodes;
+  protected static List<Edge> edges;
+  private static Map<String, PersonNode> people;
   LinkedList<ColorBins> history;
   boolean finishedLoading = false;
   
@@ -125,7 +127,7 @@ public class code_swarm extends PApplet {
   private float PERSON_MASS = 10.0f;
 
   private int HIGHLIGHT_PCT = 5;
-
+  
   // Physics engine configuration
   String          physicsEngineConfigDir;
   String          physicsEngineSelection;
@@ -288,9 +290,9 @@ public class code_swarm extends PApplet {
     frameRate(FRAME_RATE);
 
     // init data structures
-    nodes         = new CopyOnWriteArrayList<FileNode>();
-    edges         = new CopyOnWriteArrayList<Edge>();
-    people        = new CopyOnWriteArrayList<PersonNode>();
+    nodes         = new HashMap<String,FileNode>();
+    edges         = new ArrayList<Edge>();
+    people        = new HashMap<String,PersonNode>();
     history       = new LinkedList<ColorBins>(); 
     if (isInputSorted)
       //If the input is sorted, we only need to store the next few events
@@ -378,7 +380,7 @@ public class code_swarm extends PApplet {
     }
 
     // Draw file particles
-    for (FileNode node : nodes) {
+    for (FileNode node : getLivingNodes()) {
       node.draw();
     }
 
@@ -441,7 +443,7 @@ public class code_swarm extends PApplet {
   public void drawPeopleNodesBlur() {
     colorMode(HSB);
     // First draw the name
-    for (PersonNode p : people) {
+    for (PersonNode p : getLivingPeople()) {
       fill(hue(p.flavor), 64, 255, p.life);
       p.draw();
     }
@@ -455,8 +457,7 @@ public class code_swarm extends PApplet {
    */
   public void drawPeopleNodesSharp() {
     colorMode(RGB);
-    for (int i = 0; i < people.size(); i++) {
-      PersonNode p = (PersonNode) people.get(i);
+    for (PersonNode p : getLivingPeople()) {
       fill(lerpColor(p.flavor, color(255), 0.5f), max(p.life - 50, 0));
       p.draw();
     }
@@ -579,7 +580,7 @@ public class code_swarm extends PApplet {
     text("Queue: " + eventsQueue.size(), 0, 20);
     text("Last render time: " + lastDrawDuration, 0, 30);
   }
-
+  
   /**
    * TODO This could be made to look a lot better.
    */
@@ -590,8 +591,7 @@ public class code_swarm extends PApplet {
     textAlign(RIGHT, TOP);
     fill(255, 200);
     text("Popular Nodes (touches):", width-120, 0);
-    for (int i = 0; i < nodes.size(); i++) {
-      FileNode fn = (FileNode) nodes.get(i);
+    for (FileNode fn : nodes.values()) {
       if (fn.qualifies()) {
         // Insertion Sort
         if (al.size() > 0) {
@@ -646,7 +646,7 @@ public class code_swarm extends PApplet {
    * @return list of people whose life is > 0
    */
   public static Iterable<PersonNode> getLivingPeople() {
-    return filterLiving(people);
+    return filterLiving(people.values());
   }
   
   /**
@@ -660,7 +660,7 @@ public class code_swarm extends PApplet {
    * @return list of file nodes whose life is > 0
    */
   public static Iterable<FileNode> getLivingNodes() {
-    return filterLiving(nodes);
+    return filterLiving(nodes.values());
   }
   
   private static <T extends Drawable> Iterable<T> filterLiving(Iterable<T> iter) {
@@ -719,7 +719,7 @@ public class code_swarm extends PApplet {
       FileNode n = findNode(currentEvent.path + currentEvent.filename);
       if (n == null) {
         n = new FileNode(currentEvent);
-        nodes.add(n);
+        nodes.put(currentEvent.path + currentEvent.filename, n);
       } else {
         n.freshen();
       }
@@ -730,7 +730,7 @@ public class code_swarm extends PApplet {
       PersonNode p = findPerson(currentEvent.author);
       if (p == null) {
         p = new PersonNode(currentEvent.author);
-        people.add(p);
+        people.put(currentEvent.author, p);
       } else {
         p.freshen();
       }
@@ -830,10 +830,8 @@ public class code_swarm extends PApplet {
    * @return FileNode with matching name or null if not found.
    */
   public FileNode findNode(String name) {
-    for (FileNode node : nodes) {
-      if (node.name.equals(name))
-        return node;
-    }
+    if (nodes.containsKey(name))
+      return nodes.get(name);
     return null;
   }
 
@@ -857,10 +855,8 @@ public class code_swarm extends PApplet {
    * @return PersonNode for given name or null if not found.
    */
   public PersonNode findPerson(String name) {
-    for (PersonNode p : people) {
-      if (p.name.equals(name))
-        return p;
-    }
+    if (people.containsKey(name))
+      return people.get(name);
     return null;
   }
 
@@ -1503,4 +1499,5 @@ public class code_swarm extends PApplet {
     cfg = config;
     PApplet.main(new String[]{"code_swarm"});
   }
+
 }
