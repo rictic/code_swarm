@@ -1,8 +1,9 @@
-*.DS_Store
-*.svn
-build
-frames
-dist
-.project
 .classpath
+.DS_Store
+.project
+.svn
+build
+data
+dist
+frames
 *.pyc
