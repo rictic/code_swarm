@@ -30,7 +30,10 @@
         <pathelement location="lib/svnkit.jar" />
         <pathelement location="lib/swing-layout-1.0.3.jar" />
     </path>
-    <javac destdir="${build}" srcdir="${src}" classpathref="library.classpath" debug="true" deprecation="false" />
+    <javac destdir="${build}" srcdir="${src}" classpathref="library.classpath" 
+           debug="true" deprecation="false">
+      <compilerarg value="-Xlint"/>
+    </javac>
     <copy file="${src}/particle.png" todir="${build}" />
   </target>
 
