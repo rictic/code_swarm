@@ -8,11 +8,12 @@ import time
 from xml.sax.saxutils import escape as h
 
 # Some global variables
-svn_sep = "------------------------------------------------------------------------"
-cvs_sep = "----------------------------"
+SVN_SEP = "------------------------------------------------------------------------"
+CVS_SEP = "----------------------------"
 
-# Event to hold all of the separate events as we parse them from the logs.
+
 class Event(object):
+    """ Event to hold all of the separate events as we parse them from the logs. """
     filename = ""
     date = "0"
     author = "(no author)"
@@ -75,11 +76,11 @@ def parse_args(argv):
     return (options, args)
     
     
-def main():
+def main(argv):
     """ Calls the parse_args function based on the 
     command-line inputs and handles parsed arguments.
     """
-    (opts, args) = parse_args(sys.argv)
+    (opts, args) = parse_args(argv)
     
     # Handle parsed options.
     if opts.svn_log or opts.git_log:
@@ -96,21 +97,25 @@ def main():
             file_handle = open(log_file,  'r')
             line = file_handle.readline()
             while len(line) > 0:
-                # The svn_sep indicates a new revision history to parse.
-                if line.startswith(svn_sep):
+                # The SVN_SEP indicates a new revision history to parse.
+                if line.startswith(SVN_SEP):
                     # Extract author and date from revision line.  Here is a sample revision line:
                     # r9 | michael.ogawa | 2008-06-19 10:23:25 -0500 (Thu, 19 Jun 2008) | 3 lines.
                     rev_line = file_handle.readline()
-                    # The last line of the file is an svn_sep line, so if we try to retreive the
+                    # The last line of the file is an SVN_SEP line, so if we try to retreive the
                     # revision line and get an empty string, we know we are at the end of the file
                     # and can break out of the loop.
-                    if rev_line is '' or len(rev_line) < 2:
-                        break;
+                    if rev_line == '' or len(rev_line) < 2:
+                        break
                     rev_parts = rev_line.split(' | ')
                     author = rev_parts[1]
                     date_parts = rev_parts[2].split(" ")
                     date = date_parts[0] + " " + date_parts[1]
-                    date = time.strptime(date, '%Y-%m-%d %H:%M:%S')
+                    try:
+                        date = time.strptime(date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        print "Skipping malformed date: " + str(date)
+                        continue
                     date = int(time.mktime(date))*1000
                     
                     # Skip the 'Changed paths:' line and start reading in the changed filenames.
@@ -145,8 +150,8 @@ def main():
             file_handle = open(log_file,  'r')
             line = file_handle.readline()
             while len(line) > 0:
-                # The cvs_sep indicates a new revision history to parse.
-                if line.startswith(cvs_sep):
+                # The CVS_SEP indicates a new revision history to parse.
+                if line.startswith(CVS_SEP):
                     #Read the revision number
                     rev_line = file_handle.readline()
 
@@ -164,7 +169,7 @@ def main():
                 if(str(line) == ""):
                     break
                 elif(line.lower().find("rcs file: ") >= 0):
-                    rev_line = line.split(": ");
+                    rev_line = line.split(": ")
                     filename = rev_line[1].strip().split(',')[0]
             file_handle.close()
             
@@ -257,7 +262,7 @@ def main():
             line = file_handle.readline()
             
             for rev_line in file_handle.readlines():
-                if rev_line is '':
+                if rev_line == '':
                     continue
                 
                 rev_parts = rev_line.split('|')
@@ -310,8 +315,8 @@ def main():
         file_key_re = re.compile("^depotFile")
         for changelist in changelists:
             files = run_marshal('p4 -G describe -s "' + changelist['change'] + '"')
-            for file in files:
-                for key_name, file_name in file.iteritems():
+            for fi in files:
+                for key_name, file_name in fi.iteritems():
                     if file_key_re.match(key_name):
                         event_list.append(Event(file_name, int(changelist['time'] + '000'), changelist['user']))
 
@@ -323,11 +328,11 @@ def run_marshal(command):
     import marshal
 
     # run marshal.load in a loop
-    results=[]
-    stream=os.popen(command,'rb')
+    results = []
+    stream = os.popen(command,'rb')
     try:
         while 1:
-                results.append(marshal.load(stream))
+            results.append(marshal.load(stream))
     except EOFError:
         pass
     stream.close()
@@ -361,11 +366,12 @@ def create_event_xml(events, base_log, output_log=None):
             xml_handle.write('<event date="%s" filename="%s" author="%s" />\n' % \
                 (event.date, h(event.filename), h(event.author)))
         except:
-                print "Error when writing this file: " + str(event)
+            print "Error when writing this file: " + str(event)
     xml_handle.write('</file_events>\n')
     xml_handle.close()
-    
+
+# Main entry point.
 if __name__ == "__main__":
-    """ Main entry point."""
-    main()
+
+    main(sys.argv)
    
