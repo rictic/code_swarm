@@ -83,7 +83,7 @@ public class PhysicsEngineOrderly extends PhysicsEngine
   }
   
   
-  private Vector2f calculateForceBetweenPNodes( code_swarm.Node nodeA, code_swarm.Node nodeB )
+  private Vector2f calculateForceBetweenPNodes( code_swarm.PersonNode nodeA, code_swarm.PersonNode nodeB )
   {
     float lensq;
     Vector2f force = new Vector2f();
@@ -104,11 +104,11 @@ public class PhysicsEngineOrderly extends PhysicsEngine
      */
     if (lensq == 0) {
       force.set( (float)Math.random()*FORCE_CALCULATION_RANDOMIZER, (float)Math.random()*FORCE_CALCULATION_RANDOMIZER );
-    } else if (lensq < 1000) {
+    } else if (lensq < 10000) {
       /**
        * No collision and distance is close enough to actually matter.
        */
-      normVec.scale(FORCE_NODES_MULTIPLIER * 10000/lensq);
+      normVec.scale(FORCE_NODES_MULTIPLIER * 100000 * nodeA.editing.size() * nodeB.editing.size()/lensq);
       force.set(normVec);
     }
     
@@ -193,10 +193,7 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     Vector2f forceSummation      = new Vector2f();
 
     // Calculation of repulsive force between persons
-    for (final String k : code_swarm.people.keySet()) {
-      code_swarm.Node n = (code_swarm.Node) code_swarm.people.get(k);
-      assert n != null : "n should not be null, but is";
-      
+    for (code_swarm.PersonNode n : code_swarm.getLivingPeople()) {
       if (n != pNode) {
         // elemental force calculation, and summation
         forceBetweenPersons = calculateForceBetweenPNodes(pNode, n);
