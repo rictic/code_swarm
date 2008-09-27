@@ -68,7 +68,7 @@ public class code_swarm extends PApplet {
   boolean isInputSorted = false;
   protected static Map<String, FileNode> nodes;
   protected static List<Edge> edges;
-  private static Map<String, PersonNode> people;
+  protected static Map<String, PersonNode> people;
   LinkedList<ColorBins> history;
   boolean finishedLoading = false;
   
