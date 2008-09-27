@@ -92,6 +92,9 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     /**
      * Get the distance between nodeA and nodeB
      */
+    assert nodeA != null : "nodeA should not be null";
+    assert nodeB != null : "nodeB should not be null";
+    
     normVec.sub(nodeA.mPosition, nodeB.mPosition);
     lensq = normVec.lengthSquared();
     /**
@@ -193,10 +196,13 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     for (int j = 0; j < code_swarm.people.size(); j++) {
       code_swarm.Node n = (code_swarm.Node) code_swarm.people.get(j);
 
-      if (n != pNode) {
+      if (n != null && n != pNode) {
         // elemental force calculation, and summation
+        assert n != null : "null pointer should not be passed to calculateForceBetweenPNodes";
         forceBetweenPersons = calculateForceBetweenPNodes(pNode, n);
         forceSummation.add(forceBetweenPersons);
+      } else if (n == null) {
+        assert false : "n should not be null, but is";
       }
     }
     // Apply repulsive force from other persons to this Node

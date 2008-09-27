@@ -43,6 +43,6 @@ if [ ! -f $code_swarm_jar ]; then
 fi
 
 # running
-java -Xmx1000m -server -classpath dist/code_swarm.jar:`ls lib/*.jar | tr '\n' ':'`:. code_swarm $params
+java -ea -Xmx1000m -server -classpath dist/code_swarm.jar:`ls lib/*.jar | tr '\n' ':'`:. code_swarm $params
 
 

@@ -797,6 +797,7 @@ public class code_swarm extends PApplet {
 
     // update velocity
     for (PersonNode person : livingPeople) {
+      assert person != null : "PersonNode should not be null";
       mPhysicsEngine.onRelax(person);
     }
 
