@@ -110,7 +110,11 @@ def main():
                     author = rev_parts[1]
                     date_parts = rev_parts[2].split(" ")
                     date = date_parts[0] + " " + date_parts[1]
-                    date = time.strptime(date, '%Y-%m-%d %H:%M:%S')
+                    try:
+                        date = time.strptime(date, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        print "Skipping malformed date: " + str(date)
+                        continue
                     date = int(time.mktime(date))*1000
                     
                     # Skip the 'Changed paths:' line and start reading in the changed filenames.
