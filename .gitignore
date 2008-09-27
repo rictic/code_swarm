@@ -5,3 +5,4 @@ frames
 dist
 .project
 .classpath
+*.pyc
