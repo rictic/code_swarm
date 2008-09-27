@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # a single command to visualize a project
 
 # requires the convert_logs dir to be in the PATH
@@ -12,6 +14,15 @@ do
 	      exit 1;;
     esac
 done
+
+
+# Set up $DYLD_LIBRARY_PATH on Mac OS X
+if [ `uname -s` = "Darwin" ]; then
+    lib_path=`dirname $0`
+    lib_path=`dirname $lib_path`
+    lib_path="$lib_path/lib"
+    export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$lib_path
+fi
 
 
 if [ -d .git ]; then
