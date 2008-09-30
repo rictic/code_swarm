@@ -65,6 +65,7 @@ public abstract class AbstractSVNHistoryVisitor implements RepositoryHistoryVisi
      * @param name username for authentication
      * @param password users password for authentication
      */
+    @SuppressWarnings("unchecked")
     public void run(String url, Long pStartrevision, Long pEndrevision, String name, String password) {
         handleStart(url);
         long startRevision = pStartrevision!=null?pStartrevision.longValue():0;
