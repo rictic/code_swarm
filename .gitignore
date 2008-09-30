@@ -1,7 +1,6 @@
 .classpath
 .DS_Store
 .project
-.run.sh.swp
 .svn
 build
 data
