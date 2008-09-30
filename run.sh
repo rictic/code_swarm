@@ -29,8 +29,8 @@ fi
 
 # checking for code_swarm java binaries
 if [ ! -f $code_swarm_jar ]; then
-    echo "no code_swarm binaries !"
-    echo "needing to build it with 'ant' and 'javac' (java-sdk)"
+    echo "no code_swarm binaries!"
+    echo "need to build it with 'ant' and 'javac' (java-sdk)"
     echo ""
     echo "auto-trying the ant command..."
     if ant; then
@@ -43,6 +43,12 @@ if [ ! -f $code_swarm_jar ]; then
 fi
 
 # running
-java -ea -Xmx1000m -server -classpath dist/code_swarm.jar:`ls lib/*.jar | tr '\n' ':'`:. code_swarm $params
+base_cp=`dirname $0`
+base_cp=`cd $base_cp; pwd`
+classpath="$base_cp/dist/code_swarm.jar"
+jars=`ls $base_cp/lib/*jar | tr '\n' ':'`
+classpath="$classpath:$jars"
+
+java -ea -Xmx1000m -server -classpath $classpath:. code_swarm $params
 
 
