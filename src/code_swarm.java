@@ -124,7 +124,7 @@ public class code_swarm extends PApplet {
   private float DEFAULT_PERSON_SPEED = 2.0f;
 
   private float FILE_MASS = 1.0f;
-  private float PERSON_MASS = 10.0f;
+  private float PERSON_MASS = 100.0f;
 
   private int HIGHLIGHT_PCT = 5;
   
@@ -1438,7 +1438,9 @@ public class code_swarm extends PApplet {
       mass = PERSON_MASS; // bigger mass to person then to node, to stabilize them
       touches = 1;
       mPosition.set(mPhysicsEngine.pStartLocation());
-      mSpeed.set(mPhysicsEngine.pStartVelocity(mass));
+      //mSpeed.set(mPhysicsEngine.pStartVelocity(mass));
+      mSpeed.set(new Vector2f(mPosition));
+      //mSpeed.set(new Vector2f(0.0f, 0.0f));
     }
 
     /**

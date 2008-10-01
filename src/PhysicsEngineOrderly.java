@@ -135,27 +135,6 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     }
   }
 
-  /**
-   * Legacy method that apply a force to a node, converting acceleration to speed.
-   * 
-   * @param node the node to which the force apply
-    */
-  protected void applySpeedTo( code_swarm.Node node )
-  {
-    float div;
-    // This block enforces a maximum absolute velocity.
-    if (node.mSpeed.length() > node.maxSpeed) {
-      Vector2f mag = new Vector2f(node.mSpeed.x / node.maxSpeed, node.mSpeed.y / node.maxSpeed);
-      div = mag.length();
-      node.mSpeed.scale( 1/div );
-    }
-    
-    // This block convert Speed to Position
-    node.mPosition.add(node.mSpeed);
-    
-    // Apply drag (reduce Speed for next frame calculation)
-    node.mSpeed.scale( SPEED_TO_POSITION_MULTIPLIER );
-  }
     
   /**
    * Method that allows Physics Engine to modify forces between files and people during the relax stage
@@ -171,7 +150,7 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     force = calculateAttractionBetweenPoints(edge.nodeTo.mPosition, edge.nodeFrom.mPosition, edge.len, ((float)edge.life / edge.LIFE_INIT));
 
     // transmit (applying) fake force projection to file and person nodes
-    applyForceTo(edge.nodeTo, force);
+    //applyForceTo(edge.nodeTo, force);
     
 //    force.negate(); // force is inverted for the other end of the edge
 //    applyForceTo(edge.nodeFrom, force);
@@ -190,6 +169,7 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     Vector2f forceSummation      = new Vector2f();
 
     // Calculation of repulsive force between persons
+    /*
     for (code_swarm.PersonNode n : code_swarm.getLivingPeople()) {
       if (n != pNode) {
         // elemental force calculation, and summation
@@ -197,11 +177,28 @@ public class PhysicsEngineOrderly extends PhysicsEngine
         forceSummation.add(forceBetweenPersons);
       }
     }
+    */
+
+    Vector2f midpoint = new Vector2f(code_swarm.width / 2, code_swarm.height / 2);
+    Vector2f delta = new Vector2f();
+    delta.sub(midpoint, pNode.mPosition);
+
+     // Dodgy forces to roughly attract pNodes to the center
+    if (delta.lengthSquared() > 40000) {
+      delta.scale(1 / delta.length() * 0.02f);
+      pNode.mPosition.add(delta);
+    } else {
+      delta.scale(1 / delta.length() * 0.02f);
+      pNode.mPosition.sub(delta);
+    }
+
     // Apply repulsive force from other persons to this Node
-    applyForceTo(pNode, forceSummation);
+    //applyForceTo(pNode, forceSummation);
+    //pNode.mSpeed = new Vector2f(1.0f, 1.0f);
+    //pNode.mSpeed.add(forceSummation);
     
     // Don't know why, but the prototype had this.
-    pNode.mSpeed.scale(1.0f/12);
+    //pNode.mSpeed.scale(1.0f/12);
     
     
     //place the edited files around the person
@@ -242,7 +239,13 @@ public class PhysicsEngineOrderly extends PhysicsEngine
    */
   public void onUpdate(code_swarm.PersonNode pNode) {
     // Apply Speed to Position on nodes
-    applySpeedTo(pNode);
+    // IMPORTANT: mSpeed actually = last position
+    // distance calculation
+    Vector2f tforce = new Vector2f(pNode.mPosition.x - pNode.mSpeed.x, pNode.mPosition.y - pNode.mSpeed.y);
+    pNode.mSpeed = new Vector2f(pNode.mPosition);
+    pNode.mPosition.add(tforce);
+    
+    //applySpeedTo(pNode);
     
     // ensure coherent resulting position
     pNode.mPosition.set(constrain(pNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(pNode.mPosition.y, 0.0f, (float)code_swarm.height));
