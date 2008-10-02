@@ -785,22 +785,19 @@ public class code_swarm extends PApplet {
     Iterable<FileNode> livingNodes = getLivingNodes();
     Iterable<PersonNode> livingPeople = getLivingPeople();
     
-    // Loop the onRelax step to allow the system to stabilize
-    for (int i = 0; i < 20; i++) {
-      // update velocity
-      for (Edge edge : livingEdges) {
-        mPhysicsEngine.onRelax(edge);
-      }
+    // update velocity
+    for (Edge edge : livingEdges) {
+      mPhysicsEngine.onRelax(edge);
+    }
 
-      // update velocity
-      for (FileNode node : livingNodes) {
-        mPhysicsEngine.onRelax(node);
-      }
+    // update velocity
+    for (FileNode node : livingNodes) {
+      mPhysicsEngine.onRelax(node);
+    }
 
-      // update velocity
-      for (PersonNode person : livingPeople) {
-        mPhysicsEngine.onRelax(person);
-      }
+    // update velocity
+    for (PersonNode person : livingPeople) {
+      mPhysicsEngine.onRelax(person);
     }
 
     // update position
@@ -1254,8 +1251,8 @@ public class code_swarm extends PApplet {
      * 5) drawing the new state.
      */
     public void draw() {
-      if (life > 240) {
-        stroke(255, life);
+      if (life > 40) {
+        stroke(255, life + 100);
         strokeWeight(0.35f);
         line(nodeFrom.mPosition.x, nodeFrom.mPosition.y, nodeTo.mPosition.x, nodeTo.mPosition.y);
       }
@@ -1320,7 +1317,7 @@ public class code_swarm extends PApplet {
       mass = FILE_MASS;
       maxSpeed = DEFAULT_FILE_SPEED;
       mPosition.set(mPhysicsEngine.fStartLocation());
-      mSpeed.set(mPhysicsEngine.fStartVelocity(mass));
+      mSpeed.set(mPosition);
     }
 
     /**
