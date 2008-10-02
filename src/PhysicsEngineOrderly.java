@@ -34,6 +34,8 @@ public class PhysicsEngineOrderly extends PhysicsEngine
   private float FORCE_CALCULATION_RANDOMIZER;
   private float FORCE_NODES_MULTIPLIER;
   private float FORCE_TO_SPEED_MULTIPLIER;
+
+  private float MIN_DISTANCE_SQR;
   
   /**
    * Method for initializing parameters.
@@ -48,6 +50,7 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     FORCE_NODES_MULTIPLIER = cfg.getFloatProperty("nodesMultiplier",1.0);
     FORCE_TO_SPEED_MULTIPLIER = cfg.getFloatProperty("speedMultiplier",1.0);
     SPEED_TO_POSITION_MULTIPLIER = cfg.getFloatProperty("drag",0.5);
+    MIN_DISTANCE_SQR = 40000;
   }
   
   /**
@@ -77,36 +80,6 @@ public class PhysicsEngineOrderly extends PhysicsEngine
       tforce.scale(deltaDistance*FORCE_EDGE_MULTIPLIER);
       
       force.set(tforce);
-    }
-    
-    return force;
-  }
-  
-  
-  private Vector2f calculateForceBetweenPNodes( code_swarm.PersonNode nodeA, code_swarm.PersonNode nodeB )
-  {
-    float lensq;
-    Vector2f force = new Vector2f();
-    Vector2f normVec = new Vector2f();
-    
-    /**
-     * Get the distance between nodeA and nodeB
-     */
-    normVec.sub(nodeA.mPosition, nodeB.mPosition);
-    lensq = normVec.lengthSquared();
-    /**
-     * If there is a Collision.  This is assuming a radius of zero.
-     * if (lensq == (radius1 + radius2)) is what to use if we have radius 
-     * could use touches for files and edge_length for people?
-     */
-    if (lensq == 0) {
-      force.set( (float)Math.random()*FORCE_CALCULATION_RANDOMIZER, (float)Math.random()*FORCE_CALCULATION_RANDOMIZER );
-    } else if (lensq < 10000) {
-      /**
-       * No collision and distance is close enough to actually matter.
-       */
-      normVec.scale(FORCE_NODES_MULTIPLIER * 100000 * nodeA.editing.size() * nodeB.editing.size()/lensq);
-      force.set(normVec);
     }
     
     return force;
@@ -179,27 +152,40 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     }
     */
 
+    // All person nodes attract each other, but only to a certain point, then they repel with gentle force
+    for (code_swarm.PersonNode n : code_swarm.getLivingPeople()) {
+      if (pNode != n) {
+        Vector2f delta = new Vector2f();
+        delta.sub(pNode.mPosition, n.mPosition);
+        if (delta.lengthSquared() < MIN_DISTANCE_SQR) {
+          // This calculation gives a 'stiff spring' affect
+          //float toMove = ((float)Math.sqrt(MIN_DISTANCE_SQR) - delta.length()) / 10.0f;
+
+          // This calculation gives a much nicer flow
+          float toMove = 0.01f;
+          delta.scale((1 / delta.length()) * toMove);
+
+          n.mPosition.sub(delta);
+          pNode.mPosition.add(delta);
+        } else {
+          float toMove = -0.001f;
+          delta.scale((1 / delta.length()) * toMove);
+
+          n.mPosition.sub(delta);
+          pNode.mPosition.add(delta);
+        }
+      }
+    }
+
+
+    // A gentel force to attract pNodes to the center
     Vector2f midpoint = new Vector2f(code_swarm.width / 2, code_swarm.height / 2);
     Vector2f delta = new Vector2f();
     delta.sub(midpoint, pNode.mPosition);
 
-     // Dodgy forces to roughly attract pNodes to the center
-    if (delta.lengthSquared() > 40000) {
-      delta.scale(1 / delta.length() * 0.02f);
-      pNode.mPosition.add(delta);
-    } else {
-      delta.scale(1 / delta.length() * 0.02f);
-      pNode.mPosition.sub(delta);
-    }
-
-    // Apply repulsive force from other persons to this Node
-    //applyForceTo(pNode, forceSummation);
-    //pNode.mSpeed = new Vector2f(1.0f, 1.0f);
-    //pNode.mSpeed.add(forceSummation);
-    
-    // Don't know why, but the prototype had this.
-    //pNode.mSpeed.scale(1.0f/12);
-    
+    delta.scale(1 / delta.length() * 0.0001f);
+    pNode.mPosition.add(delta);
+      
     
     //place the edited files around the person
     Iterator<code_swarm.FileNode> iter = pNode.editing.iterator();
@@ -240,12 +226,10 @@ public class PhysicsEngineOrderly extends PhysicsEngine
   public void onUpdate(code_swarm.PersonNode pNode) {
     // Apply Speed to Position on nodes
     // IMPORTANT: mSpeed actually = last position
-    // distance calculation
     Vector2f tforce = new Vector2f(pNode.mPosition.x - pNode.mSpeed.x, pNode.mPosition.y - pNode.mSpeed.y);
     pNode.mSpeed = new Vector2f(pNode.mPosition);
+    tforce.scale(0.99f); // Friction!
     pNode.mPosition.add(tforce);
-    
-    //applySpeedTo(pNode);
     
     // ensure coherent resulting position
     pNode.mPosition.set(constrain(pNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(pNode.mPosition.y, 0.0f, (float)code_swarm.height));
@@ -262,6 +246,29 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     
     // shortening life
     pNode.decay();
+  }
+
+  /**
+   * 
+   * @return Vector2f vector holding the starting location for a Person Node
+   */
+  public Vector2f pStartLocation(){
+    // Try to place the new node in a location that won't disrupt the system too much (by being too close to another person)
+    for (int i = 0; i < 100; i++) {
+      Vector2f testStart = this.randomLocation();
+      boolean good = true;
+      for (code_swarm.PersonNode n : code_swarm.getLivingPeople()) {
+        Vector2f delta = new Vector2f();
+        delta.sub(n.mPosition, testStart);
+        if (delta.lengthSquared() < MIN_DISTANCE_SQR) {
+          good = false;
+          break;
+        }
+      }
+      if (good)
+        return testStart;
+    }
+    return randomLocation();
   }
 }
 

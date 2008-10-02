@@ -785,19 +785,22 @@ public class code_swarm extends PApplet {
     Iterable<FileNode> livingNodes = getLivingNodes();
     Iterable<PersonNode> livingPeople = getLivingPeople();
     
-    // update velocity
-    for (Edge edge : livingEdges) {
-      mPhysicsEngine.onRelax(edge);
-    }
+    // Loop the onRelax step to allow the system to stabilize
+    for (int i = 0; i < 20; i++) {
+      // update velocity
+      for (Edge edge : livingEdges) {
+        mPhysicsEngine.onRelax(edge);
+      }
 
-    // update velocity
-    for (FileNode node : livingNodes) {
-      mPhysicsEngine.onRelax(node);
-    }
+      // update velocity
+      for (FileNode node : livingNodes) {
+        mPhysicsEngine.onRelax(node);
+      }
 
-    // update velocity
-    for (PersonNode person : livingPeople) {
-      mPhysicsEngine.onRelax(person);
+      // update velocity
+      for (PersonNode person : livingPeople) {
+        mPhysicsEngine.onRelax(person);
+      }
     }
 
     // update position

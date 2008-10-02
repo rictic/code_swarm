@@ -111,7 +111,7 @@ public abstract class PhysicsEngine
     return vec;
   }
   
-  private Vector2f randomLocation() {
+  public Vector2f randomLocation() {
     Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
     return vec;
   }
