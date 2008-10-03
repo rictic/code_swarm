@@ -103,6 +103,7 @@ public class SVNHistory extends AbstractSVNHistoryVisitor {
      * processes a log entry. Adds it to the EventList
      * @param logEntry the entry to process
      */
+    @SuppressWarnings("unchecked")
     public void handleLogEntry(SVNLogEntry logEntry) {
         Set<String> keySet = logEntry.getChangedPaths().keySet();
         for(String key : keySet){
