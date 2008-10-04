@@ -28,6 +28,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -69,6 +71,12 @@ public class code_swarm extends PApplet {
   protected static Map<String, FileNode> nodes;
   protected static List<Edge> edges;
   protected static Map<String, PersonNode> people;
+
+  // Liveness cache
+  static List<PersonNode> livingPeople = new ArrayList<PersonNode>();
+  static List<Edge> livingEdges = new ArrayList<Edge>();
+  static List<FileNode> livingNodes = new ArrayList<FileNode>();
+
   LinkedList<ColorBins> history;
   boolean finishedLoading = false;
   
@@ -645,26 +653,26 @@ public class code_swarm extends PApplet {
   /**
    * @return list of people whose life is > 0
    */
-  public static Iterable<PersonNode> getLivingPeople() {
-    return filterLiving(people.values());
+  public static List<PersonNode> getLivingPeople() {
+    return Collections.unmodifiableList (livingPeople);
   }
   
   /**
    * @return list of edges whose life is > 0
    */
-  public static Iterable<Edge> getLivingEdges() {
-    return filterLiving(edges);
+  public static List<Edge> getLivingEdges() {
+    return Collections.unmodifiableList (livingEdges);
   }
   
   /**
    * @return list of file nodes whose life is > 0
    */
-  public static Iterable<FileNode> getLivingNodes() {
-    return filterLiving(nodes.values());
+  public static List<FileNode> getLivingNodes() {
+    return Collections.unmodifiableList (livingNodes);
   }
   
-  private static <T extends Drawable> Iterable<T> filterLiving(Iterable<T> iter) {
-    ArrayList<T> livingThings = new ArrayList<T>();
+  private static <T extends Drawable> List<T> filterLiving(Collection<T> iter) {
+    ArrayList<T> livingThings = new ArrayList<T>(iter.size());
     for (T thing : iter)
       if (thing.isAlive())
         livingThings.add(thing);
@@ -781,38 +789,45 @@ public class code_swarm extends PApplet {
     // Init frame:
     mPhysicsEngine.initializeFrame();
 
-    Iterable<Edge> livingEdges = getLivingEdges();
-    Iterable<FileNode> livingNodes = getLivingNodes();
-    Iterable<PersonNode> livingPeople = getLivingPeople();
+	/*
+	We cache liveness information at the beginning on the update cycle.
+
+	Have have to do it this way as the physics engine onRelax methods
+	loop on all living elements and filtering this for every element
+	gets too painfull slow on logs with over 100.000 entries.	
+	*/
+
+    livingPeople = filterLiving(people.values());
+    livingNodes = filterLiving(nodes.values());
+    livingEdges = filterLiving(edges);
     
     // update velocity
-    for (Edge edge : livingEdges) {
+    for (Edge edge : getLivingEdges()) {
       mPhysicsEngine.onRelax(edge);
     }
 
     // update velocity
-    for (FileNode node : livingNodes) {
+    for (FileNode node : getLivingNodes()) {
       mPhysicsEngine.onRelax(node);
     }
 
     // update velocity
-    for (PersonNode person : livingPeople) {
-      assert person != null : "PersonNode should not be null";
+    for (PersonNode person : getLivingPeople()) {
       mPhysicsEngine.onRelax(person);
     }
 
     // update position
-    for (Edge edge : livingEdges) {
+    for (Edge edge : getLivingEdges()) {
       mPhysicsEngine.onUpdate(edge);
     }
 
     // update position
-    for (FileNode node : livingNodes) {
+    for (FileNode node : getLivingNodes()) {
       mPhysicsEngine.onUpdate(node);
     }
 
     // update position
-    for (PersonNode person : livingPeople) {
+    for (PersonNode person : getLivingPeople()) {
       mPhysicsEngine.onUpdate(person);
     }
 
