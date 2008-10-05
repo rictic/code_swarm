@@ -108,7 +108,13 @@ def main(argv):
                     if rev_line == '' or len(rev_line) < 2:
                         break
                     rev_parts = rev_line.split(' | ')
-                    author = rev_parts[1]
+                    try:
+                        author = rev_parts[1]
+                    except IndexError:
+                        print >>sys.stderr, "Skipped malformed author info"
+                        print >>sys.stderr, "Here's the log line:"
+                        print >>sys.stderr, rev_line
+                        continue
                     date_parts = rev_parts[2].split(" ")
                     date = date_parts[0] + " " + date_parts[1]
                     try:
