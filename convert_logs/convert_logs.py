@@ -114,6 +114,7 @@ def main(argv):
                         print >>sys.stderr, "Skipped malformed author info"
                         print >>sys.stderr, "Here's the log line:"
                         print >>sys.stderr, rev_line
+                        line = file_handle.readline()
                         continue
                     date_parts = rev_parts[2].split(" ")
                     date = date_parts[0] + " " + date_parts[1]
