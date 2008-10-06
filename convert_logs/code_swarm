@@ -26,13 +26,13 @@ done
 # Set up paths for dynamically-loaded libraries
 if [ `uname -s` = "Darwin" ]; then
     lib_path=`get_lib_path`
-    export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$lib_path
+    export DYLD_LIBRARY_PATH=$lib_path:$DYLD_LIBRARY_PATH
 elif [ `uname -s` = "Linux" ]; then
     lib_path=`get_lib_path`
     if [ `uname -p` = "x86_64" ]; then
         lib_path="$lib_path/linux-x86_64:$libpath"
     fi
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$lib_path
+    export LD_LIBRARY_PATH=$lib_path:$LD_LIBRARY_PATH
 fi
 
 
