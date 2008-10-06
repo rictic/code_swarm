@@ -111,7 +111,7 @@ def main(argv):
                     try:
                         author = rev_parts[1]
                     except IndexError:
-                        print >>sys.stderr, "Skipped bad line: %s" % rev_line
+                        print >>sys.stderr, "Skipping bad line: %s" % rev_line
                         line = file_handle.readline()
                         continue
                     date_parts = rev_parts[2].split(" ")
