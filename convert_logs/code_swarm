@@ -29,6 +29,9 @@ if [ `uname -s` = "Darwin" ]; then
     export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$lib_path
 elif [ `uname -s` = "Linux" ]; then
     lib_path=`get_lib_path`
+    if [ `uname -p` = "x86_64" ]; then
+        lib_path="$lib_path/linux-x86_64:$libpath"
+    fi
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$lib_path
 fi
 
