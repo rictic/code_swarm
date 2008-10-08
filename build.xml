@@ -32,7 +32,7 @@
     </path>
     <javac destdir="${build}" srcdir="${src}" classpathref="library.classpath" 
            debug="true" deprecation="false">
-      <compilerarg value="-Xlint"/>
+      <compilerarg value="-Xlint:unchecked"/>
     </javac>
     <copy file="${src}/particle.png" todir="${build}" />
   </target>
