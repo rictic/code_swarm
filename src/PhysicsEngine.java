@@ -77,7 +77,7 @@ public abstract class PhysicsEngine
    * 
    * @return Vector2f vector holding the starting location for a Person Node
    */
-  public Vector2f pStartLocation(){
+  public Vector2f startLocation(code_swarm.PersonNode node){
     return randomLocation();
   }
   
@@ -86,7 +86,7 @@ public abstract class PhysicsEngine
    * 
    * @return Vector2f vector holding the starting location for a File Node
    */
-  public Vector2f fStartLocation() { 
+  public Vector2f startLocation(code_swarm.FileNode node){
     return randomLocation();
   }
   
