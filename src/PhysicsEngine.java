@@ -30,7 +30,6 @@ import javax.vecmath.Vector2f;
  */
 public abstract class PhysicsEngine
 {
-  protected float SPEED_TO_POSITION_MULTIPLIER;
 
   /**
    * Initialize the Physical Engine
@@ -66,14 +65,16 @@ public abstract class PhysicsEngine
     edge.decay();
   }
   private void updateNode(code_swarm.Node node) {
-    // Apply Speed to Position on nodes
-    applySpeedTo(node);
-    
-    // ensure coherent resulting position
-    node.mPosition.set(constrain(node.mPosition.x, 0.0f, (float)code_swarm.width),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
-    
-    // shortening life
+    Vector2f tforce = new Vector2f(node.mPosition.x - node.mLastPosition.x, node.mPosition.y - node.mLastPosition.y);
+    node.mLastPosition = new Vector2f(node.mPosition);
+    tforce.scale(node.mFriction); // Friction!
+    node.mPosition.add(tforce);
+
     node.decay();
+    // ensure coherent resulting position
+    /*
+    pNode.mPosition.set(constrain(pNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(pNode.mPosition.y, 0.0f, (float)code_swarm.height));
+    */
   }
   
   /**
@@ -124,30 +125,6 @@ public abstract class PhysicsEngine
     }
     
     return value;
-  }
-
-  
-  /**
-   * Simple method that apply a force to a node, converting acceleration to speed.
-   * 
-   * @param node the node to which the force apply
-    */
-  protected void applySpeedTo( code_swarm.Node node )
-  {
-    float div;
-    // This block enforces a maximum absolute velocity.
-    // TODO : I want to remove all this
-    if (node.mSpeed.length() > node.maxSpeed) {
-      Vector2f mag = new Vector2f(node.mSpeed.x / node.maxSpeed, node.mSpeed.y / node.maxSpeed);
-      div = mag.length();
-      node.mSpeed.scale( 1/div );
-    }
-    
-    // This block convert Speed to Position
-    node.mPosition.add(node.mSpeed);
-    
-    // Apply drag (reduce Speed for next frame calculation)
-    node.mSpeed.scale( SPEED_TO_POSITION_MULTIPLIER );
   }
 }
 

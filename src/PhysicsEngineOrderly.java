@@ -18,7 +18,6 @@
  */
 
 import java.util.Iterator;
-
 import javax.vecmath.Vector2f;
 
 /**
@@ -123,38 +122,18 @@ public class PhysicsEngineOrderly extends PhysicsEngine
    * @param pNode the node to which the force apply
    */
   public void onUpdate(code_swarm.PersonNode pNode) {
-    // Apply Speed to Position on nodes
-    // IMPORTANT: mSpeed actually = last position
-    Vector2f tforce = new Vector2f(pNode.mPosition.x - pNode.mSpeed.x, pNode.mPosition.y - pNode.mSpeed.y);
-    pNode.mSpeed = new Vector2f(pNode.mPosition);
-    tforce.scale(0.99f); // Friction!
-    pNode.mPosition.add(tforce);
+    super.onUpdate(pNode);
     
-    // ensure coherent resulting position
-    pNode.mPosition.set(constrain(pNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(pNode.mPosition.y, 0.0f, (float)code_swarm.height));
-    
+    /*
     int i = 0;
     Iterator<code_swarm.FileNode> iter = pNode.editing.iterator();
     while(iter.hasNext()){
       code_swarm.FileNode file = iter.next();
       if (file != null && !file.isAlive())
         pNode.editing.set(i, null);
-      
       i++;
     }
-    
-    // shortening life
-    pNode.decay();
-  }
-
-  public void onUpdate(code_swarm.FileNode pNode) {
-    Vector2f tforce = new Vector2f(pNode.mPosition.x - pNode.mSpeed.x, pNode.mPosition.y - pNode.mSpeed.y);
-    pNode.mSpeed = new Vector2f(pNode.mPosition);
-    tforce.scale(0.9f); // Friction!
-    pNode.mPosition.add(tforce);
-
-    // shortening life
-    pNode.decay();
+    */
   }
 
   /**
