@@ -71,10 +71,6 @@ public abstract class PhysicsEngine
     node.mPosition.add(tforce);
 
     node.decay();
-    // ensure coherent resulting position
-    /*
-    pNode.mPosition.set(constrain(pNode.mPosition.x, 0.0f, (float)code_swarm.width),constrain(pNode.mPosition.y, 0.0f, (float)code_swarm.height));
-    */
   }
   
   /**
@@ -96,19 +92,15 @@ public abstract class PhysicsEngine
   
   /**
    * 
-   * @return Vector2f vector holding the starting velocity for a Person Node
-   */
-  public Vector2f pStartVelocity(float mass) {
-    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
-    return vec;
-  }
-  
-  /**
-   * 
    * @return Vector2f vector holding the starting velocity for a File Node
    */
-  public Vector2f fStartVelocity(float mass) {
-    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
+  public Vector2f startVelocity(code_swarm.PersonNode node) {
+    return new Vector2f();
+  }
+
+  public Vector2f startVelocity(code_swarm.FileNode node) {
+    Vector2f vec = new Vector2f(((float)Math.random()*2 - 1), ((float)Math.random()*2-1));
+    vec.scale((1 / vec.length()) * (float)Math.random() * 15 / node.mass);
     return vec;
   }
   

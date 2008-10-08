@@ -1317,7 +1317,8 @@ public class code_swarm extends PApplet {
       nodeHue = colorAssigner.getColor(name);
       mass = FILE_MASS;
       mPosition.set(mPhysicsEngine.fStartLocation());
-      mLastPosition.set(new Vector2f(mPosition)); // TODO: Use physics engine
+      mLastPosition.set(new Vector2f(mPosition));
+      mLastPosition.add(mPhysicsEngine.startVelocity(this));
       mFriction = 0.9f;
     }
 
@@ -1438,7 +1439,8 @@ public class code_swarm extends PApplet {
       mass = PERSON_MASS; // bigger mass to person then to node, to stabilize them
       touches = 1;
       mPosition.set(mPhysicsEngine.pStartLocation());
-      mLastPosition.set(new Vector2f(mPosition)); // TODO: Use physics engine
+      mLastPosition.set(new Vector2f(mPosition)); 
+      mLastPosition.add(mPhysicsEngine.startVelocity(this));
       mFriction = 0.99f;
     }
 
