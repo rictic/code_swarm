@@ -132,7 +132,7 @@ public class code_swarm extends PApplet {
   private float DEFAULT_PERSON_SPEED = 2.0f;
 
   private float FILE_MASS = 1.0f;
-  private float PERSON_MASS = 10.0f;
+  private float PERSON_MASS = 100.0f;
 
   private int HIGHLIGHT_PCT = 5;
   
@@ -147,7 +147,7 @@ public class code_swarm extends PApplet {
 
 
   // Default Physics Engine (class) name
-  static final String PHYSICS_ENGINE_LEGACY  = "PhysicsEngineLegacy";
+  static final String PHYSICS_ENGINE_DEFAULT  = "PhysicsEngineOrderly";
 
   // Formats the date string nicely
   DateFormat formatter = DateFormat.getDateInstance();
@@ -281,7 +281,7 @@ public class code_swarm extends PApplet {
     }
 
     // Physics engine configuration and instantiation
-    physicsEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_SELECTION, PHYSICS_ENGINE_LEGACY );
+    physicsEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_SELECTION, PHYSICS_ENGINE_DEFAULT );
 
     for (peConfig p : mPhysicsEngineChoices) {
       if (physicsEngineSelection.equals(p.name)) {
@@ -1267,8 +1267,8 @@ public class code_swarm extends PApplet {
      * 5) drawing the new state.
      */
     public void draw() {
-      if (life > 240) {
-        stroke(255, life);
+      if (life > 40) {
+        stroke(255, life + 100);
         strokeWeight(0.35f);
         line(nodeFrom.mPosition.x, nodeFrom.mPosition.y, nodeTo.mPosition.x, nodeTo.mPosition.y);
       }
@@ -1285,13 +1285,13 @@ public class code_swarm extends PApplet {
   public abstract class Node extends Drawable {
     protected String name;
     protected Vector2f mPosition;
-    protected Vector2f mSpeed;
-    protected float maxSpeed = DEFAULT_NODE_SPEED;
+    protected Vector2f mLastPosition;
+    protected float mFriction;
 
     /**
      * mass of the node
      */
-    protected float mass;
+    protected float mass; // Currently unused
 
     /**
      * 1) constructor.
@@ -1299,7 +1299,8 @@ public class code_swarm extends PApplet {
     Node(int lifeInit, int lifeDecrement) {
       super(lifeInit, lifeDecrement);
       mPosition = new Vector2f();
-      mSpeed = new Vector2f();
+      mLastPosition = new Vector2f();
+      mFriction = 1.0f; // No friction
     }
 
   }
@@ -1331,9 +1332,10 @@ public class code_swarm extends PApplet {
       minBold = (int)(FILE_LIFE_INIT * ((100.0f - HIGHLIGHT_PCT)/100));
       nodeHue = colorAssigner.getColor(name);
       mass = FILE_MASS;
-      maxSpeed = DEFAULT_FILE_SPEED;
-      mPosition.set(mPhysicsEngine.fStartLocation());
-      mSpeed.set(mPhysicsEngine.fStartVelocity(mass));
+      mPosition.set(mPhysicsEngine.startLocation(this));
+      mLastPosition.set(new Vector2f(mPosition));
+      mLastPosition.add(mPhysicsEngine.startVelocity(this));
+      mFriction = 0.9f;
     }
 
     /**
@@ -1448,13 +1450,14 @@ public class code_swarm extends PApplet {
      */
     PersonNode(String n) {
       super(PERSON_LIFE_INIT, PERSON_LIFE_DECREMENT); // -1
-      maxSpeed = DEFAULT_PERSON_SPEED;
       name = n;
       minBold = (PERSON_LIFE_INIT * (1 - (HIGHLIGHT_PCT)/100));
       mass = PERSON_MASS; // bigger mass to person then to node, to stabilize them
       touches = 1;
-      mPosition.set(mPhysicsEngine.pStartLocation());
-      mSpeed.set(mPhysicsEngine.pStartVelocity(mass));
+      mPosition.set(mPhysicsEngine.startLocation(this));
+      mLastPosition.set(new Vector2f(mPosition)); 
+      mLastPosition.add(mPhysicsEngine.startVelocity(this));
+      mFriction = 0.99f;
     }
 
     /**

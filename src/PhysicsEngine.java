@@ -30,7 +30,6 @@ import javax.vecmath.Vector2f;
  */
 public abstract class PhysicsEngine
 {
-  protected float SPEED_TO_POSITION_MULTIPLIER;
 
   /**
    * Initialize the Physical Engine
@@ -66,13 +65,11 @@ public abstract class PhysicsEngine
     edge.decay();
   }
   private void updateNode(code_swarm.Node node) {
-    // Apply Speed to Position on nodes
-    applySpeedTo(node);
-    
-    // ensure coherent resulting position
-    node.mPosition.set(constrain(node.mPosition.x, 0.0f, (float)code_swarm.width),constrain(node.mPosition.y, 0.0f, (float)code_swarm.height));
-    
-    // shortening life
+    Vector2f tforce = new Vector2f(node.mPosition.x - node.mLastPosition.x, node.mPosition.y - node.mLastPosition.y);
+    node.mLastPosition = new Vector2f(node.mPosition);
+    tforce.scale(node.mFriction); // Friction!
+    node.mPosition.add(tforce);
+
     node.decay();
   }
   
@@ -80,7 +77,7 @@ public abstract class PhysicsEngine
    * 
    * @return Vector2f vector holding the starting location for a Person Node
    */
-  public Vector2f pStartLocation(){
+  public Vector2f startLocation(code_swarm.PersonNode node){
     return randomLocation();
   }
   
@@ -89,29 +86,25 @@ public abstract class PhysicsEngine
    * 
    * @return Vector2f vector holding the starting location for a File Node
    */
-  public Vector2f fStartLocation() { 
+  public Vector2f startLocation(code_swarm.FileNode node){
     return randomLocation();
-  }
-  
-  /**
-   * 
-   * @return Vector2f vector holding the starting velocity for a Person Node
-   */
-  public Vector2f pStartVelocity(float mass) {
-    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
-    return vec;
   }
   
   /**
    * 
    * @return Vector2f vector holding the starting velocity for a File Node
    */
-  public Vector2f fStartVelocity(float mass) {
-    Vector2f vec = new Vector2f(mass*((float)Math.random()*2 - 1), mass*((float)Math.random()*2 -1));
+  public Vector2f startVelocity(code_swarm.PersonNode node) {
+    return new Vector2f();
+  }
+
+  public Vector2f startVelocity(code_swarm.FileNode node) {
+    Vector2f vec = new Vector2f(((float)Math.random()*2 - 1), ((float)Math.random()*2-1));
+    vec.scale((1 / vec.length()) * (float)Math.random() * 15 / node.mass);
     return vec;
   }
   
-  private Vector2f randomLocation() {
+  public Vector2f randomLocation() {
     Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
     return vec;
   }
@@ -124,30 +117,6 @@ public abstract class PhysicsEngine
     }
     
     return value;
-  }
-
-  
-  /**
-   * Simple method that apply a force to a node, converting acceleration to speed.
-   * 
-   * @param node the node to which the force apply
-    */
-  protected void applySpeedTo( code_swarm.Node node )
-  {
-    float div;
-    // This block enforces a maximum absolute velocity.
-    // TODO : I want to remove all this
-    if (node.mSpeed.length() > node.maxSpeed) {
-      Vector2f mag = new Vector2f(node.mSpeed.x / node.maxSpeed, node.mSpeed.y / node.maxSpeed);
-      div = mag.length();
-      node.mSpeed.scale( 1/div );
-    }
-    
-    // This block convert Speed to Position
-    node.mPosition.add(node.mSpeed);
-    
-    // Apply drag (reduce Speed for next frame calculation)
-    node.mSpeed.scale( SPEED_TO_POSITION_MULTIPLIER );
   }
 }
 
