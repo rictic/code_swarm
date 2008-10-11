@@ -3,7 +3,6 @@
 .project
 .svn
 build
-data
 dist
 frames
 *.pyc

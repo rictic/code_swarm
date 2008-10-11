@@ -111,9 +111,7 @@ def main(argv):
                     try:
                         author = rev_parts[1]
                     except IndexError:
-                        print >>sys.stderr, "Skipped malformed author info"
-                        print >>sys.stderr, "Here's the log line:"
-                        print >>sys.stderr, rev_line
+                        print >>sys.stderr, "Skipping bad line: %s" % rev_line
                         line = file_handle.readline()
                         continue
                     date_parts = rev_parts[2].split(" ")
@@ -121,7 +119,7 @@ def main(argv):
                     try:
                         date = time.strptime(date, '%Y-%m-%d %H:%M:%S')
                     except ValueError:
-                        print "Skipping malformed date: " + str(date)
+                        print >>sys.stderr, "Skipping malformed date: " + str(date)
                         continue
                     date = int(time.mktime(date))*1000
                     

@@ -4,6 +4,13 @@
 
 # requires the convert_logs dir to be in the PATH
 
+get_lib_path() {
+    lib_path=`dirname $0`
+    lib_path=`dirname $lib_path`
+    lib_path="$lib_path/lib"
+    echo -n $lib_path
+}
+
 while getopts r opt
 do
     case "$opt" in
@@ -16,12 +23,16 @@ do
 done
 
 
-# Set up $DYLD_LIBRARY_PATH on Mac OS X
+# Set up paths for dynamically-loaded libraries
 if [ `uname -s` = "Darwin" ]; then
-    lib_path=`dirname $0`
-    lib_path=`dirname $lib_path`
-    lib_path="$lib_path/lib"
-    export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$lib_path
+    lib_path=`get_lib_path`
+    export DYLD_LIBRARY_PATH=$lib_path:$DYLD_LIBRARY_PATH
+elif [ `uname -s` = "Linux" ]; then
+    lib_path=`get_lib_path`
+    if [ `uname -p` = "x86_64" ]; then
+        lib_path="$lib_path/linux-x86_64:$lib_path"
+    fi
+    export LD_LIBRARY_PATH=$lib_path:$LD_LIBRARY_PATH
 fi
 
 
