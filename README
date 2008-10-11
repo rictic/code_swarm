@@ -17,9 +17,9 @@ and run code_swarm.
 
 ## Prerequisites ##
 
-You will need Apache's "ant" build tool, and at least version 5 of the Java SDK from Sun.
+You will need Apache's "ant" build tool, at least version 5 of the Java SDK from Sun, and for some features, Python version 2.4 or later.
 
-If you don't have Java and Ant installed, you'll need to get them.
+
 
 ### Linux ###
 
@@ -32,6 +32,7 @@ This should ensure that ant and java6 are installed and configured:
     sudo apt-get install sun-java6-jdk 
     sudo update-java-alternatives -s java-6-sun 
 
+You should also ensure that Python is installed.
 
 ### Windows ###
 
@@ -47,23 +48,24 @@ This should ensure that ant and java6 are installed and configured:
 * then create a new environment variable called JAVA_HOME and set its path to 
   `C:\Program Files\Java\jdk1.6.0_06;`
 
+* download and install Python from http://www.python.org/download/
+
 ### Mac ###
 
-Recent versions of OS X come with a good java compiler, so all you need to do
-is get and install Apache ant.
+Recent versions of OS X come with a good java compiler and Python interpreter, so all you need to do is get and install Apache ant.
 
 If you have DarwinPorts/MacPorts, you can simply:
     sudo port install apache-ant
 
 ## Getting the source code ##
 
-code_swarm is still a very new project.  At the moment, the best way to get it going is to download the source code and build it.
+code_swarm is still a very young project.  At the moment, the best way to get it going is to download the source code and build it.
 
 ### git ###
 
 A git fork of the main code_swarm repository is maintained at <http://github.com/rictic/code_swarm/tree/master>
 
-This fork contains a number of patches which improve the speed of `code_swarm` significantly, as well as the `code_swarm` executable, which makes visualizing a new project a one-step process.  
+This fork contains a number of patches which improve the speed of `code_swarm` significantly, as well as the `code_swarm` executable, which makes visualizing a new project on Linux and the Mac a one-step process.  
 
 To obtain a clone of the repository, simply use:
 
@@ -84,11 +86,11 @@ For more information, see http://code.google.com/p/codeswarm/source/checkout
 
 ## Building and Running ##
 
-With Java and ant installed, and the code_swarm source downloaded, running code_swarm on any given git, svn, or hg based project is quite easy.
+With Java and ant installed, and the `code_swarm` source downloaded, running `code_swarm` on any given git, svn, or hg based project is quite easy.
 
-* Add code_swarm/convert_logs to your PATH.  A line like `export PATH=$PATH:/path/to/code_swarm/convert_logs` in your ~/.profile or ~/.bash_profile should do it
-* $ cd project/to/visualize
-* $ code_swarm
+* Add `code_swarm/convert_logs` to your PATH.  A line like `export PATH=$PATH:/path/to/code_swarm/convert_logs` in your `~/.profile` or `~/.bash_profile` should do it
+* `$ cd project/to/visualize`
+* `$ code_swarm`
 
 
 ### Other ways of running code_swarm ###
@@ -98,13 +100,13 @@ There are a couple of other ways of invoking code_swarm.  For an experimental GU
 * cd path/to/code_swarm
 * ant run
 
-While code_swarm was developed to visualize source code repositories, its input format is generic, and some have experimented with visualizing other collaborative environments, including activity wikis and freebase.com.
+While code_swarm was developed to visualize source code repositories, its input format is generic, and some have experimented with visualizing other collaborative environments, including user activity on wikis and freebase.com.
 
 code_swarm can be invoked by pointing it at a project config file, which contains a number of options for customizing the visualization.  The config file must point at a repository xml file, which contains a set of events, which each describe a file, edited by a person, at a specific time.  The time is specified as the number of milliseconds since January 1st, 1970.
 
-Example config files can be seen in data/sample.config and convert_logs/config.template
+Example config files can be seen in `data/sample.config` and `convert_logs/config.template`
 
-To invoke code_swarm with a given config file, use ./run.sh path/to/project.config
+To invoke `code_swarm` with a given config file, use `./run.sh path/to/project.config`
 
 
 Other commands:
