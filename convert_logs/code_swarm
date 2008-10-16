@@ -112,7 +112,7 @@ end
 # Configure the project environment and launch
 `mkdir -p #{dir}`
 
-log() if options[:reload] or not File.exists? dir
+log() if options[:reload] or not File.exists? "#{dir}/log.xml"
 
 if not File.exists? "#{dir}/project.config"
     puts "creating default config file at #{dir}/project.config"
