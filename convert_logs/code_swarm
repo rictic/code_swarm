@@ -39,13 +39,10 @@ def lib_path
 end
 
 def lib_environ
-    uname = `uname -s`.strip
-    if uname == "Linux"
-        "LD_LIBRARY_PATH"
-    elsif uname == "Darwin"
-        "DYLD_LIBRARY_PATH"
-    else
-        raise "Invalid OS: #{uname}"
+    case `uname -s`.strip
+    when "Linux"  then "LD_LIBRARY_PATH"
+    when "Darwin" then "DYLD_LIBRARY_PATH"
+    else          raise "Invalid OS: #{`uname -s`.strip}"
     end
 end
 
