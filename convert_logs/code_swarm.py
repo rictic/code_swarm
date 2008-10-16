@@ -103,9 +103,70 @@ def do_hg():
     return do_cmds(cmds)
 
 
-def main(argv):
-    return 0
+def parse_args():
+    from optparse import OptionParser
+
+    parser = OptionParser()
+    parser.add_option("-r", "--reload",
+                      help="Reload the XML log file", action="store_true")
+    parser.add_option("-d", "--debug",
+                      help="Enable Java debugging", action="store_true")
+
+    return parser.parse_args()
+
+
+def main():
+    options = parse_args()[0]
+
+    os.environ[lib_environ()] = lib_path()
+    
+    log = None
+    dir = None
+    if os.path.exists(".git"):
+        dir = code_swarm_dir("git")
+        log = do_git
+    elif os.path.exists(".svn"):
+        dir = code_swarm_dir("svn")
+        log = do_svn
+    elif os.path.exists(".hg"):
+        dir = code_swarm_dir("hg")
+        log = do_hg
+    else:
+        msg = "This directory isn't an svn, git, or hg project. "\
+              "Run in the base directory of a source-controlled project."
+        print >>sys.stderr, msg
+
+    os.mkdir(dir)
+
+    if options.reload or not os.path.exists(os.path.join(dir, "log.xml")):
+        log()
+
+    params = os.path.join(dir, "project.config")
+    code_swarm_jar = os.path.join(root_path(), "dist", "code_swarm.jar")
+
+    if not os.path.exists(code_swarm_jar):
+        print >>sys.stderr, "no code_swarm binaries!"
+        print >>sys.stderr, "need to build with 'ant' and 'javac' (java-sdk)"
+        print >>sys.stderr, ""
+        print >>sys.stderr, "auto-trying the ant command..."
+        build = os.path.join(root_path(), "build.xml")
+        retn = os.system("ant -buildfile " + build)
+        print >>sys.stderr, ""
+        if not retn == 0:
+            print >>sys.stderr, "ERROR, please verify 'ant' installation"
+            sys.exit(2)
+
+    jars = ''   #TODO: Get jars!
+    classpath = "-classpath %s:%s:." % (code_swarm_jar, jars)
+
+    ea = ""
+    if options.debug:
+        ea = "-ea"
+
+    args = ["java", ea, "-Xmx1000m", "-server", classpath, "code_swarm", params]
+
+    os.execlp("java", *args)
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    main()
