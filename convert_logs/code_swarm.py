@@ -117,12 +117,14 @@ def parse_args():
 
 def main():
     def get_jars():
-        lib = os.listdir(os.path.join(root_path(), "lib"))
+        lib_dir = os.path.join(root_path(), "lib")
+        lib = os.listdir(lib_dir)
         jars = []
         for f in lib:
             if f.endswith(".jar"):
                 jars.append(f)
-        return jars
+        jars = [lib_dir + os.sep + j for j in jars]
+        return ":".join(jars)
 
     options = parse_args()[0]
 
@@ -173,7 +175,6 @@ def main():
         ea = "-ea"
 
     args = ["java", ea, "-Xmx1000m", "-server", classpath, "code_swarm", params]
-
     os.execlp("java", *args)
 
 
