@@ -116,6 +116,14 @@ def parse_args():
 
 
 def main():
+    def get_jars():
+        lib = os.listdir(os.path.join(root_path(), "lib"))
+        jars = []
+        for f in lib:
+            if f.endswith(".jar"):
+                jars.append(f)
+        return jars
+
     options = parse_args()[0]
 
     os.environ[lib_environ()] = lib_path()
@@ -136,7 +144,8 @@ def main():
               "Run in the base directory of a source-controlled project."
         print >>sys.stderr, msg
 
-    os.mkdir(dir)
+    if not os.path.exists(dir):
+        os.mkdir(dir)
 
     if options.reload or not os.path.exists(os.path.join(dir, "log.xml")):
         log()
@@ -156,7 +165,7 @@ def main():
             print >>sys.stderr, "ERROR, please verify 'ant' installation"
             sys.exit(2)
 
-    jars = ''   #TODO: Get jars!
+    jars = get_jars()
     classpath = "-classpath %s:%s:." % (code_swarm_jar, jars)
 
     ea = ""
