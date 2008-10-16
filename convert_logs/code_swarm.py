@@ -29,10 +29,7 @@ def root_path():
 
 
 def lib_path():
-    try:
-        old_path = os.environ[lib_environ()]
-    except KeyError:
-        old_path = ""
+    old_path = os.environ.get(lib_environ(), "")
     path = os.path.join(root_path(), "lib")
     (platform, _, _, _, arch) = os.uname()
     if platform == "Linux" and arch == "x86_64":
@@ -127,8 +124,6 @@ def main():
         return ":".join(jars)
 
     options = parse_args()[0]
-
-    os.environ[lib_environ()] = lib_path()
     
     log = None
     dir = None
@@ -167,15 +162,18 @@ def main():
             print >>sys.stderr, "ERROR, please verify 'ant' installation"
             sys.exit(2)
 
-    jars = get_jars()
-    classpath = "-classpath %s:%s:." % (code_swarm_jar, jars)
-
-    ea = ""
-    if options.debug:
-        ea = "-ea"
-
-    args = ["java", ea, "-Xmx1000m", "-server", classpath, "code_swarm", params]
-    os.execlp("java", *args)
+    classpath = "-classpath %s:%s:." % (code_swarm_jar, get_jars())
+    ea = "-ea" if options.debug else ""
+    os.environ[lib_environ()] = lib_path()
+    args = [ "java"
+           , ea
+           , "-Xmx1000m"
+           , "-server"
+           , classpath
+           , "code_swarm"
+           , params
+           ]
+    os.execvp("java", args)
 
 
 if __name__ == "__main__":
