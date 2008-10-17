@@ -163,13 +163,13 @@ def main():
 
     cp = os.pathsep.join([code_swarm_jar, get_jars(), "."])
     classpath = "-classpath " + cp
-    ea = "-ea" if options.debug else ""
+    ea = "-ea" if options.debug else "-da"
     args = [ "java"
+           , classpath
            , "-Djava.library.path=" + lib_path()
            , ea
            , "-Xmx1000m"
            , "-server"
-           , classpath
            , "code_swarm"
            , params
            ]
