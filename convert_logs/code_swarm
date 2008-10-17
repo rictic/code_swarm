@@ -139,6 +139,7 @@ def main():
         msg  = "This directory isn't an svn, git, or hg project. "
         msg += "Run in the base directory of a source-controlled project."
         print >>sys.stderr, msg
+        sys.exit(2)
 
     if not os.path.exists(dir):
         os.makedirs(dir)
