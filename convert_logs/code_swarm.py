@@ -136,8 +136,8 @@ def main():
         dir = code_swarm_dir("hg")
         log = do_hg
     else:
-        msg = "This directory isn't an svn, git, or hg project. "\
-              "Run in the base directory of a source-controlled project."
+        msg  = "This directory isn't an svn, git, or hg project. "
+        msg += "Run in the base directory of a source-controlled project."
         print >>sys.stderr, msg
 
     if not os.path.exists(dir):
