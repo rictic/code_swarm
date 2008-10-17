@@ -162,10 +162,10 @@ def main():
             sys.exit(2)
 
     cp = os.pathsep.join([code_swarm_jar, get_jars(), "."])
-    classpath = "-classpath " + cp
     ea = "-ea" if options.debug else "-da"
     args = [ "java"
-           , classpath
+           , "-classpath"
+           , cp
            , "-Djava.library.path=" + lib_path()
            , ea
            , "-Xmx1000m"
