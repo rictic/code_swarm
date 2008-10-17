@@ -29,23 +29,22 @@ def root_path():
 
 
 def lib_path():
+    def lib_environ():
+        platform = os.uname()[0]
+        if platform == "Linux":
+            return "LD_LIBRARY_PATH"
+        elif platform == "Darwin":
+            return "DYLD_LIBRARY_PATH"
+        else:
+            raise RuntimeError("Invalid OS: " + platform)
+    
     old_path = os.environ.get(lib_environ(), "")
     path = os.path.join(root_path(), "lib")
     (platform, _, _, _, arch) = os.uname()
     if platform == "Linux" and arch == "x86_64":
         path_64 = os.path.join(path, "linux-x86_64")
-        path = "%s:%s" % (path_64, path)
-    return "%s:%s" % (path, old_path)
-
-
-def lib_environ():
-    platform = os.uname()[0]
-    if platform == "Linux":
-        return "LD_LIBRARY_PATH"
-    elif platform == "Darwin":
-        return "DYLD_LIBRARY_PATH"
-    else:
-        raise RuntimeError("Invalid OS: " + platform)
+        path = os.pathsep.join([path_64, path])
+    return os.pathsep.join([path, old_path])
 
 
 def code_swarm_dir(repo):
@@ -121,7 +120,7 @@ def main():
             if f.endswith(".jar"):
                 jars.append(f)
         jars = [lib_dir + os.sep + j for j in jars]
-        return ":".join(jars)
+        return os.pathsep.join(jars)
 
     options = parse_args()[0]
     
@@ -162,10 +161,11 @@ def main():
             print >>sys.stderr, "ERROR, please verify 'ant' installation"
             sys.exit(2)
 
-    classpath = "-classpath %s:%s:." % (code_swarm_jar, get_jars())
+    cp = os.pathsep.join([code_swarm_jar, get_jars(), "."])
+    classpath = "-classpath " + cp
     ea = "-ea" if options.debug else ""
-    os.environ[lib_environ()] = lib_path()
     args = [ "java"
+           , "-Djava.library.path=" + lib_path()
            , ea
            , "-Xmx1000m"
            , "-server"
