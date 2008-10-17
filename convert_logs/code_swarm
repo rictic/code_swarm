@@ -141,10 +141,17 @@ def main():
         print >>sys.stderr, msg
 
     if not os.path.exists(dir):
-        os.mkdir(dir)
+        os.makedirs(dir)
 
     if options.reload or not os.path.exists(os.path.join(dir, "log.xml")):
         log()
+    
+    proj_cfg = os.path.join(dir, "project.config")
+    if not os.path.exists(proj_cfg):
+        from shutil import copy
+        print "Creating default config file at " + proj_cfg
+        cp_tpl = os.path.join(root_path(), "convert_logs", "config.template")
+        copy(cp_tpl, proj_cfg)
 
     params = os.path.join(dir, "project.config")
     code_swarm_jar = os.path.join(root_path(), "dist", "code_swarm.jar")
