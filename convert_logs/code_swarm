@@ -181,6 +181,7 @@ def main():
            , "code_swarm"
            , params
            ]
+    os.chdir(root_path())
     os.execvp("java", args)
 
 
