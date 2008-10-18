@@ -87,26 +87,26 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     
     // place the edited files around the person
     Iterator<code_swarm.FileNode> iter = pNode.editing.iterator();
-    int i = 0;
-    int r = 25;
-    final int k = 4;
+    int index = 0;
+    int radius = 45;
+    final int node_size = 4;
     final int salt = pNode.hashCode(); // used to randomize orientation of circle of nodes
-    int N = (int)((2 * r * Math.PI) / k);
+    int nodes_in_ring = (int)((2 * radius * Math.PI) / node_size);
     while(iter.hasNext()){
       
-      if (i == N){
-        r += k;
-        N = (int)((2 * r * Math.PI) / k);
-        i = 0;
+      if (index == nodes_in_ring){
+        radius += node_size;
+        nodes_in_ring = (int)((2 * radius * Math.PI) / node_size);
+        index = 0;
       }
-      i++;
+      index++;
       
       code_swarm.FileNode file = iter.next();
       if (file == null) continue;
       
-      final int val = i * N + salt; 
-      int x = (int)(r * Math.sin(val));
-      int y = (int)(r * Math.cos(val));
+      final int val = index * nodes_in_ring + salt; 
+      int x = (int)(radius * Math.sin(val));
+      int y = (int)(radius * Math.cos(val));
 
       delta = new Vector2f();
       delta.sub(file.mPosition, new Vector2f(pNode.mPosition.x + x,pNode.mPosition.y + y));

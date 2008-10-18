@@ -1477,11 +1477,11 @@ public class code_swarm extends PApplet {
         else
           textFont(font);
 
-        text(name, mPosition.x, mPosition.y);
+        text(name, mPosition.x, mPosition.y+10);
         if (icon != null){
           colorMode(RGB);
-          tint(255,255,255,190);
-          image(icon, mPosition.x-40, mPosition.y-85);
+          tint(255,255,255,max(0,life-80));
+          image(icon, mPosition.x-20, mPosition.y-35);
         }
       }
     }

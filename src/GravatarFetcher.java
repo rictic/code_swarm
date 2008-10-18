@@ -28,7 +28,7 @@ public class GravatarFetcher {
     if (!new File(filename).exists()){
       try {
         new File("image_cache").mkdirs();
-        URL url = new URL("http://www.gravatar.com/avatar/" + hash + "?d=identicon");
+        URL url = new URL("http://www.gravatar.com/avatar/" + hash + "?d=identicon&s=40");
         URLConnection con = url.openConnection();
         InputStream input = con.getInputStream();
         FileOutputStream output = new FileOutputStream(filename);
