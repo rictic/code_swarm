@@ -6,6 +6,8 @@ import os
 import sys
 import time
 from xml.sax.saxutils import escape as h
+from sys import stderr
+import re
 
 # Some global variables
 SVN_SEP = "------------------------------------------------------------------------"
@@ -14,9 +16,6 @@ CVS_SEP = "----------------------------"
 
 class Event(object):
     """ Event to hold all of the separate events as we parse them from the logs. """
-    filename = ""
-    date = "0"
-    author = "(no author)"
     
     def __init__(self, filename, date, author):
         self.filename = filename
@@ -28,12 +27,92 @@ class Event(object):
     def __cmp__(self, other):
         return cmp(self.date, other.date)
     
+
+def main(argv):
+    """ Calls the parse_args function based on the 
+    command-line inputs and handles parsed arguments.
+    """
+    (opts, args) = parse_args(argv)
+    output = sys.stdout
+    # If the user specified an output log file, then use that.
+    if opts.output_log is not None:
+        output = open(opts.output_log, "w")
+        
+    # Handle parsed options.
+    if opts.svn_log:
+        log_file = opts.svn_log
+        parser = parse_svn_log
+    elif opts.git_log:
+        log_file = opts.git_log
+        parser = parse_svn_log
+    elif opts.cvs_log:
+        log_file = opts.cvs_log
+        parser = parse_cvs_log
+    elif opts.vss_log:
+        log_file = opts.vss_log
+        parser = parse_vss_log
+    elif opts.starteam_log:
+        log_file = opts.starteam_log
+        parser = parse_starteam_log
+    elif opts.wikiswarm_log:
+        log_file = opts.wikiswarm_log
+        parser = parse_wikistorm_log
+    elif opts.mercurial_log:
+        log_file = opts.mercurial_log
+        parser = parse_mercurial_log
+    elif opts.perforce_path:
+        #special case
+        create_event_xml(parse_perforce_path(opts.perforce_path), output)
+        return
+    else:
+        print >>stderr, "No repository format given, for more info see:\n   convert_logs.py help"
+        sys.exit(1)
+    
+    if not os.path.exists(log_file):
+        #hacky, but OptionParse doesn't support options that only sometimes
+        # have an extra value
+        if log_file == "stdin":
+            log_file = sys.stdin
+        else:
+            print >>stderr, "Unable to find input log %s" % log_file
+            sys.exit(1)
+    else:
+        log_file = open(log_file, 'r')
+
+    events = parser(log_file, opts)
+    
+    #its really best if we don't have to sort, but by default most are
+    # in the reverse order that we want, so we sort by default
+    if not opts.nosort:
+        events= sorted(list(events))
+    # Generate standard event xml file from event_list.
+    create_event_xml(events, output)
+
+
+def create_event_xml(events, output):
+    """ Write out the final XML given an input iterator of events."""
+    # Create new empty xml file.
+    output.write('<?xml version="1.0"?>\n')
+    output.write('<file_events>\n')
+    # Make sure the events are sorted in ascending order by date, then
+    # write the events into the xml file.
+    # If we can get a guarantee that this sort isn't necessary somehow it 
+    # could be a big win for decreasing startup time
+    for event in events:
+        try:
+            output.write('<event date="%s" filename="%s" author="%s" />\n' % \
+                (event.date, h(event.filename), h(event.author)))
+        except:
+            print >>stderr, "Error when writing %s to %s" % (event, output)
+    output.write('</file_events>\n')
+    output.close()
+
 def parse_args(argv):
     """ Parses command line arguments and returns an options object
     along with any extra arguments.
     """
     p = OptionParser()
-    
+
     p.add_option("-s", "--svn-log", dest="svn_log", 
         metavar="<log file>",
         help="input svn log to convert to standard event xml")
@@ -45,11 +124,11 @@ def parse_args(argv):
     p.add_option("-g", "--git-log", dest="git_log", 
         metavar="<log file>",
         help="input git log to convert to standard event xml")
-    
+
     p.add_option("-v", "--vss-log", dest="vss_log",
         metavar="<log file>",
         help="input vss report to convert to standard event xml")
-        
+
     p.add_option("-t", "--starteam-log", dest="starteam_log",
         metavar="<log file>",
         help="input starteam log to convert to standard event xml")
@@ -62,272 +141,197 @@ def parse_args(argv):
         metavar="<log file>",
         help="input mercurial log to convert to standard event xml")
 
-    p.add_option( "-o", "--output-log", dest="output_log", 
-        metavar="<log file>",
-        help="specify standard log output file")
-
     p.add_option( "-p", "--perforce-path", dest="perforce_path",
         metavar="<log file>",
         help="get data from perforce and save it to standard event xml")
+    p.add_option( "-o", "--output-log", dest="output_log", 
+        metavar="<log file>",
+        help="specify event log output file")
+    p.add_option("--nosort", dest="nosort", default=False, action="store_true",
+        help="use if the input log is already in chronological order for speed")
 
 
     (options, args) = p.parse_args(argv)
 
     return (options, args)
-    
-    
-def main(argv):
-    """ Calls the parse_args function based on the 
-    command-line inputs and handles parsed arguments.
-    """
-    (opts, args) = parse_args(argv)
-    
-    # Handle parsed options.
-    if opts.svn_log or opts.git_log:
-        # Grab the correct log file based on what was specified.
-        log_file = opts.svn_log
-        if opts.git_log:
-            log_file = opts.git_log
-        
-        # Check to be sure the specified log path exists.
-        if os.path.exists(log_file):
-            # Iterate through log file lines to parse out the revision history, adding Event
-            # entries to a list as we go.
-            event_list = []
-            file_handle = open(log_file,  'r')
-            line = file_handle.readline()
-            while len(line) > 0:
-                # The SVN_SEP indicates a new revision history to parse.
-                if line.startswith(SVN_SEP):
-                    # Extract author and date from revision line.  Here is a sample revision line:
-                    # r9 | michael.ogawa | 2008-06-19 10:23:25 -0500 (Thu, 19 Jun 2008) | 3 lines.
-                    rev_line = file_handle.readline()
-                    # The last line of the file is an SVN_SEP line, so if we try to retreive the
-                    # revision line and get an empty string, we know we are at the end of the file
-                    # and can break out of the loop.
-                    if rev_line == '' or len(rev_line) < 2:
-                        break
-                    rev_parts = rev_line.split(' | ')
-                    try:
-                        author = rev_parts[1]
-                    except IndexError:
-                        print >>sys.stderr, "Skipping bad line: %s" % rev_line
-                        line = file_handle.readline()
-                        continue
-                    date_parts = rev_parts[2].split(" ")
-                    date = date_parts[0] + " " + date_parts[1]
-                    try:
-                        date = time.strptime(date, '%Y-%m-%d %H:%M:%S')
-                    except ValueError:
-                        print >>sys.stderr, "Skipping malformed date: " + str(date)
-                        continue
-                    date = int(time.mktime(date))*1000
-                    
-                    # Skip the 'Changed paths:' line and start reading in the changed filenames.
-                    file_handle.readline()
-                    path = file_handle.readline()
-                    while len(path) > 1:
-                        ch_path = None
-                        if opts.svn_log:
-                            ch_path = path[5:].split(" (from")[0].replace("\n", "")
-                        else:
-                            # git uses quotes if filename contains unprintable characters
-                            ch_path = path[2:].replace("\n", "").replace("\"", "")
-                        event_list.append(Event(ch_path, date, author))
-                        path = file_handle.readline()
-                    
-                line = file_handle.readline()
-            file_handle.close()
-            
-            # Generate standard event xml file from event_list.
-            create_event_xml(event_list, log_file, opts.output_log)
-        else:
-            print "Please specify an existing path."
-        
-    if opts.cvs_log:
-        log_file = opts.cvs_log
-        
-        # Check to be sure the specified log path exists.
-        if os.path.exists(log_file):
-            event_list = []
-            filename = ""
-           
-            file_handle = open(log_file,  'r')
-            line = file_handle.readline()
-            while len(line) > 0:
-                # The CVS_SEP indicates a new revision history to parse.
-                if line.startswith(CVS_SEP):
-                    #Read the revision number
-                    rev_line = file_handle.readline()
 
-                    # Extract author and date from revision line.
-                    rev_line = file_handle.readline()
-                    if(rev_line.lower().find("date:") == 0):
-                        rev_parts = rev_line.split(';  ')
-                        date_parts = rev_parts[0].split(": ")
-                        date = time.strptime(date_parts[1], '%Y/%m/%d %H:%M:%S')
-                        date = int(time.mktime(date))*1000
-                        author = rev_parts[1].split(": ")[1]
-                        event_list.append(Event(filename, date, author))
-                        
-                line = file_handle.readline()
-                if(str(line) == ""):
-                    break
-                elif(line.lower().find("rcs file: ") >= 0):
-                    rev_line = line.split(": ")
-                    filename = rev_line[1].strip().split(',')[0]
-            file_handle.close()
-            
-            # Generate standard event xml file from event_list.
-            create_event_xml(event_list, log_file, opts.output_log)
-        else:
-            print "Please specify an existing path."
-        
-    if opts.vss_log:
-        log_file = opts.vss_log
-        
-        if os.path.exists(log_file):
-            event_list = []
-            file_handle = open(log_file, 'r')
-            
-            filename = ""
-            author = ""
-            mdy = ""
-            t = ""
-            
-            # The VSS report can have multiple lines for each entry, where the values
-            # are continued within a column range.
-            for line in file_handle.readlines():
-                if line.startswith(' '):
-                    # Handle a continuation line
-                    filename += line[0:20].strip()
-                    author += line[22:31].strip()
-                else:
-                    if mdy:
-                        filename = filename.replace("$", "")
-                        date = datetime.strptime(mdy + ' ' + t[:-1]+t[-1].upper()+'M', "%m/%d/%y %I:%M%p")
-                        date = int(time.mktime(date.timetuple())*1000)
-                        event_list.append(Event(filename, date, author.lower()))
-                    filename = line[0:20].strip()
-                    author = line[21:31].strip()
-                    mdy = line[32:40].strip()
-                    t = line[42:48].strip()
-                    
-            create_event_xml(event_list, log_file, opts.output_log)
-        
-    if opts.starteam_log:
-        log_file = opts.starteam_log
-        
-        if os.path.exists(log_file):
-            import re
-            
-            event_list = []
-            file_handle = open(log_file, 'r')
-            
-            folder = None
-            filename = None
-            
-            # The Starteam log can have multiple lines for each entry
-            for line in file_handle.readlines():                
-                m = re.compile("^Folder: (\w*)  \(working dir: (.*)\)$").match(line)
-                
-                if m:
-                    folder = m.group(2)
-                    #print "parsing folder %s @ %s" % (m.group(1), folder)
-                    continue
-                
-                m = re.compile("^History for: (.*)$").match(line)
-                
-                if m:
-                    filename = m.group(1)
-                    #print "parsing file %s" % filename
-                    continue
-                    
-                m = re.compile("^Author: (.*) Date: (.*) \w+$").match(line)
-                
-                if m:
-                    author = m.group(1)
-                    date = datetime.strptime(m.group(2), "%m/%d/%y %I:%M:%S %p")
-                    date = int(time.mktime(date.timetuple())*1000)
-                    
-                    event_list.append(Event(os.path.join(folder, filename), date, author))
-                    
-                    #print "%s check in at %s" % (author, date)
-                    continue
-                
-            create_event_xml(event_list, log_file, opts.output_log)
 
-    if opts.wikiswarm_log:
-        log_file = opts.wikiswarm_log
-        
-        # Check to be sure the specified log path exists.
-        if os.path.exists(log_file):
-            event_list = []
-            file_handle = open(log_file, 'r')
-            line = file_handle.readline()
-            
-            for rev_line in file_handle.readlines():
-                if rev_line == '':
-                    continue
-                
-                rev_parts = rev_line.split('|')
-                #rev_id    = rev_parts[0].strip()# Don't really need this, it's mainly for the ouputter
-                filename  = rev_parts[1].strip()
-                author    = rev_parts[2].strip()
-                date      = rev_parts[3].strip()+'000' # Padd to convert seconds into milliseconds
-                event_list.append(Event(filename, date, author))
+def parse_svn_log(file_handle, opts):
+    """Takes an iterator of lines in svn log -v format and
+    yields a stream of Events"""
+    # Iterate through log file lines to parse out the revision history, adding Event
+    # entries to a list as we go.
+    line = file_handle.readline()
+    while len(line) > 0:
+        # The SVN_SEP indicates a new revision history to parse.
+        if line.startswith(SVN_SEP):
+            # Extract author and date from revision line.  Here is a sample revision line:
+            # r9 | michael.ogawa | 2008-06-19 10:23:25 -0500 (Thu, 19 Jun 2008) | 3 lines.
+            rev_line = file_handle.readline()
+            # The last line of the file is an SVN_SEP line, so if we try to retreive the
+            # revision line and get an empty string, we know we are at the end of the file
+            # and can break out of the loop.
+            if rev_line == '' or len(rev_line) < 2:
+                break
+            rev_parts = rev_line.split(' | ')
+            try:
+                author = rev_parts[1]
+            except IndexError:
+                print >>sys.stderr, "Skipping bad line: %s" % rev_line
+                line = file_handle.readline()
                 continue
-                
-            # Generate standard event xml file from event_list.
-            create_event_xml(event_list, log_file, opts.output_log)
+            date_parts = rev_parts[2].split(" ")
+            date = date_parts[0] + " " + date_parts[1]
+            try:
+                date = time.strptime(date, '%Y-%m-%d %H:%M:%S')
+            except ValueError:
+                print >>sys.stderr, "Skipping malformed date: " + str(date)
+                continue
+            date = int(time.mktime(date))*1000
 
-    if opts.mercurial_log:
-        # author: Stefan Scherfke
-        # contact: stefan.scherfke at uni-oldenburg.de
-        log_file = opts.mercurial_log
-        
-        if os.path.exists(log_file):
-            event_list = []
-            file_handle = open(log_file, 'r')
-            state = 0
-            user = ''
-            date = ''
-            files = []
-            for line in file_handle.readlines():
-                if state == 0:
-                    author = line[:-1]
-                    state += 1
-                elif state == 1:
-                    date = line[:line.find('.')] + '000'
-                    state += 1
-                elif state == 2:
-                    files = line[:-1].split(' ')
-                    for filename in files:
-                        event_list.append(Event(filename, date, author.lower()))
-                    state += 1
-                elif state == 3:
-                    state = 0
+            # Skip the 'Changed paths:' line and start reading in the changed filenames.
+            file_handle.readline()
+            path = file_handle.readline()
+            while len(path) > 1:
+                ch_path = None
+                if opts.svn_log:
+                    ch_path = path[5:].split(" (from")[0].replace("\n", "")
                 else:
-                    print 'Error: undifined state'
+                    # git uses quotes if filename contains unprintable characters
+                    ch_path = path[2:].replace("\n", "").replace("\"", "")
+                yield Event(ch_path, date, author)
+                path = file_handle.readline()
 
-        create_event_xml(event_list, log_file, opts.output_log)
-        
-    if opts.perforce_path:
-        import re
-        
-        event_list = []
-        changelists = run_marshal('p4 -G changelists "' + opts.perforce_path + '"')
-        file_key_re = re.compile("^depotFile")
-        for changelist in changelists:
-            files = run_marshal('p4 -G describe -s "' + changelist['change'] + '"')
-            for fi in files:
-                for key_name, file_name in fi.iteritems():
-                    if file_key_re.match(key_name):
-                        event_list.append(Event(file_name, int(changelist['time'] + '000'), changelist['user']))
+        line = file_handle.readline()
+
+def parse_cvs_log(file_handle, opts):
+    filename = ""
+
+    line = file_handle.readline()
+    while len(line) > 0:
+        # The CVS_SEP indicates a new revision history to parse.
+        if line.startswith(CVS_SEP):
+            #Read the revision number
+            rev_line = file_handle.readline()
+
+            # Extract author and date from revision line.
+            rev_line = file_handle.readline()
+            if(rev_line.lower().find("date:") == 0):
+                rev_parts = rev_line.split(';  ')
+                date_parts = rev_parts[0].split(": ")
+                date = time.strptime(date_parts[1], '%Y/%m/%d %H:%M:%S')
+                date = int(time.mktime(date))*1000
+                author = rev_parts[1].split(": ")[1]
+                yield Event(filename, date, author)
+
+        line = file_handle.readline()
+        if(str(line) == ""):
+            break
+        elif(line.lower().find("rcs file: ") >= 0):
+            rev_line = line.split(": ")
+            filename = rev_line[1].strip().split(',')[0]
+    file_handle.close()
+
+def parse_vss_log(file_handle, opts):
+    filename = ""
+    author = ""
+    mdy = ""
+    t = ""
+
+    # The VSS report can have multiple lines for each entry, where the values
+    # are continued within a column range.
+    for line in file_handle.readlines():
+        if line.startswith(' '):
+            # Handle a continuation line
+            filename += line[0:20].strip()
+            author += line[22:31].strip()
+        else:
+            if mdy:
+                filename = filename.replace("$", "")
+                date = datetime.strptime(mdy + ' ' + t[:-1]+t[-1].upper()+'M', "%m/%d/%y %I:%M%p")
+                date = int(time.mktime(date.timetuple())*1000)
+                yield Event(filename, date, author.lower())
+            filename = line[0:20].strip()
+            author = line[21:31].strip()
+            mdy = line[32:40].strip()
+            t = line[42:48].strip()
+
+def parse_starteam_log(file_handle, opts):
+    folder = None
+    filename = None
+
+    # The Starteam log can have multiple lines for each entry
+    for line in file_handle.readlines():                
+        m = re.compile("^Folder: (\w*)  \(working dir: (.*)\)$").match(line)
+
+        if m:
+            folder = m.group(2)
+            #print "parsing folder %s @ %s" % (m.group(1), folder)
+            continue
+
+        m = re.compile("^History for: (.*)$").match(line)
+
+        if m:
+            filename = m.group(1)
+            #print "parsing file %s" % filename
+            continue
+
+        m = re.compile("^Author: (.*) Date: (.*) \w+$").match(line)
+
+        if m:
+            author = m.group(1)
+            date = datetime.strptime(m.group(2), "%m/%d/%y %I:%M:%S %p")
+            date = int(time.mktime(date.timetuple())*1000)
+
+            yield Event(os.path.join(folder, filename), date, author)
+            continue
+
+def parse_wikiswarm_log(file_handle, opts):
+    line = file_handle.readline()
+
+    for rev_line in file_handle.readlines():
+        if rev_line == '':
+            continue
+
+        rev_parts = rev_line.split('|')
+        #rev_id    = rev_parts[0].strip()# Don't really need this, it's mainly for the ouputter
+        filename  = rev_parts[1].strip()
+        author    = rev_parts[2].strip()
+        date      = rev_parts[3].strip()+'000' # Padd to convert seconds into milliseconds
+        yield Event(filename, date, author)
 
 
-        create_event_xml(event_list, 'depot', opts.output_log)
+def parse_mercurial_log(file_handle, opts):
+    state = 0
+    user = ''
+    date = ''
+    files = []
+    for line in file_handle.readlines():
+        if state == 0:
+            author = line[:-1]
+            state += 1
+        elif state == 1:
+            date = line[:line.find('.')] + '000'
+            state += 1
+        elif state == 2:
+            files = line[:-1].split(' ')
+            for filename in files:
+                yield Event(filename, date, author.lower())
+            state += 1
+        elif state == 3:
+            state = 0
+        else:
+            print >>stderr, 'Error: undifined state'
 
+def parse_perforce_path(file_handle, opts):
+    changelists = run_marshal('p4 -G changelists "' + opts.perforce_path + '"')
+    file_key_re = re.compile("^depotFile")
+    for changelist in changelists:
+        files = run_marshal('p4 -G describe -s "' + changelist['change'] + '"')
+        for fi in files:
+            for key_name, file_name in fi.iteritems():
+                if file_key_re.match(key_name):
+                    yield Event(file_name, int(changelist['time'] + '000'), changelist['user'])
 
 def run_marshal(command):
     import marshal
@@ -343,40 +347,7 @@ def run_marshal(command):
     stream.close()
     return results
 
-def create_event_xml(events, base_log, output_log=None):
-    """ Write out the final XML output log file based on an input
-    list of events and input log files.
-    """
-    # By default, the generated xml file will be the same name as the input log file
-    # but with an '.xml' extension.
-    log_file_path = os.path.abspath(base_log)
-    dest_dir = os.path.dirname(log_file_path)
-    log_file_base = os.path.basename(log_file_path)
-    xml_filename = os.path.splitext(log_file_base)[0] + '.xml'
-    xml_path = os.path.join(dest_dir, xml_filename)
-            
-    # If the user specified an output log file, then use that.
-    if output_log:
-        xml_path = output_log
-            
-    # Create new empty xml file.
-    xml_handle = open(xml_path,  'w')
-    xml_handle.write('<?xml version="1.0"?>\n')
-    xml_handle.write('<file_events>\n')
-    # Make sure the events are sorted in ascending order by date, then
-    # write the events into the xml file.
-    events.sort()
-    for event in events:
-        try:
-            xml_handle.write('<event date="%s" filename="%s" author="%s" />\n' % \
-                (event.date, h(event.filename), h(event.author)))
-        except:
-            print "Error when writing this file: " + str(event)
-    xml_handle.write('</file_events>\n')
-    xml_handle.close()
 
 # Main entry point.
 if __name__ == "__main__":
-
     main(sys.argv)
-   

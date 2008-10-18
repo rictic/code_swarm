@@ -31,18 +31,17 @@ fi
 if [ -d .git ]; then
     dir=`pwd`/.git/.code_swarm
     log() {
-        git log --name-status --pretty=format:"%n------------------------------------------------------------------------%nr%h | %ae | %ai (%aD) | x lines%nChanged paths:" > $dir/temp.log
-        convert_logs.py -g $dir/temp.log -o $dir/log.xml
-        rm $dir/temp.log
+        git log --name-status \
+                --pretty=format:"%n------------------------------------------------------------------------%nr%h | %ae | %ai (%aD) | x lines%nChanged paths:"\
+            | convert_logs.py -g stdin > $dir/log.xml
     }
 elif [ -d .svn ]; then
     dir=`pwd`/.svn/.code_swarm
     log() {
-        svn log -v > $dir/temp.log
-        convert_logs.py -s $dir/temp.log -o $dir/log.xml
-        rm $dir/temp.log
+        echo "Fetching SVN revisions, this may take some time"
+        svn log -v -r 1:HEAD \
+          | convert_logs.py --nosort -s stdin > $dir/log.xml
     }
-    convert="convert_logs.py -s"
 elif [ -d .hg ]; then
     dir=`pwd`/.hg/.code_swarm
     log() {
