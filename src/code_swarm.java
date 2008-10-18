@@ -1306,7 +1306,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * A node describing a file, which is repulsed by other files.
+   * A node describing a file
    */
   class FileNode extends Node implements Comparable<FileNode> {
     private int nodeHue;
@@ -1437,7 +1437,7 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * A node describing a person, which is repulsed by other persons.
+   * A node describing a person
    */
   class PersonNode extends Node {
     private int flavor = color(0);
@@ -1445,6 +1445,7 @@ public class code_swarm extends PApplet {
     private int minBold;
     protected int touches;
     public List<FileNode> editing = new ArrayList<FileNode>();
+    private PImage icon = null;
     /**
      * 1) constructor.
      */
@@ -1458,6 +1459,8 @@ public class code_swarm extends PApplet {
       mLastPosition.set(new Vector2f(mPosition)); 
       mLastPosition.add(mPhysicsEngine.startVelocity(this));
       mFriction = 0.99f;
+      String iconFile = GravatarFetcher.fetchUserImage(name);
+      if (iconFile != null) icon = loadImage(iconFile);
     }
 
     /**
@@ -1475,6 +1478,11 @@ public class code_swarm extends PApplet {
           textFont(font);
 
         text(name, mPosition.x, mPosition.y);
+        if (icon != null){
+          colorMode(RGB);
+          tint(255,255,255,190);
+          image(icon, mPosition.x-40, mPosition.y-85);
+        }
       }
     }
 
