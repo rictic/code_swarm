@@ -6,3 +6,4 @@ build
 dist
 frames
 *.pyc
+image_cache
