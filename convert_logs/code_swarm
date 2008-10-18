@@ -127,8 +127,8 @@ def invoke_code_swarm(code_swarm_jar, proj_cfg, debug):
         return "-Djava.library.path=" + os.pathsep.join([path, old_path])
     
     classpath = os.pathsep.join([code_swarm_jar, get_jars(), "."])
-    ea = "-ea" 
-    if debug: ea = "-da"
+    ea = "-da"
+    if debug: ea = "-ea"
     args = ( "java"
            , "-classpath"
            , classpath
@@ -141,8 +141,6 @@ def invoke_code_swarm(code_swarm_jar, proj_cfg, debug):
            )
     os.chdir(root_path())
     os.execvp("java", args)
-    
-
 
 
 def code_swarm_dir(repo):
@@ -186,11 +184,6 @@ def do_hg(dir):
     return do_cmds(["hg_log.py -o %s ." % tmp
                    ,"sort_code_swarm_input.py < %s > %s" % (tmp, xml)
                    ,"rm " + tmp])
-
-
-
-
-
 
 
 if __name__ == "__main__":
