@@ -1,69 +1,197 @@
-#!/bin/sh
+#!/usr/bin/env python
 
-# a single command to visualize a project
+# Copyright (C) 2008 Michael Dippery <mpd@cs.wm.edu>, et al
+#
+# This file is part of code_swarm.
+#
+# code_swarm is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# code_swarm is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with code_swarm. If not, see <http://www.gnu.org/licenses/>.
 
-# requires the convert_logs dir to be in the PATH
+import os
+import sys
 
-while getopts r opt
-do
-    case "$opt" in
-      r)  reload=1;;
-      \?)		# unknown flag
-      	  echo >&2 "usage: $0 [-r]"
-      	  echo >&2 "displays a visualization of a source-controlled project's commit history"
-	      exit 1;;
-    esac
-done
+def parse_args():
+    from optparse import OptionParser
 
+    parser = OptionParser()
+    parser.add_option("-r", "--reload",
+                      help="Regenerate the XML log file to get the latest commits", action="store_true")
+    parser.add_option("-d", "--debug",
+                      help="Enable Java debugging", action="store_true")
 
-# Set up paths for dynamically-loaded libraries
-lib_path=`dirname $0`/../lib
-if [ `uname -s` = "Darwin" ]; then
-    export DYLD_LIBRARY_PATH=$lib_path:$DYLD_LIBRARY_PATH
-elif [ `uname -s` = "Linux" ]; then
-    if [ `uname -p` = "x86_64" ]; then
-        lib_path="$lib_path/linux-x86_64:$lib_path"
-    fi
-    export LD_LIBRARY_PATH=$lib_path:$LD_LIBRARY_PATH
-fi
+    return parser.parse_args()
 
 
-if [ -d .git ]; then
-    dir=`pwd`/.git/.code_swarm
-    log() {
-        git log --name-status \
-                --pretty=format:"%n------------------------------------------------------------------------%nr%h | %ae | %ai (%aD) | x lines%nChanged paths:"\
-            | convert_logs.py -g stdin > $dir/log.xml
-    }
-elif [ -d .svn ]; then
-    dir=`pwd`/.svn/.code_swarm
-    log() {
-        echo "Fetching SVN revisions, this may take some time"
-        svn log -v -r 1:HEAD \
-          | convert_logs.py --nosort -s stdin > $dir/log.xml
-    }
-elif [ -d .hg ]; then
-    dir=`pwd`/.hg/.code_swarm
-    log() {
-        hg_log.py -o $dir/unsorted_log.xml .
-        sort_code_swarm_input.py < $dir/unsorted_log.xml > $dir/log.xml
-        rm $dir/unsorted_log.xml
-    }
-else
-    echo "This directory isn't an svn, git, or hg project.  Run in the base directory of source-controlled project."
-    exit 2
-fi
+def main():
+    """
+    Visualizes the project in the current working directory.
+    
+    Doing this automagically involves three steps:
+    1) Discovering what kind of repository is used in the current working
+        directory.
+    
+    2) Converting the log formats from each kind of repository to the event
+        xml format that convert_logs expects.
+    
+    3) Invoking code_swarm    
+    """
+    
+    options = parse_args()[0]
+    
+    if os.path.exists(".git"):
+        dir = code_swarm_dir("git")
+        generate_log = do_git
+    elif os.path.exists(".svn"):
+        dir = code_swarm_dir("svn")
+        generate_log = do_svn
+    elif os.path.exists(".hg"):
+        dir = code_swarm_dir("hg")
+        generate_log = do_hg
+    else:
+        msg  = "This directory isn't an svn, git, or hg project."
+        msg += "Run in the base directory of a source-controlled project."
+        print >>sys.stderr, msg
+        sys.exit(2)
 
-mkdir -p $dir
+    if not os.path.exists(dir):
+        os.makedirs(dir)
 
-if [ $reload ] || ! [ -a $dir/log.xml ]; then
-    log
-fi
+    if options.reload or not os.path.exists(os.path.join(dir, "log.xml")):
+        generate_log(dir)
+            
+    
+    proj_cfg = os.path.join(dir, "project.config")
+    if not os.path.exists(proj_cfg):
+        from shutil import copy
+        print "Creating default config file at " + proj_cfg
+        cp_tpl = os.path.join(root_path(), "convert_logs", "config.template")
+        copy(cp_tpl, proj_cfg)
 
-if ! [ -a $dir/project.config ]; then
-    echo "creating default config file at $dir/project.config"
-    cp `dirname $0`/config.template $dir/project.config
-fi
+    code_swarm_jar = os.path.join(root_path(), "dist", "code_swarm.jar")
 
-cd `dirname $0`/../
-./run.sh $dir/project.config
+    if not os.path.exists(code_swarm_jar):
+        print >>sys.stderr, "no code_swarm binaries!"
+        print >>sys.stderr, "need to build with 'ant' and 'javac' (java-sdk)"
+        print >>sys.stderr, ""
+        print >>sys.stderr, "auto-trying the ant command..."
+        build = os.path.join(root_path(), "build.xml")
+        retn = os.system("ant -buildfile " + build)
+        print >>sys.stderr, ""
+        if not retn == 0:
+            print >>sys.stderr, "ERROR, please verify 'ant' installation"
+            sys.exit(2)
+
+    invoke_code_swarm(code_swarm_jar, proj_cfg, options.debug)
+
+def root_path():
+    "Returns the path of the code_swarm source directory"
+    path = os.path.dirname(__file__)
+    path = os.path.dirname(path)
+    return path
+
+def invoke_code_swarm(code_swarm_jar, proj_cfg, debug):
+    """Invokes the code_swarm_jar on the given config file"""
+    def get_jars():
+        """Returns the absolute path of each jar in the code_swarm
+        lib directory as a pathsep seperated string"""
+        lib_dir = os.path.join(root_path(), "lib")
+        jars = [f for f in os.listdir(lib_dir) if f.endswith(".jar")]
+        jars = [lib_dir + os.sep + j for j in jars]
+        return os.pathsep.join(jars)
+
+    def ld_path_arg():
+        (platform, _, _, _, arch) = os.uname()
+        if platform == "Linux":
+            ld_lib_path = "LD_LIBRARY_PATH"
+        elif platform == "Darwin":
+            ld_lib_path = "DYLD_LIBRARY_PATH"
+        else:
+            return ""
+
+        old_path = os.environ.get(ld_lib_path, "")
+        path = os.path.join(root_path(), "lib")
+
+        if platform == "Linux" and arch == "x86_64":
+            path_64 = os.path.join(path, "linux-x86_64")
+            path = os.pathsep.join([path_64, path])
+        return "-Djava.library.path=" + os.pathsep.join([path, old_path])
+    
+    classpath = os.pathsep.join([code_swarm_jar, get_jars(), "."])
+    ea = "-ea" 
+    if debug: ea = "-da"
+    args = ( "java"
+           , "-classpath"
+           , classpath
+           , ld_path_arg()
+           , ea
+           , "-Xmx1000m"
+           , "-server"
+           , "code_swarm"
+           , proj_cfg
+           )
+    os.chdir(root_path())
+    os.execvp("java", args)
+    
+
+
+
+def code_swarm_dir(repo):
+    """Returns a directory within the current working directory that
+    we can use for storage within the given repository directory."""
+    if repo[0] == '.':
+        repo = repo[1:]
+    return os.path.join(os.getcwd(), "." + repo, ".code_swarm")
+
+
+def do_cmds(cmds):
+    for cmd in cmds:
+        if not os.system(cmd) == 0:
+            raise Exception("Error running `%s'" % cmd)
+
+
+def do_git(dir):
+    ds = '-' * 72
+    fmt = "%%n%s%%nr%%h | %%ae | %%ai (%%aD) | x lines%%nChanged paths: " % ds
+    tmp = os.path.join(dir, "temp.log")
+    xml = os.path.join(dir, "log.xml")
+
+    return do_cmds(['git log --name-status --pretty=format:"%s" > %s' % (fmt, tmp)
+                   ,"convert_logs.py -g %s -o %s" % (tmp, xml)
+                   ,"rm " + tmp])
+
+
+def do_svn(dir):
+    tmp = os.path.join(dir, "temp.log")
+    xml = os.path.join(dir, "log.xml")
+
+    return do_cmds(["svn log -v > " + tmp
+                   ,"convert_logs.py -s %s -o %s" % (tmp, xml)
+                   ,"rm " + tmp])
+
+
+def do_hg(dir):
+    tmp = os.path.join(dir, "unsorted_log.xml")
+    xml = os.path.join(dir, "log.xml")
+
+    return do_cmds(["hg_log.py -o %s ." % tmp
+                   ,"sort_code_swarm_input.py < %s > %s" % (tmp, xml)
+                   ,"rm " + tmp])
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    main()
