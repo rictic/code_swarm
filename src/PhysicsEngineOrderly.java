@@ -86,27 +86,29 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     pNode.mPosition.add(delta);
     
     // place the edited files around the person
-    Iterator<code_swarm.FileNode> iter = pNode.editing.iterator();
-    int i = 0;
-    int r = 25;
-    final int k = 4;
+    Iterator<code_swarm.FileNode> editedFiles = pNode.editing.iterator();
+    int index = 0;
+    int radius = 25;
+    final int node_size = 4;
     final int salt = pNode.hashCode(); // used to randomize orientation of circle of nodes
-    int N = (int)((2 * r * Math.PI) / k);
-    while(iter.hasNext()){
-      
-      if (i == N){
-        r += k;
-        N = (int)((2 * r * Math.PI) / k);
-        i = 0;
+    int num_nodes_in_ring = (int)((2 * radius * Math.PI) / node_size);
+    while(editedFiles.hasNext()){
+      //if we've placed all the nodes in this ring...
+      if (index == num_nodes_in_ring){
+        //start on a new ring
+        radius += node_size;
+        num_nodes_in_ring = (int)((2 * radius * Math.PI) / node_size);
+        index = 0;
       }
-      i++;
+      index++;
       
-      code_swarm.FileNode file = iter.next();
+      code_swarm.FileNode file = editedFiles.next();
+      //leave a hole for the null files
       if (file == null) continue;
       
-      final int val = i * N + salt; 
-      int x = (int)(r * Math.sin(val));
-      int y = (int)(r * Math.cos(val));
+      final int place_around_ring = index * num_nodes_in_ring + salt; 
+      int x = (int)(radius * Math.sin(place_around_ring));
+      int y = (int)(radius * Math.cos(place_around_ring));
 
       delta = new Vector2f();
       delta.sub(file.mPosition, new Vector2f(pNode.mPosition.x + x,pNode.mPosition.y + y));
@@ -115,7 +117,6 @@ public class PhysicsEngineOrderly extends PhysicsEngine
       file.mPosition.add(delta);
     }
   }
-  
 
   /**
    * 
