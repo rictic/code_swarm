@@ -732,7 +732,7 @@ public class code_swarm extends PApplet {
         n.freshen();
       }
 
-      // add to color bin
+      // add to histogram
       cb.add(n.nodeHue);
 
       PersonNode p = findPerson(currentEvent.author);
@@ -743,12 +743,6 @@ public class code_swarm extends PApplet {
         p.freshen();
       }
       p.addColor(n.nodeHue);
-
-      int firstNullIndex = p.editing.indexOf(null);
-      if (firstNullIndex == -1)
-        p.editing.add(n);
-      else
-        p.editing.set(firstNullIndex, n);
       
       Edge ped = findEdge(n, p);
       if (ped == null) {
@@ -756,7 +750,9 @@ public class code_swarm extends PApplet {
         edges.add(ped);
       } else
         ped.freshen();
-
+      
+      n.setEditor(p);
+      
       /*
        * if ( currentEvent.date.equals( prevDate ) ) { Edge e = findEdge( n, prevNode
        * ); if ( e == null ) { e = new Edge( n, prevNode ); edges.add( e ); } else {
@@ -1312,7 +1308,8 @@ public class code_swarm extends PApplet {
     private int nodeHue;
     private int minBold;
     protected int touches;
-
+    private PersonNode lastEditor = null;
+    
     /**
      * @return file node as a string
      */
@@ -1374,6 +1371,31 @@ public class code_swarm extends PApplet {
       if (++touches > maxTouches) {
         maxTouches = touches;
       }
+    }
+    
+    public boolean isAlive() {
+      boolean alive = life > 0;
+      if (!alive && lastEditor != null) {
+        int idx = lastEditor.editing.indexOf(this);
+        if (idx != -1)
+          lastEditor.editing.set(idx, null);
+        lastEditor = null;
+      }
+        
+      return alive;
+    }
+    
+    public void setEditor(PersonNode editor) {
+      if (editor == lastEditor)
+        return;
+      if (lastEditor != null)
+        lastEditor.editing.set(lastEditor.editing.indexOf(this), null);
+      lastEditor = editor;
+      int firstNullIndex = editor.editing.indexOf(null);
+      if (firstNullIndex == -1)
+        editor.editing.add(this);
+      else
+        editor.editing.set(firstNullIndex, this);
     }
 
     public boolean qualifies() {
