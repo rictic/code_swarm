@@ -116,25 +116,6 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     }
   }
   
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the update phase.
-   * 
-   * @param pNode the node to which the force apply
-   */
-  public void onUpdate(code_swarm.PersonNode pNode) {
-    super.onUpdate(pNode);
-    
-    /*
-    int i = 0;
-    Iterator<code_swarm.FileNode> iter = pNode.editing.iterator();
-    while(iter.hasNext()){
-      code_swarm.FileNode file = iter.next();
-      if (file != null && !file.isAlive())
-        pNode.editing.set(i, null);
-      i++;
-    }
-    */
-  }
 
   /**
    * 
