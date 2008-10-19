@@ -825,6 +825,8 @@ public class code_swarm extends PApplet {
     // update position
     for (PersonNode person : getLivingPeople()) {
       mPhysicsEngine.onUpdate(person);
+      person.mPosition.x = max(50, min(width-50,  person.mPosition.x));
+      person.mPosition.y = max(45, min(height-15, person.mPosition.y));
     }
 
     // Finalize frame:

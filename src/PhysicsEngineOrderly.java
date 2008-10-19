@@ -86,27 +86,29 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     pNode.mPosition.add(delta);
     
     // place the edited files around the person
-    Iterator<code_swarm.FileNode> iter = pNode.editing.iterator();
+    Iterator<code_swarm.FileNode> editedFiles = pNode.editing.iterator();
     int index = 0;
     int radius = 45;
     final int node_size = 4;
     final int salt = pNode.hashCode(); // used to randomize orientation of circle of nodes
-    int nodes_in_ring = (int)((2 * radius * Math.PI) / node_size);
-    while(iter.hasNext()){
-      
-      if (index == nodes_in_ring){
+    int num_nodes_in_ring = (int)((2 * radius * Math.PI) / node_size);
+    while(editedFiles.hasNext()){
+      //if we've placed all the nodes in this ring...
+      if (index == num_nodes_in_ring){
+        //start on a new ring
         radius += node_size;
-        nodes_in_ring = (int)((2 * radius * Math.PI) / node_size);
+        num_nodes_in_ring = (int)((2 * radius * Math.PI) / node_size);
         index = 0;
       }
       index++;
       
-      code_swarm.FileNode file = iter.next();
+      code_swarm.FileNode file = editedFiles.next();
+      //leave a hole for the null files
       if (file == null) continue;
       
-      final int val = index * nodes_in_ring + salt; 
-      int x = (int)(radius * Math.sin(val));
-      int y = (int)(radius * Math.cos(val));
+      final int place_around_ring = index * num_nodes_in_ring + salt; 
+      int x = (int)(radius * Math.sin(place_around_ring));
+      int y = (int)(radius * Math.cos(place_around_ring));
 
       delta = new Vector2f();
       delta.sub(file.mPosition, new Vector2f(pNode.mPosition.x + x,pNode.mPosition.y + y));
@@ -114,26 +116,6 @@ public class PhysicsEngineOrderly extends PhysicsEngine
       delta.scale(1 / delta.length() * -0.01f * distance);
       file.mPosition.add(delta);
     }
-  }
-  
-  /**
-   * Method that allows Physics Engine to modify Speed / Position during the update phase.
-   * 
-   * @param pNode the node to which the force apply
-   */
-  public void onUpdate(code_swarm.PersonNode pNode) {
-    super.onUpdate(pNode);
-    
-    /*
-    int i = 0;
-    Iterator<code_swarm.FileNode> iter = pNode.editing.iterator();
-    while(iter.hasNext()){
-      code_swarm.FileNode file = iter.next();
-      if (file != null && !file.isAlive())
-        pNode.editing.set(i, null);
-      i++;
-    }
-    */
   }
 
   /**
