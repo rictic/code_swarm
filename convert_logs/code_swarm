@@ -28,7 +28,8 @@ def parse_args():
                       help="Regenerate the XML log file to get the latest commits", action="store_true")
     parser.add_option("-d", "--debug",
                       help="Enable Java debugging", action="store_true")
-
+    parser.add_option("-c", "--config",
+                      help="Just run code_swarm on the given config file")
     return parser.parse_args()
 
 
@@ -45,37 +46,14 @@ def main():
     
     3) Invoking code_swarm    
     """
-    
+
     options = parse_args()[0]
-    
-    if os.path.exists(".git"):
-        dir = code_swarm_dir("git")
-        generate_log = do_git
-    elif os.path.exists(".svn"):
-        dir = code_swarm_dir("svn")
-        generate_log = do_svn
-    elif os.path.exists(".hg"):
-        dir = code_swarm_dir("hg")
-        generate_log = do_hg
+
+    if options.config:
+        proj_cfg = os.path.abspath(options.config)
     else:
-        msg  = "This directory isn't an svn, git, or hg project."
-        msg += "Run in the base directory of a source-controlled project."
-        print >>sys.stderr, msg
-        sys.exit(2)
+        proj_cfg = autogenerate_files(options)
 
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-
-    if options.reload or not os.path.exists(os.path.join(dir, "log.xml")):
-        generate_log(dir)
-            
-    
-    proj_cfg = os.path.join(dir, "project.config")
-    if not os.path.exists(proj_cfg):
-        from shutil import copy
-        print "Creating default config file at " + proj_cfg
-        cp_tpl = os.path.join(root_path(), "convert_logs", "config.template")
-        copy(cp_tpl, proj_cfg)
 
     code_swarm_jar = os.path.join(root_path(), "dist", "code_swarm.jar")
 
@@ -88,7 +66,7 @@ def main():
         retn = os.system("ant -buildfile " + build)
         print >>sys.stderr, ""
         if not retn == 0:
-            print >>sys.stderr, "ERROR, please verify 'ant' installation"
+            print >>sys.stderr, "ERROR, please verify that Apache ant is installed"
             sys.exit(2)
 
     invoke_code_swarm(code_swarm_jar, proj_cfg, options.debug)
@@ -150,6 +128,39 @@ def code_swarm_dir(repo):
         repo = repo[1:]
     return os.path.join(os.getcwd(), "." + repo, ".code_swarm")
 
+
+def autogenerate_files(options):
+    """docstring for autogenerate_files"""
+    if os.path.exists(".git"):
+        dir = code_swarm_dir("git")
+        generate_log = do_git
+    elif os.path.exists(".svn"):
+        dir = code_swarm_dir("svn")
+        generate_log = do_svn
+    elif os.path.exists(".hg"):
+        dir = code_swarm_dir("hg")
+        generate_log = do_hg
+    else:
+        msg  = "This directory isn't an svn, git, or hg project."
+        msg += "Run in the base directory of a source-controlled project."
+        print >>sys.stderr, msg
+        sys.exit(2)
+
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+    if options.reload or not os.path.exists(os.path.join(dir, "log.xml")):
+        generate_log(dir)
+            
+    proj_cfg = os.path.join(dir, "project.config")
+    if not os.path.exists(proj_cfg):
+        from shutil import copy
+        print >>sys.stderr, "Creating default config file at " + proj_cfg
+        cp_tpl = os.path.join(root_path(), "convert_logs", "config.template")
+        copy(cp_tpl, proj_cfg)
+    
+    return proj_cfg
+    
 
 def do_cmds(cmds):
     for cmd in cmds:
