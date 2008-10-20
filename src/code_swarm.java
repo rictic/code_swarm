@@ -37,15 +37,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import javax.vecmath.Vector2f;
-
+import org.codeswarm.dependencies.sun.tools.javac.util.Pair;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
-
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
@@ -69,7 +67,7 @@ public class code_swarm extends PApplet {
   BlockingQueue<FileEvent> eventsQueue;
   boolean isInputSorted = false;
   protected static Map<String, FileNode> nodes;
-  protected static List<Edge> edges;
+  protected static Map<Pair<FileNode, PersonNode>, Edge> edges;
   protected static Map<String, PersonNode> people;
 
   // Liveness cache
@@ -299,7 +297,7 @@ public class code_swarm extends PApplet {
 
     // init data structures
     nodes         = new HashMap<String,FileNode>();
-    edges         = new ArrayList<Edge>();
+    edges         = new HashMap<Pair<FileNode, PersonNode>, Edge>();
     people        = new HashMap<String,PersonNode>();
     history       = new LinkedList<ColorBins>(); 
     if (isInputSorted)
@@ -371,7 +369,7 @@ public class code_swarm extends PApplet {
 
     // Draw edges (for debugging only)
     if (showEdges) {
-      for (Edge edge : edges) {
+      for (Edge edge : edges.values()) {
         edge.draw();
       }
     }
@@ -747,7 +745,7 @@ public class code_swarm extends PApplet {
       Edge ped = findEdge(n, p);
       if (ped == null) {
         ped = new Edge(n, p);
-        edges.add(ped);
+        edges.put(new Pair<FileNode,PersonNode>(n,p), ped);
       } else
         ped.freshen();
       
@@ -795,7 +793,7 @@ public class code_swarm extends PApplet {
 
     livingPeople = filterLiving(people.values());
     livingNodes = filterLiving(nodes.values());
-    livingEdges = filterLiving(edges);
+    livingEdges = filterLiving(edges.values());
     
     // update velocity
     for (Edge edge : getLivingEdges()) {
@@ -839,39 +837,31 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * Searches the nodes array for a given name
+   * Searches for the FileNode with a given name
    * @param name
    * @return FileNode with matching name or null if not found.
    */
   public FileNode findNode(String name) {
-    if (nodes.containsKey(name))
-      return nodes.get(name);
-    return null;
+    return nodes.get(name);
   }
 
   /**
-   * Searches the nodes array for a given name
+   * Searches for the Edge connecting the given nodes
    * @param n1 From
    * @param n2 To
    * @return Edge connecting n1 to n2 or null if not found
    */
-  public Edge findEdge(Node n1, Node n2) {
-    for (Edge edge : edges) {
-      if (edge.nodeFrom == n1 && edge.nodeTo == n2)
-        return edge;
-    }
-    return null;
+  public Edge findEdge(FileNode n1, PersonNode n2) {
+    return edges.get(new Pair<FileNode, PersonNode>(n1,n2));
   }
 
   /**
-   * Searches the people array for a given name.
+   * Searches for the PersonNode with a given name.
    * @param name
    * @return PersonNode for given name or null if not found.
    */
   public PersonNode findPerson(String name) {
-    if (people.containsKey(name))
-      return people.get(name);
-    return null;
+    return people.get(name);
   }
 
   /**

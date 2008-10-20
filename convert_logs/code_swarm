@@ -30,6 +30,8 @@ def parse_args():
                       help="Enable Java debugging", action="store_true")
     parser.add_option("-c", "--config",
                       help="Just run code_swarm on the given config file")
+    parser.add_option("-p", "--profile", action="store_true",
+                      help="Invokes java with profiling options, writing output to swarm.proof")
     return parser.parse_args()
 
 
@@ -69,7 +71,7 @@ def main():
             print >>sys.stderr, "ERROR, please verify that Apache ant is installed"
             sys.exit(2)
 
-    invoke_code_swarm(code_swarm_jar, proj_cfg, options.debug)
+    invoke_code_swarm(code_swarm_jar, proj_cfg, options)
 
 def root_path():
     "Returns the path of the code_swarm source directory"
@@ -77,7 +79,7 @@ def root_path():
     path = os.path.dirname(path)
     return path
 
-def invoke_code_swarm(code_swarm_jar, proj_cfg, debug):
+def invoke_code_swarm(code_swarm_jar, proj_cfg, options):
     """Invokes the code_swarm_jar on the given config file"""
     def get_jars():
         """Returns the absolute path of each jar in the code_swarm
@@ -106,17 +108,16 @@ def invoke_code_swarm(code_swarm_jar, proj_cfg, debug):
     
     classpath = os.pathsep.join([code_swarm_jar, get_jars(), "."])
     ea = "-da"
-    if debug: ea = "-ea"
-    args = ( "java"
-           , "-classpath"
-           , classpath
-           , ld_path_arg()
-           , ea
-           , "-Xmx1000m"
-           , "-server"
-           , "code_swarm"
-           , proj_cfg
-           )
+    if options.debug: ea = "-ea"
+    java_args = ["-classpath"
+                ,classpath
+                ,ld_path_arg()
+                ,ea
+                , "-Xmx1000m"
+                , "-server"]
+    if options.profile:
+        java_args.append("-agentlib:hprof=cpu=samples,depth=7,file=swarm.proof")
+    args = [ "java" ] + java_args + ["code_swarm", proj_cfg]
     os.chdir(root_path())
     os.execvp("java", args)
 
