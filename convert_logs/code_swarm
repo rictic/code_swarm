@@ -116,7 +116,7 @@ def invoke_code_swarm(code_swarm_jar, proj_cfg, options):
                 , "-Xmx1000m"
                 , "-server"]
     if options.profile:
-        java_args.append("-agentlib:hprof=cpu=samples,interval=20,depth=7,file=swarm.proof")
+        java_args.append("-agentlib:hprof=cpu=samples,depth=7,file=swarm.proof")
     args = [ "java" ] + java_args + ["code_swarm", proj_cfg]
     os.chdir(root_path())
     os.execvp("java", args)
