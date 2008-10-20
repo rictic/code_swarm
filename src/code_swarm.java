@@ -37,17 +37,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import javax.vecmath.Vector2f;
-
+import org.codeswarm.dependencies.sun.tools.javac.util.Pair;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
-
-import com.sun.tools.javac.util.Pair;
-
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
