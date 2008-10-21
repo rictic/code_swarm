@@ -20,6 +20,7 @@ def get_date_value(line):
 xml_lines.sort(key=get_date_value)
 
 print """<?xml version="1.0"?>
-<file_events>
-%s
-</file_events> """ % "".join(xml_lines)
+<file_events>"""
+for line in xml_lines:
+    print line
+print """</file_events>"""
