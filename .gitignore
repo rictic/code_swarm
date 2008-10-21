@@ -6,4 +6,5 @@ build
 dist
 frames
 *.pyc
-*.proofimage_cache
+*.proof
+image_cache
