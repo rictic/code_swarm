@@ -20,18 +20,28 @@
 import os
 import sys
 
+
 def parse_args():
     from optparse import OptionParser
 
     parser = OptionParser()
-    parser.add_option("-r", "--reload",
-                      help="Regenerate the XML log file to get the latest commits", action="store_true")
-    parser.add_option("-d", "--debug",
-                      help="Enable Java debugging", action="store_true")
-    parser.add_option("-c", "--config",
-                      help="Just run code_swarm on the given config file")
-    parser.add_option("-p", "--profile", action="store_true",
-                      help="Invokes java with profiling options, writing output to swarm.proof")
+    parser.add_option("-r"
+                     ,"--reload"
+                     ,help="Regenerate the XML log file to get the latest \
+                            commits"
+                     ,action="store_true")
+    parser.add_option("-d"
+                     ,"--debug"
+                     ,help="Enable Java debugging"
+                     ,action="store_true")
+    parser.add_option("-c"
+                     ,"--config"
+                     ,help="Just run code_swarm on the given config file")
+    parser.add_option("-p"
+                     ,"--profile"
+                     ,action="store_true"
+                     ,help="Invokes java with profiling options, writing \
+                            output to swarm.proof")
     return parser.parse_args()
 
 
@@ -68,16 +78,19 @@ def main():
         retn = os.system("ant -buildfile " + build)
         print >>sys.stderr, ""
         if not retn == 0:
-            print >>sys.stderr, "ERROR, please verify that Apache ant is installed"
+            print >>sys.stderr, "ERROR, please verify that Apache Ant is \
+                                 installed"
             sys.exit(2)
 
     invoke_code_swarm(code_swarm_jar, proj_cfg, options)
+
 
 def root_path():
     "Returns the path of the code_swarm source directory"
     path = os.path.dirname(__file__)
     path = os.path.dirname(path)
     return path
+
 
 def invoke_code_swarm(code_swarm_jar, proj_cfg, options):
     """Invokes the code_swarm_jar on the given config file"""
@@ -175,7 +188,8 @@ def do_git(dir):
     tmp = os.path.join(dir, "temp.log")
     xml = os.path.join(dir, "log.xml")
 
-    return do_cmds(['git log --name-status --pretty=format:"%s" > %s' % (fmt, tmp)
+    return do_cmds(['git log --name-status --pretty=format:"%s" > %s'
+                    % (fmt, tmp)
                    ,"convert_logs.py -g %s -o %s" % (tmp, xml)
                    ,"rm " + tmp])
 
