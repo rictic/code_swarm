@@ -19,8 +19,12 @@
 
 import os
 import sys
-
-
+import tempfile
+import md5
+from random import random
+from threading import Thread
+from shutil import copy
+        
 def parse_args():
     from optparse import OptionParser
 
@@ -42,6 +46,9 @@ def parse_args():
                      ,action="store_true"
                      ,help="Invokes java with profiling options, writing \
                             output to swarm.proof")
+    parser.add_option("-f"
+                      ,"--freebase"
+                      ,help="Visualize a given freebase domain")
     return parser.parse_args()
 
 
@@ -63,6 +70,8 @@ def main():
 
     if options.config:
         proj_cfg = os.path.abspath(options.config)
+    elif options.freebase:
+        proj_cfg = do_freebase(options.freebase)
     else:
         proj_cfg = autogenerate_files(options)
 
@@ -168,7 +177,6 @@ def autogenerate_files(options):
             
     proj_cfg = os.path.join(dir, "project.config")
     if not os.path.exists(proj_cfg):
-        from shutil import copy
         print >>sys.stderr, "Creating default config file at " + proj_cfg
         cp_tpl = os.path.join(root_path(), "convert_logs", "config.template")
         copy(cp_tpl, proj_cfg)
@@ -211,6 +219,20 @@ def do_hg(dir):
                    ,"sort_code_swarm_input.py < %s > %s" % (tmp, xml)
                    ,"rm " + tmp])
 
-
+def do_freebase(domain):
+    dir = os.path.abspath(tempfile.gettempdir())
+    xml = os.path.join(dir, md5.new(str(random())).hexdigest() + ".xml")
+    cfg = os.path.join(dir, md5.new(str(random())).hexdigest() + ".config")
+    try: os.remove(xml)
+    except: pass
+    os.mkfifo(xml)
+    os.system("fetch_freebase_edits %s > %s &" % (domain,xml))
+    copy(os.path.join(root_path(),"convert_logs","freebase_config.template"),cfg)
+    cfgf = open(cfg,"a")
+    cfgf.write("InputFile=%s\n" % xml)
+    cfgf.close()
+    return cfg
+    
+    
 if __name__ == "__main__":
     main()

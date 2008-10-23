@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+from freebase.api import HTTPMetawebSession, MetawebError
+import iso8601
+from sys import argv, stderr
+import logging
+from logging import debug, warning, error
+null = None
+
+logging.basicConfig(level=logging.ERROR,
+                    format='%(levelname)s: %(message)s')
+
+domain = "/user/skud/tall_ships"
+if len(argv) == 2:
+    domain = argv[1]
+
+mss = HTTPMetawebSession('www.freebase.com')
+
+
+user_cache = {}
+def user_from_guid(guid):
+    global user_cache, mss
+    if guid not in user_cache:
+        user = mss.mqlread({
+          "a:id" : "/guid/%s" % guid,
+          "id" : None
+        })
+        user_cache[guid] = user["id"][6:]
+    return user_cache[guid]
+
+sub_query =     {
+    "type" : [
+      {
+        "!/type/domain/types" : domain,
+        "id" : null
+      }
+    ],
+    "guid": null
+  }
+
+query = {
+  "creator" : null,
+  "sort" : "timestamp",
+  "target" : sub_query,
+  "timestamp" : null,
+  "type" : "/type/link"
+}
+
+
+print '<?xml version="1.0"?>'
+print '<file_events>'
+
+for edit in mss.mqlreaditer(query):
+    name = ":".join(map(lambda t: t["id"], edit["target"]["type"]) + [edit["target"]["guid"]])
+    print '<event filename="%s" date="%d" author="%s" />' % (name, int(iso8601.parse_date(edit["timestamp"]).strftime("%s")) * 1000, edit["creator"][6:])
+
+print '</file_events>'
