@@ -9,7 +9,7 @@ public class GravatarFetcher extends AvatarFetcher {
   public String fetchUserImage(String username) {
     String hash = md5Hex(username);
     try {
-      return getImage(hash, new URL("http://www.gravatar.com/avatar/" + hash + "?d=identicon&s=40"));
+      return getImage(hash, new URL("http://www.gravatar.com/avatar/" + hash + "?d=identicon&s=" + size));
     } catch (MalformedURLException e) {
       e.printStackTrace(); //should be impossible...
       return null;

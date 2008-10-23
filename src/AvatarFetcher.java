@@ -11,8 +11,10 @@ import java.security.NoSuchAlgorithmException;
 
 public class AvatarFetcher {
   protected CodeSwarmConfig cfg;
+  public int size; 
   public AvatarFetcher(CodeSwarmConfig cfg) {
     this.cfg = cfg;
+    size = cfg.getPositiveIntProperty("AvatarSize", 40);
   }
   
   public String fetchUserImage(String username) {

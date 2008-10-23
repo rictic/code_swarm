@@ -66,7 +66,11 @@ public class FreebaseAvatarFetcher extends AvatarFetcher{
     try {
       String imageID = getUserImageID(username);
       if (imageID == null) return null;
-      return getImage(key, new URL("http://www.freebase.com/api/trans/image_thumb/" +imageID+ "?maxheight=40&mode=fillcrop&maxwidth=40"));
+      return getImage(key, new URL("http://www.freebase.com/api/trans/image_thumb/" 
+                                   + imageID 
+                                   + "?maxheight=" + size 
+                                   + "&maxwidth=" + size
+                                   + "&mode=fillcrop"));
     } catch (MalformedURLException e) {
       e.printStackTrace(); //should be impossible...
       return null;
