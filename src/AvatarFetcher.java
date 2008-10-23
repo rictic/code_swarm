@@ -16,8 +16,7 @@ public class AvatarFetcher {
   }
   
   public String fetchUserImage(String username) {
-    //Override fetchUserImage in your Avatar Fetcher
-    return null;
+    throw new RuntimeException("Override fetchUserImage in your Avatar Fetcher");
   }
   
   protected static String getFilename(String key){

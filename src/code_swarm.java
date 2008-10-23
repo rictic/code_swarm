@@ -243,7 +243,7 @@ public class code_swarm extends PApplet {
 
     isInputSorted = cfg.getBooleanProperty(CodeSwarmConfig.IS_INPUT_SORTED_KEY, false);
     
-    avatarFetcher = getAvatarFetcher(cfg.getStringProperty("AvatarFetcher","AvatarFetcher"));
+    avatarFetcher = getAvatarFetcher(cfg.getStringProperty("AvatarFetcher","NoAvatar"));
 
     /**
      * This section loads config files and calls the setup method for all physics engines.
