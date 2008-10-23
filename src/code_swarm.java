@@ -30,6 +30,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -73,8 +75,8 @@ public class code_swarm extends PApplet {
   // Liveness cache
   static List<PersonNode> livingPeople = new ArrayList<PersonNode>();
   static List<Edge> livingEdges = new ArrayList<Edge>();
-  static List<FileNode> livingNodes = new ArrayList<FileNode>();
-
+  static List<FileNode> livingNodes = new ArrayList<FileNode>(); 
+  
   LinkedList<ColorBins> history;
   boolean finishedLoading = false;
   
@@ -166,7 +168,8 @@ public class code_swarm extends PApplet {
    *      drawLine: Pass coords and color
    */
   public static Utils utils = null;
-
+  public AvatarFetcher avatarFetcher;
+  
   /**
    * Initialization
    */
@@ -240,6 +243,8 @@ public class code_swarm extends PApplet {
 
     isInputSorted = cfg.getBooleanProperty(CodeSwarmConfig.IS_INPUT_SORTED_KEY, false);
     
+    avatarFetcher = getAvatarFetcher(cfg.getStringProperty("AvatarFetcher","AvatarFetcher"));
+
     /**
      * This section loads config files and calls the setup method for all physics engines.
      */
@@ -292,6 +297,8 @@ public class code_swarm extends PApplet {
       System.exit(1);
     }
 
+    
+    
     smooth();
     frameRate(FRAME_RATE);
 
@@ -302,7 +309,7 @@ public class code_swarm extends PApplet {
     history       = new LinkedList<ColorBins>(); 
     if (isInputSorted)
       //If the input is sorted, we only need to store the next few events
-      eventsQueue = new ArrayBlockingQueue<FileEvent>(5000);
+      eventsQueue = new ArrayBlockingQueue<FileEvent>(50000);
     else
       //Otherwise we need to store them all at once in a data structure that will sort them
       eventsQueue = new PriorityBlockingQueue<FileEvent>();
@@ -337,6 +344,16 @@ public class code_swarm extends PApplet {
     sprite = loadImage(SPRITE_FILE);
     // Add translucency (using itself in this case)
     sprite.mask(sprite);
+  }
+
+  @SuppressWarnings("unchecked")
+  private AvatarFetcher getAvatarFetcher(String avatarFetcherName) {
+    try {
+      Class<AvatarFetcher> c = (Class<AvatarFetcher>)Class.forName(avatarFetcherName);
+      return c.getConstructor(CodeSwarmConfig.class).newInstance(cfg);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -715,7 +732,6 @@ public class code_swarm extends PApplet {
         try {
           currentEvent = eventsQueue.take();
         } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
           System.out.println("Interrupted while fetching current event from eventsQueue");
           e.printStackTrace();
           continue;
@@ -1018,6 +1034,7 @@ public class code_swarm extends PApplet {
     private final String fullFilename;
     private BlockingQueue<FileEvent> queue;
     boolean isXMLSorted;
+    private Set<String> peopleSeen = new TreeSet<String>();
     
     private XMLQueueLoader(String fullFilename, BlockingQueue<FileEvent> queue, boolean isXMLSorted) {
       this.fullFilename = fullFilename;
@@ -1058,10 +1075,16 @@ public class code_swarm extends PApplet {
             // int eventLinesRemoved = atts.getValue( "linesremoved" );
             
             FileEvent evt = new FileEvent(eventDate, eventAuthor, "", eventFilename);
+            
+            //We want to pre-fetch images to minimize lag as images are loaded
+            if (!peopleSeen.contains(eventAuthor)){
+              avatarFetcher.fetchUserImage(eventAuthor);
+              peopleSeen.add(eventAuthor);
+            }
+            
             try {
               queue.put(evt);
             } catch (InterruptedException e) {
-              // TODO Auto-generated catch block
               System.out.println("Interrupted while trying to put into eventsQueue");
               e.printStackTrace();
               System.exit(1);
@@ -1075,7 +1098,6 @@ public class code_swarm extends PApplet {
       try {
         reader.parse(fullFilename);
       } catch (Exception e) {
-        // TODO Auto-generated catch block
         System.out.println("Error parsing xml:");
         e.printStackTrace();
         System.exit(1);
@@ -1473,7 +1495,7 @@ public class code_swarm extends PApplet {
       mLastPosition.set(new Vector2f(mPosition)); 
       mLastPosition.add(mPhysicsEngine.startVelocity(this));
       mFriction = 0.99f;
-      String iconFile = GravatarFetcher.fetchUserImage(name);
+      String iconFile = avatarFetcher.fetchUserImage(name);
       if (iconFile != null) icon = loadImage(iconFile);
     }
 

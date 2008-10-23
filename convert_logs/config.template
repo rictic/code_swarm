@@ -101,3 +101,6 @@ IsInputSorted=true
 
 # OpenGL is experimental. Use at your own risk.
 UseOpenGL=true
+
+# Leave blank to go without avatars
+AvatarFetcher=GravatarFetcher
