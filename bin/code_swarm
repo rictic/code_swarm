@@ -61,7 +61,7 @@ def main():
         directory.
     
     2) Converting the log formats from each kind of repository to the event
-        xml format that convert_logs expects.
+        xml format that code_swarm expects.
     
     3) Invoking code_swarm    
     """
@@ -178,7 +178,7 @@ def autogenerate_files(options):
     proj_cfg = os.path.join(dir, "project.config")
     if not os.path.exists(proj_cfg):
         print >>sys.stderr, "Creating default config file at " + proj_cfg
-        cp_tpl = os.path.join(root_path(), "convert_logs", "config.template")
+        cp_tpl = os.path.join(root_path(), "bin", "config.template")
         copy(cp_tpl, proj_cfg)
     
     return proj_cfg
@@ -227,7 +227,7 @@ def do_freebase(domain):
     except: pass
     os.mkfifo(xml)
     os.system("fetch_freebase_edits %s > %s &" % (domain,xml))
-    copy(os.path.join(root_path(),"convert_logs","freebase_config.template"),cfg)
+    copy(os.path.join(root_path(),"bin","freebase_config.template"),cfg)
     cfgf = open(cfg,"a")
     cfgf.write("InputFile=%s\n" % xml)
     cfgf.close()

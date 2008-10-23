@@ -88,7 +88,7 @@ For more information, see http://code.google.com/p/codeswarm/source/checkout
 
 With Java and ant installed, and the `code_swarm` source downloaded, running `code_swarm` on any given git, svn, or hg based project is quite easy.
 
-* Add `code_swarm/convert_logs` to your PATH.  A line like `export PATH=$PATH:/path/to/code_swarm/convert_logs` in your `~/.profile` or `~/.bash_profile` should do it
+* Add `code_swarm/bin` to your PATH.  A line like `export PATH=$PATH:/path/to/code_swarm/bin` in your `~/.profile` or `~/.bash_profile` should do it
 * `$ cd project/to/visualize`
 * `$ code_swarm`
 
@@ -104,7 +104,7 @@ While code_swarm was developed to visualize source code repositories, its input 
 
 code_swarm can be invoked by pointing it at a project config file, which contains a number of options for customizing the visualization.  The config file must point at a repository xml file, which contains a set of events, which each describe a file, edited by a person, at a specific time.  The time is specified as the number of milliseconds since January 1st, 1970.
 
-Example config files can be seen in `data/sample.config` and `convert_logs/config.template`
+Example config files can be seen in `data/sample.config` and `bin/config.template`
 
 To invoke `code_swarm` with a given config file, use `./run.sh path/to/project.config`
 
