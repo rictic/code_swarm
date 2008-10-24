@@ -19,14 +19,14 @@
 
 import java.awt.Color;
 import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Enumeration;
 
 /**
  * @author Michael Ogawa
  */
-public class CodeSwarmConfig
-{
+public class CodeSwarmConfig {
   /** Indexes into the Properties Object */
   /** The width of window */
   public static final String WIDTH_KEY = "Width";
@@ -64,12 +64,6 @@ public class CodeSwarmConfig
   public static final String FILE_DECREMENT_KEY = "FileDecrement";
   /** How long to keep person alive */
   public static final String PERSON_DECREMENT_KEY = "PersonDecrement";
-  /** Node Speed */
-  public static final String NODE_SPEED_KEY = "NodeSpeed";
-  /** File Speed */
-  public static final String FILE_SPEED_KEY = "FileSpeed";
-  /** Person Speed */
-  public static final String PERSON_SPEED_KEY = "PersonSpeed";
   /** File Mass */
   public static final String FILE_MASS_KEY = "FileMass";
   /** Person Mass */
@@ -112,48 +106,69 @@ public class CodeSwarmConfig
   /** Default regex and rgb values used to match anything not caught in the config file */
   public static String DEFAULT_COLOR_ASSIGN = "\"Misc\",\".*\",128,128,128,128,128,128";
 
-  private Properties p = null;
-
-  public String filename;
+  private List<Properties> propStack;
   
+  
+
   // Cache variables
   private Color _background = null;
-  /**
-   * Constructor
-   * @param configFileName passed from command line
-   * @throws IOException
-   */  
-  public CodeSwarmConfig(String configFileName) throws IOException
-  {
-	filename = configFileName;
-    p = new Properties( this.createDefaults() );
-    p.load( new FileInputStream(configFileName) );
-  }
-        
-  private Properties createDefaults()
-  {
-    Properties def = new Properties();
-    def.setProperty( INPUT_FILE_KEY, "data/sample-repevents.xml");
-    def.setProperty( BACKGROUND_KEY, "0,0,0" );
-    def.setProperty( TAKE_SNAPSHOTS_KEY, "false");
-    def.setProperty( SNAPSHOT_LOCATION_KEY, "frames/snap-#####.png" );
-    def.setProperty( SPRITE_FILE_KEY, "particle.png" );
-    def.setProperty( COLOR_ASSIGN_KEY + "1" , DEFAULT_COLOR_ASSIGN );
 
-    return def;
+  public CodeSwarmConfig(String configFileName) throws IOException {
+    initPropStack();
+    addPropertiesLayer(configFileName);
   }
   
+  public CodeSwarmConfig(Iterable<String> configFileNames) throws IOException {
+    initPropStack();
+    for (String filename: configFileNames)
+      if (new File(filename).exists())
+        addPropertiesLayer(filename);
+  }
+
+  public void addPropertiesLayer(Properties props) {
+    propStack.add(0,props);
+  }
+  public void addPropertiesLayer(String filename) throws IOException {
+    Properties props = new Properties();
+    props.load(new FileInputStream(filename));
+    addPropertiesLayer(props);
+  }
+  
+  protected void initPropStack() {
+    propStack = new LinkedList<Properties>();
+    propStack.add(createDefaults());
+  }
+  
+  private Properties createDefaults() {
+    Properties def = new Properties();
+    def.setProperty( COLOR_ASSIGN_KEY + "1" , DEFAULT_COLOR_ASSIGN );
+    return def;
+  }
+
+
+  /**
+   * 
+   * @param key
+   * @return Returns the first key found in the stack of config files.
+   */
+  public String getStringProperty( String key ) {
+    for(Properties props: propStack)
+      if (props.containsKey(key))
+        return props.getProperty(key);
+    return null;
+  }
+
   /**
    * 
    * @return Color
    */
-  public Color getBackground()
-  {
+  public Color getBackground() {
     if ( _background == null )
-      _background = stringToColor( p.getProperty(BACKGROUND_KEY) );
+      _background = stringToColor( getStringProperty(BACKGROUND_KEY) );
     return _background;
   }
 
+  
   /**
    * Specify the path to the Xml-input file containing the repository
    * entries.<br />
@@ -163,166 +178,84 @@ public class CodeSwarmConfig
    * @param filePath the path to the Xml-input file.
    */
   public void setInputFile(String filePath){
-    p.setProperty(INPUT_FILE_KEY, filePath);
-  }
-  /**
-   * 
-   * @param key
-   * @param defValue
-   * @return defValue if not found, value stored otherwise (true or false)
-   */
-  public boolean getBooleanProperty(String key, boolean defValue)
-  {
-    return Boolean.valueOf(p.getProperty(key, String.valueOf(defValue))).booleanValue();
+    propStack.get(0).setProperty(INPUT_FILE_KEY, filePath);
   }
 
-  /**
-   * 
-   * @param key
-   * @return String containing value for property or null if not found.
-   */
-  public String getStringProperty( String key )
-  {
-    return p.getProperty( key );
+  
+  public boolean getBooleanProperty(String key) {
+    return Boolean.valueOf(getStringProperty(key));
   }
-
-  /**
-   * 
-   * @param key
-   * @param defValue
-   * @return defValue if not found, Value of property if found.
-   */
-  public String getStringProperty(String key, String defValue)
-  {
-    return p.getProperty(key, defValue);
-  }
-
+  
   /**
    * 
    * @param key
    * @return value of property if found, 0 if not found.
    */
-  public int getIntProperty( String key )
-  {
-    return Integer.parseInt( p.getProperty(key) );
+  public int getIntProperty( String key ) {
+    return Integer.parseInt( getStringProperty(key) );
   }
-  
-  /**
-   * 
-   * @param key
-   * @param defValue
-   * @return defValue if not found, Value of property if found.
-   */
-  public int getIntProperty( String key, int defValue )
-  {
-    return Integer.parseInt( p.getProperty(key, String.valueOf(defValue)) );
-  }
-  
-  /**
-   * 
-   * @param key
-   * @param defValue
-   * @return defValue if not found or found value isn't positive, Value of property if found.
-   */
-  public int getPositiveIntProperty( String key, int defValue)
-  {
-	if (p.containsKey(key)){
-	  int value = getIntProperty(key);
-	  if (value > 0)
-	    return value;
-	}
 
-	return defValue;
+  /**
+   * 
+   * @param key
+   * @param defValue
+   * @return value of property if found.
+   */
+  public int getPositiveIntProperty(String key) {
+    int value = getIntProperty(key);
+    if (value < 0)
+      throw new RuntimeException(key + " must be >0, found " + value);
+    return value;
   }
-  
+
   /**
    * 
    * @param key
    * @param defValue
    * @return defValue if not found or found value isn't negative, Value of property if found.
    */
-  public int getNegativeIntProperty( String key, int defValue)
-  {
-	if (p.containsKey(key)){
-	  int value = getIntProperty(key);
-	  if (value >= 0)
-	    return value;
-	}
+  public int getNegativeIntProperty( String key) {
+    int value = getIntProperty(key);
+    if (value > 0)
+      throw new RuntimeException(key + " must be >0, found " + value);
+    return value;
+  }
 
-	return defValue;
-  }
-  
-  
-  
+
+
   /**
    * 
    * @param key
    * @return value of property if found, 0 if not found.
    */
-  public long getLongProperty( String key )
-  {
-    return Long.parseLong( p.getProperty(key) );
+  public long getLongProperty( String key ) {
+    return Long.parseLong( getStringProperty(key) );
   }
-  
-  /**
-   * 
-   * @param key
-   * @param defValue
-   * @return defValue if not found, Value of property if found.
-   */
-  public long getLongProperty( String key, long defValue )
-  {
-    return Long.parseLong( p.getProperty(key, String.valueOf(defValue)) );
-  }
-  
+
   /**
    * 
    * @param key
    * @return value of property if found, 0 if not found.
    */
-  public float getFloatProperty( String key )
-  {
-    return Float.parseFloat( p.getProperty(key) );
+  public float getFloatProperty( String key ) {
+    return Float.parseFloat( getStringProperty(key) );
   }
-  
-  /**
-   * 
-   * @param key
-   * @param defValue
-   * @return defValue if not found, Value of property if found.
-   */
-  public float getFloatProperty( String key, float defValue )
-  {
-    return Float.parseFloat( p.getProperty(key, String.valueOf(defValue)) );
-  }
-  
+
   /**
    * 
    * @param index
    * @return String containing the regex and rgb values used to colorcode nodes, null if not found
    */
-  public String getColorAssignProperty( Integer index )
-  {
-    return p.getProperty( COLOR_ASSIGN_KEY + index.toString() );
+  public String getColorAssignProperty( Integer index ) {
+    return getStringProperty( COLOR_ASSIGN_KEY + index.toString() );
   }
 
-  /**
-   * 
-   * @param key
-   * @param defValue
-   * @return defValue if not found, float value of property if found.
-   */
-  public Float getFloatProperty(String key, double defValue) {
-    return Float.parseFloat( p.getProperty(key, String.valueOf(defValue)) );
-  }
-  
   /**
    * 
    * @param str
    * @return Color object constructed from values in str
    */
-  public static Color stringToColor( String str )
-  {
+  protected static Color stringToColor( String str ){
     // assume format is "R,G,B"
     String [] tokens = str.split( "," );
     int [] values = new int[3];
@@ -333,34 +266,7 @@ public class CodeSwarmConfig
     return new Color( values[0], values[1], values[2] );
   }
 
-  /**
-   * 
-   * @param args
-   */
-  public static void main(String[] args)
-  {
-    if (args.length > 0)
-    {
-      CodeSwarmConfig config = null;
-      try
-      {
-        config = new CodeSwarmConfig(args[0]);
-        Enumeration<?> en = config.p.propertyNames();
-        while ( en.hasMoreElements() )
-        {
-          String key = (String)en.nextElement();
-          String value = config.p.getProperty( key );
-          System.out.println( key + "=" + value );
-        }
-      }
-      catch (IOException e)
-      {
-        System.err.println("Failed due to exception: " + e.getMessage());
-      }
-    }
-    else
-    {
-      System.err.println("Requires config file.");
-    }
+  public double getDoubleProperty(String key) {
+    return Double.parseDouble(getStringProperty(key));
   }
 }

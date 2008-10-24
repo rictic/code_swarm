@@ -14,7 +14,7 @@ public class AvatarFetcher {
   public int size; 
   public AvatarFetcher(CodeSwarmConfig cfg) {
     this.cfg = cfg;
-    size = cfg.getPositiveIntProperty("AvatarSize", 40);
+    size = cfg.getPositiveIntProperty("AvatarSize");
   }
   
   public String fetchUserImage(String username) {

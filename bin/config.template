@@ -1,22 +1,7 @@
 # This is a sample configuration file for code_swarm
 
-# Frame width
-Width=1024
-
-# Frame height
-Height=640
-
 # Input file
 InputFile=log.xml
-
-# Particle sprite file
-ParticleSpriteFile=src/particle.png
-
-# Optional Method instead of MillisecondsPerFrame
-FramesPerDay=6
-
-# Background in R,G,B
-Background=0,0,0
 
 # Color assignment rules
 # Keep in order, do not skip numbers. Numbers start
@@ -38,60 +23,7 @@ TakeSnapshots=false
 # Where to save each frame
 SnapshotLocation=code_swarm_frames/#####.png
 
-# Draw names (combinatory) :
-# Draw sharp names?
-DrawNamesSharp=true
-# And draw a glow around names? (Runs slower)
-DrawNamesHalos=false
 
-# Draw files (combinatory) :
-# Draw sharp files
-DrawFilesSharp=true
-# Draw fuzzy files
-DrawFilesFuzzy=true
-# Draw jelly files
-DrawFilesJelly=false
-
-# Show the Legend at start
-ShowLegend=true
-
-# Show the History at start
-ShowHistory=true
-
-# Show the Date at start
-ShowDate=true
-
-# Show edges between authors and files, mostly for debug purpose
-ShowEdges=false
-
-# Turn on Debug counts.
-ShowDebug=false
-
-# Natural distance of files to people
-EdgeLength=25
-
-# Life of an Edge
-EdgeLife=150
-
-# Life of a File
-FileLife=150
-
-# Life of a Person
-PersonLife=255
-
-
-# Highlight percent.
-# This is the amount of time that the person or
-# file will be highlighted.
-HighlightPct=5
-
-## Physics engine selection and configuration
-# Directory physics engine config files reside in.
-PhysicsEngineConfigDir=physics_engine
-
-## Physical engine selection and configuration
-# Force calculation algorithms (PhysicsEngineLegacy, PhysicsEngineSimple...) :
-PhysicsEngineSelection=PhysicsEngineOrderly
 
 #Is the input xml sorted by date?  It's faster and uses much less memory if it is
 IsInputSorted=true
@@ -99,8 +31,5 @@ IsInputSorted=true
 #  - Please file a bug if one doesn't
 
 
-# OpenGL is experimental. Use at your own risk.
-UseOpenGL=true
-
-# Leave blank to go without avatars
-AvatarFetcher=GravatarFetcher
+# Uncomment to not use avatars
+#AvatarFetcher=NoAvatar

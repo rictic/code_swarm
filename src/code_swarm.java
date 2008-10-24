@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -92,22 +93,23 @@ public class code_swarm extends PApplet {
   PFont boldFont;
   PImage sprite;
 
-  // Graphics state variables
-  boolean looping = true;
-  boolean showHistogram = true;
-  boolean showDate = true;
-  boolean showLegend = false;
-  boolean showPopular = false;
-  boolean showEdges = false;
-  boolean showEngine = false;
-  boolean showHelp = false;
-  boolean takeSnapshots = false;
-  boolean showDebug = false;
-  boolean drawNamesSharp = false;
-  boolean drawNamesHalos = false;
-  boolean drawFilesSharp = false;
-  boolean drawFilesFuzzy = false;
-  boolean drawFilesJelly = false;
+  boolean paused = false;
+  
+  // Graphics state variables  
+  boolean showHistogram;
+  boolean showDate;
+  boolean showLegend;
+  boolean showPopular;
+  boolean showEdges;
+  boolean showEngine;
+  boolean showHelp;
+  boolean takeSnapshots;
+  boolean showDebug;
+  boolean drawNamesSharp;
+  boolean drawNamesHalos;
+  boolean drawFilesSharp;
+  boolean drawFilesFuzzy;
+  boolean drawFilesJelly;
   
   //used to ensure that input is sorted when we're told it is
   long maximumDateSeenSoFar = 0;
@@ -118,23 +120,19 @@ public class code_swarm extends PApplet {
   int currentColor;
 
   // Edge Length
-  protected static int EDGE_LEN = 25;
+  protected static int EDGE_LEN;
   // Drawable object life decrement
-  private int EDGE_LIFE_INIT = 255;
-  private int FILE_LIFE_INIT = 255;
-  private int PERSON_LIFE_INIT = 255;
-  private int EDGE_LIFE_DECREMENT = -1;
-  private int FILE_LIFE_DECREMENT = -1;
-  private int PERSON_LIFE_DECREMENT = -1;
+  private int EDGE_LIFE_INIT;
+  private int FILE_LIFE_INIT;
+  private int PERSON_LIFE_INIT;
+  private int EDGE_LIFE_DECREMENT;
+  private int FILE_LIFE_DECREMENT;
+  private int PERSON_LIFE_DECREMENT;
 
-  private float DEFAULT_NODE_SPEED = 7.0f;
-  private float DEFAULT_FILE_SPEED = 7.0f;
-  private float DEFAULT_PERSON_SPEED = 2.0f;
+  private float FILE_MASS;
+  private float PERSON_MASS;
 
-  private float FILE_MASS = 1.0f;
-  private float PERSON_MASS = 100.0f;
-
-  private int HIGHLIGHT_PCT = 5;
+  private int HIGHLIGHT_PCT;
   
   // Physics engine configuration
   String          physicsEngineConfigDir;
@@ -152,7 +150,10 @@ public class code_swarm extends PApplet {
   // Formats the date string nicely
   DateFormat formatter = DateFormat.getDateInstance();
 
+  //kinda a hack that these two are static
   protected static CodeSwarmConfig cfg;
+  protected static String userConfigFilename = null;
+  
   private long lastDrawDuration = 0;
   private String loadingMessage = "Reading input file";
   protected static int width=0;
@@ -169,6 +170,8 @@ public class code_swarm extends PApplet {
    */
   public static Utils utils = null;
   public AvatarFetcher avatarFetcher;
+
+  
   
   /**
    * Initialization
@@ -177,79 +180,61 @@ public class code_swarm extends PApplet {
 
     utils = new Utils();
 
-    width=cfg.getPositiveIntProperty(CodeSwarmConfig.WIDTH_KEY,640);
-    height=cfg.getPositiveIntProperty(CodeSwarmConfig.HEIGHT_KEY,480);
+    width=cfg.getPositiveIntProperty(CodeSwarmConfig.WIDTH_KEY);
+    height=cfg.getPositiveIntProperty(CodeSwarmConfig.HEIGHT_KEY);
 
-    if (cfg.getBooleanProperty(CodeSwarmConfig.USE_OPEN_GL, false)) {
+    if (cfg.getBooleanProperty(CodeSwarmConfig.USE_OPEN_GL)) {
       size(width, height, OPENGL);
     } else {
       size(width, height);
     }
     
-    int maxBackgroundThreads = cfg.getPositiveIntProperty(CodeSwarmConfig.MAX_THREADS_KEY, 8);
+    int maxBackgroundThreads = cfg.getPositiveIntProperty(CodeSwarmConfig.MAX_THREADS_KEY);
     backgroundExecutor = new ThreadPoolExecutor(1, maxBackgroundThreads, Long.MAX_VALUE, TimeUnit.NANOSECONDS, new ArrayBlockingQueue<Runnable>(4 * maxBackgroundThreads), new ThreadPoolExecutor.CallerRunsPolicy());
     
-    showLegend     = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND, false);
-    showHistogram  = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY, false); 
-    showDate       = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DATE, false);
-    showEdges      = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_EDGES, false);
-    showDebug      = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DEBUG, false);
-    takeSnapshots  = cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY,false);
-    drawNamesSharp = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_SHARP, true);
-    drawNamesHalos = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS, false); 
-    drawFilesSharp = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_SHARP, false);
-    drawFilesFuzzy = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_FUZZY, true);
-    drawFilesJelly = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY, false);
+    showLegend     = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND);
+    showHistogram  = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY); 
+    showDate       = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DATE);
+    showEdges      = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_EDGES);
+    showDebug      = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DEBUG);
+    takeSnapshots  = cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY);
+    drawNamesSharp = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_SHARP);
+    drawNamesHalos = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS); 
+    drawFilesSharp = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_SHARP);
+    drawFilesFuzzy = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_FUZZY);
+    drawFilesJelly = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY);
 
     background = cfg.getBackground().getRGB();
 
     // Ensure we have sane values.
-    EDGE_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.EDGE_LIFE_KEY,255);
-    FILE_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.FILE_LIFE_KEY,255);
-    PERSON_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.PERSON_LIFE_KEY,255);
+    EDGE_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.EDGE_LIFE_KEY);
+    FILE_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.FILE_LIFE_KEY);
+    PERSON_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.PERSON_LIFE_KEY);
     
-    UPDATE_DELTA = cfg.getIntProperty("testsets"/*CodeSwarmConfig.MSEC_PER_FRAME_KEY*/, -1);
-
     
     
     /* enforce decrements < 0 */
-    EDGE_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.EDGE_DECREMENT_KEY,-2);
-    FILE_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.FILE_DECREMENT_KEY,-2);
-    PERSON_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.PERSON_DECREMENT_KEY,-1);
+    EDGE_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.EDGE_DECREMENT_KEY);
+    FILE_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.FILE_DECREMENT_KEY);
+    PERSON_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.PERSON_DECREMENT_KEY);
 
-    DEFAULT_NODE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.NODE_SPEED_KEY, 7.0f);
-    DEFAULT_FILE_SPEED = cfg.getFloatProperty(CodeSwarmConfig.FILE_SPEED_KEY, DEFAULT_NODE_SPEED);
-    DEFAULT_PERSON_SPEED = cfg.getFloatProperty(CodeSwarmConfig.PERSON_SPEED_KEY, DEFAULT_NODE_SPEED);
+    FILE_MASS = cfg.getFloatProperty(CodeSwarmConfig.FILE_MASS_KEY);
+    PERSON_MASS = cfg.getFloatProperty(CodeSwarmConfig.PERSON_MASS_KEY);
 
-    FILE_MASS = cfg.getFloatProperty(CodeSwarmConfig.FILE_MASS_KEY,1.0f);
-    PERSON_MASS = cfg.getFloatProperty(CodeSwarmConfig.PERSON_MASS_KEY,1.0f);
+    HIGHLIGHT_PCT = cfg.getIntProperty(CodeSwarmConfig.HIGHLIGHT_PCT_KEY);
 
-    HIGHLIGHT_PCT = cfg.getIntProperty(CodeSwarmConfig.HIGHLIGHT_PCT_KEY,5);
-    if (HIGHLIGHT_PCT < 0 || HIGHLIGHT_PCT > 100) {
-      HIGHLIGHT_PCT = 5;
-    }
+    double framesperday = cfg.getDoubleProperty(CodeSwarmConfig.FRAMES_PER_DAY_KEY);
+    UPDATE_DELTA = (long) (86400000 / framesperday);
 
-    UPDATE_DELTA = cfg.getIntProperty(CodeSwarmConfig.MSEC_PER_FRAME_KEY, -1);
-    if (UPDATE_DELTA == -1) {
-      int framesperday = cfg.getIntProperty(CodeSwarmConfig.FRAMES_PER_DAY_KEY, 4);
-      if (framesperday > 0) {
-        UPDATE_DELTA = (long) (86400000 / framesperday);
-      }
-    }
-    if (UPDATE_DELTA <= 0) {
-      // Default to 4 frames per day.
-      UPDATE_DELTA = 21600000;
-    }
-
-    isInputSorted = cfg.getBooleanProperty(CodeSwarmConfig.IS_INPUT_SORTED_KEY, false);
+    isInputSorted = cfg.getBooleanProperty(CodeSwarmConfig.IS_INPUT_SORTED_KEY);
     
-    avatarFetcher = getAvatarFetcher(cfg.getStringProperty("AvatarFetcher","NoAvatar"));
+    avatarFetcher = getAvatarFetcher(cfg.getStringProperty("AvatarFetcher"));
 
     /**
      * This section loads config files and calls the setup method for all physics engines.
      */
 
-    physicsEngineConfigDir = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_CONF_DIR, "physics_engine");
+    physicsEngineConfigDir = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_CONF_DIR);
     File f = new File(physicsEngineConfigDir);
     String[] configFiles = null;
     if ( f.exists()  &&  f.isDirectory() ) {
@@ -260,40 +245,39 @@ public class code_swarm extends PApplet {
         String ConfigPath = physicsEngineConfigDir + System.getProperty("file.separator") + configFiles[i];
         CodeSwarmConfig physicsConfig = null;
         try {
+          
           physicsConfig = new CodeSwarmConfig(ConfigPath);
         } catch (IOException e) {
           e.printStackTrace();
           System.exit(1);
         }
-        String ClassName = physicsConfig.getStringProperty("name", "__DEFAULT__");
-        if ( ! ClassName.equals("__DEFAULT__")) {
+        String ClassName = physicsConfig.getStringProperty("name");
+        if (ClassName != null) {
           PhysicsEngine pe = getPhysicsEngine(ClassName);
           pe.setup(physicsConfig);
           peConfig pec = new peConfig(ClassName,pe);
           mPhysicsEngineChoices.add(pec);
         } else {
-          System.out.println("Skipping config file '" + ConfigPath + "'.  Must specify class name via the 'name' parameter.");
+          System.err.println("Skipping config file '" + ConfigPath + "'.  Must specify class name via the 'name' parameter.");
           System.exit(1);
         }
       }
     }
 
     if (mPhysicsEngineChoices.size() == 0) {
-      System.out.println("No physics engine config files found in '" + physicsEngineConfigDir + "'.");
+      System.err.println("No physics engine config files found in '" + physicsEngineConfigDir + "'.");
       System.exit(1);
     }
 
     // Physics engine configuration and instantiation
-    physicsEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_SELECTION, PHYSICS_ENGINE_DEFAULT );
+    physicsEngineSelection = cfg.getStringProperty( CodeSwarmConfig.PHYSICS_ENGINE_SELECTION);
 
-    for (peConfig p : mPhysicsEngineChoices) {
-      if (physicsEngineSelection.equals(p.name)) {
+    for (peConfig p : mPhysicsEngineChoices)
+      if (physicsEngineSelection.equals(p.name))
         mPhysicsEngine = p.pe;
-      }
-    }
 
     if (mPhysicsEngine == null) {
-      System.out.println("No physics engine matches your choice of '" + physicsEngineSelection + "'. Check '" + physicsEngineConfigDir + "' for options.");
+      System.err.println("No physics engine matches your choice of '" + physicsEngineSelection + "'. Check '" + physicsEngineConfigDir + "' for options.");
       System.exit(1);
     }
 
@@ -326,14 +310,14 @@ public class code_swarm extends PApplet {
     prevDate = eventsQueue.peek().date;
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
-    EDGE_LEN = cfg.getPositiveIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY, 25);
+    EDGE_LEN = cfg.getPositiveIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY);
     
     maxFramesSaved = (int) Math.pow(10, SCREENSHOT_FILE.replaceAll("[^#]","").length());
     
     // Create fonts
-    String fontName = cfg.getStringProperty(CodeSwarmConfig.FONT_KEY,"SansSerif");
-    Integer fontSize = cfg.getIntProperty(CodeSwarmConfig.FONT_SIZE, 10);
-    Integer fontSizeBold = cfg.getIntProperty(CodeSwarmConfig.FONT_SIZE_BOLD, 14);
+    String fontName = cfg.getStringProperty(CodeSwarmConfig.FONT_KEY);
+    Integer fontSize = cfg.getPositiveIntProperty(CodeSwarmConfig.FONT_SIZE);
+    Integer fontSizeBold = cfg.getPositiveIntProperty(CodeSwarmConfig.FONT_SIZE_BOLD);
     font = createFont(fontName, fontSize);
     boldFont = createFont(fontName + ".bold", fontSizeBold);
 
@@ -885,8 +869,8 @@ public class code_swarm extends PApplet {
    *  @param filename
    */
   public void loadRepEvents(String filename) {
-    if (cfg.filename != null) {
-      String parentPath = new File(cfg.filename).getParentFile().getAbsolutePath();
+    if (userConfigFilename  != null) {
+      String parentPath = new File(userConfigFilename).getParentFile().getAbsolutePath();
       File fileInConfigDir = new File(parentPath, filename); 
       if (fileInConfigDir.exists())
         filename = fileInConfigDir.getAbsolutePath();
@@ -1023,11 +1007,11 @@ public class code_swarm extends PApplet {
    *  Toggle pause
    */
   public void pauseButton() {
-    if (looping)
+    if (!paused)
       noLoop();
     else
       loop();
-    looping = !looping;
+    paused = !paused;
   }
 
   private class XMLQueueLoader implements Runnable {
@@ -1541,7 +1525,11 @@ public class code_swarm extends PApplet {
   static public void main(String args[]) {
     try {
       if (args.length > 0) {
-        start(new CodeSwarmConfig(args[0]));
+        userConfigFilename = args[0];
+        List<String> configFileStack = Arrays.asList(new String[]{"defaults/code_swarm.config", 
+                                                                  "defaults/user.config",
+                                                                  args[0]});
+        start(new CodeSwarmConfig(configFileStack));
       } else {
         System.err.println("Specify a config file.");
         System.exit(2);

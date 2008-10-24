@@ -1,0 +1,18 @@
+# Your personal preferences for code_swarm, applied to every visualization
+# you run, unless overridden by the individual visualization's config
+
+#DON'T EDIT THIS FILE IN PLACE, FIRST COPY IT TO defaults/user.config
+#CHANGES TO THIS FILE WON'T BE SEEN BY code_swarm, ONLY user.config
+
+#Some common options to customize:
+
+# It's much faster if we can use OpenGL, but it still doesn't work on some
+# platforms/configurations
+UseOpenGL=true
+
+# The size of the visualization window
+Width=1024
+Height=640
+
+
+#For more options, see defaults/code_swarm.config

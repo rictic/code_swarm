@@ -8,3 +8,4 @@ frames
 *.pyc
 *.proof
 image_cache
+defaults/user.config
