@@ -171,6 +171,8 @@ public class code_swarm extends PApplet {
   public static Utils utils = null;
   public AvatarFetcher avatarFetcher;
 
+  private int fontColor;
+
   
   
   /**
@@ -204,8 +206,9 @@ public class code_swarm extends PApplet {
     drawFilesFuzzy = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_FUZZY);
     drawFilesJelly = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY);
 
-    background = cfg.getBackground().getRGB();
-
+    background = cfg.getColorProperty(CodeSwarmConfig.BACKGROUND_KEY).getRGB();
+    fontColor = cfg.getColorProperty(CodeSwarmConfig.FONT_COLOR_KEY).getRGB();
+    
     // Ensure we have sane values.
     EDGE_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.EDGE_LIFE_KEY);
     FILE_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.FILE_LIFE_KEY);
@@ -391,6 +394,7 @@ public class code_swarm extends PApplet {
       node.draw();
     }
 
+    
     textFont(font);
 
     // Show the physics engine name
@@ -474,11 +478,11 @@ public class code_swarm extends PApplet {
    * Draw date in lower-right corner
    */
   public void drawDate() {
-    fill(255);
+    fill(fontColor, 255);
     String dateText = formatter.format(prevDate);
     textAlign(RIGHT, BASELINE);
     textSize(font.size);
-    text(dateText, width - 1, height - textDescent());
+    text(dateText, width - 3, height - (2 + textDescent()));
   }
 
   /**
@@ -509,30 +513,18 @@ public class code_swarm extends PApplet {
   }
 
   /**
-   * Show the Loading screen.
-   */
-
-  public void drawLoading() {
-    noStroke();
-    textFont(font, 20);
-    textAlign(LEFT, TOP);
-    fill(255, 200);
-    text(loadingMessage, 0, 0);
-  }
-
-  /**
    *  Show color codings
    */
   public void drawLegend() {
     noStroke();
+    fill(fontColor, 255);
     textFont(font);
     textAlign(LEFT, TOP);
-    fill(255, 200);
-    text("Legend:", 0, 0);
+    text("Legend:", 3, 3);
     for (int i = 0; i < colorAssigner.tests.size(); i++) {
       ColorTest t = colorAssigner.tests.get(i);
       fill(t.c1, 200);
-      text(t.label, font.size, (i + 1) * font.size);
+      text(t.label, font.size, 3 + ((i + 1) * (font.size + 2)));
     }
   }
 
@@ -540,7 +532,7 @@ public class code_swarm extends PApplet {
    *  Show physics engine name
    */
   public void drawEngine() {
-    fill(255);
+    fill(fontColor, 255);
     textAlign(RIGHT, BASELINE);
     textSize(10);
     text(physicsEngineSelection, width-1, height - (textDescent() * 5));
@@ -554,7 +546,7 @@ public class code_swarm extends PApplet {
     noStroke();
     textFont(font);
     textAlign(LEFT, TOP);
-    fill(255, 200);
+    fill(fontColor, 200);
     text("Help on keyboard commands:", 0, 10*line++);
     text("space bar : pause", 0, 10*line++);
     text("           a : show name halos", 0, 10*line++);
@@ -581,7 +573,7 @@ public class code_swarm extends PApplet {
     noStroke();
     textFont(font);
     textAlign(LEFT, TOP);
-    fill(255, 200);
+    fill(fontColor, 200);
     text("Nodes: " + nodes.size(), 0, 0);
     text("People: " + people.size(), 0, 10);
     text("Queue: " + eventsQueue.size(), 0, 20);
@@ -596,7 +588,7 @@ public class code_swarm extends PApplet {
     noStroke();
     textFont(font);
     textAlign(RIGHT, TOP);
-    fill(255, 200);
+    fill(fontColor, 200);
     text("Popular Nodes (touches):", width-120, 0);
     for (FileNode fn : nodes.values()) {
       if (fn.qualifies()) {
@@ -1354,6 +1346,7 @@ public class code_swarm extends PApplet {
          */
         if (showPopular) {
           textAlign( CENTER, CENTER );
+          fill(fontColor, 200);
           if (this.qualifies()) {
             text(touches, mPosition.x, mPosition.y - (8 + (int)Math.sqrt(touches)));
           }
@@ -1496,7 +1489,8 @@ public class code_swarm extends PApplet {
           textFont(boldFont);
         else
           textFont(font);
-
+        
+        fill(fontColor, life);
         text(name, mPosition.x, mPosition.y+10);
         if (icon != null){
           colorMode(RGB);

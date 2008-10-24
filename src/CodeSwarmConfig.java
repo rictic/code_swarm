@@ -44,7 +44,8 @@ public class CodeSwarmConfig {
   public static final String TAKE_SNAPSHOTS_KEY = "TakeSnapshots";
   /** R,G,B Determines the background color */
   public static final String BACKGROUND_KEY = "Background";
-  /** R,G,B Determines the background color */
+  /** R,G,B Determines the default font color */
+  public static final String FONT_COLOR_KEY = "FontColor";
   public static final String FONT_KEY = "Font";
   /** R,G,B Determines the background color */
   public static final String FONT_SIZE = "FontSize";
@@ -158,14 +159,8 @@ public class CodeSwarmConfig {
     return null;
   }
 
-  /**
-   * 
-   * @return Color
-   */
-  public Color getBackground() {
-    if ( _background == null )
-      _background = stringToColor( getStringProperty(BACKGROUND_KEY) );
-    return _background;
+  public Color getColorProperty(String key) {
+    return stringToColor( getStringProperty(key) );
   }
 
   
