@@ -1465,7 +1465,7 @@ public class code_swarm extends PApplet {
     PersonNode(String n) {
       super(PERSON_LIFE_INIT, PERSON_LIFE_DECREMENT); // -1
       name = n;
-      minBold = (PERSON_LIFE_INIT * (1 - (HIGHLIGHT_PCT)/100));
+      minBold = (int)(PERSON_LIFE_INIT * (1 - (HIGHLIGHT_PCT/100.0)));
       mass = PERSON_MASS; // bigger mass to person then to node, to stabilize them
       touches = 1;
       mPosition.set(mPhysicsEngine.startLocation(this));
