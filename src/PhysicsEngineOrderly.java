@@ -88,7 +88,7 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     // place the edited files around the person
     Iterator<code_swarm.FileNode> editedFiles = pNode.editing.iterator();
     int index = 0;
-    int radius = 45;
+    int radius = pNode.radius;
     final int node_size = 4;
     final int salt = pNode.hashCode(); // used to randomize orientation of circle of nodes
     int num_nodes_in_ring = (int)((2 * radius * Math.PI) / node_size);

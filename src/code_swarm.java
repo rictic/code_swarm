@@ -1459,6 +1459,7 @@ public class code_swarm extends PApplet {
     protected int touches;
     public List<FileNode> editing = new ArrayList<FileNode>();
     private PImage icon = null;
+    public int radius;
     /**
      * 1) constructor.
      */
@@ -1474,6 +1475,10 @@ public class code_swarm extends PApplet {
       mFriction = 0.99f;
       String iconFile = avatarFetcher.fetchUserImage(name);
       if (iconFile != null) icon = loadImage(iconFile, "unknown");
+      if (icon != null)
+        radius = max(icon.width, icon.height) / 2;
+      else
+        radius = 40;
     }
 
     /**
@@ -1485,18 +1490,20 @@ public class code_swarm extends PApplet {
 
         /** TODO: proportional font size, or light intensity,
                   or some sort of thing to disable the flashing */
-        if (life >= minBold)
-          textFont(boldFont);
-        else
-          textFont(font);
-        
-        fill(fontColor, life);
-        text(name, mPosition.x, mPosition.y+10);
+        int size = 1;
         if (icon != null){
           colorMode(RGB);
           tint(255,255,255,max(0,life-80));
-          image(icon, mPosition.x-(avatarFetcher.size / 2), mPosition.y-(avatarFetcher.size - 5));
+          size = (int)(avatarFetcher.size * (((float)life)/PERSON_LIFE_INIT));
+          radius = (int)(sqrt(pow(size,2) * 2)/ 2) ;
+          drawImage(icon, mPosition.x-(size / 2), mPosition.y-(size/2), size, size);
         }
+        
+        textFont(font);
+        if (life >= minBold)
+          textFont(boldFont);
+        fill(fontColor, life);
+        text(name, mPosition.x, mPosition.y+(size / 2));
       }
     }
 
@@ -1512,6 +1519,10 @@ public class code_swarm extends PApplet {
     }
   }
 
+  public void drawImage(PImage icon, float x, float y, int width, int height) {
+    image(icon, x, y, width, height, 0, 0, icon.width, icon.height);
+  }
+  
   /**
    * code_swarm Entry point.
    * @param args : should be the path to the config file
@@ -1533,6 +1544,7 @@ public class code_swarm extends PApplet {
       System.exit(2);
     }
   }
+
   /**
    * the alternative entry-point for code_swarm. It gets called from
    * {@link MainView} after fetching the repository log.
