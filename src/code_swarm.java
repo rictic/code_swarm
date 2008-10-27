@@ -1473,7 +1473,7 @@ public class code_swarm extends PApplet {
       mLastPosition.add(mPhysicsEngine.startVelocity(this));
       mFriction = 0.99f;
       String iconFile = avatarFetcher.fetchUserImage(name);
-      if (iconFile != null) icon = loadImage(iconFile);
+      if (iconFile != null) icon = loadImage(iconFile, "unknown");
     }
 
     /**
