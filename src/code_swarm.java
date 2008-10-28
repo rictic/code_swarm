@@ -319,10 +319,11 @@ public class code_swarm extends PApplet {
     
     // Create fonts
     String fontName = cfg.getStringProperty(CodeSwarmConfig.FONT_KEY);
+    String boldFontName = cfg.getStringProperty(CodeSwarmConfig.FONT_KEY_BOLD);
     Integer fontSize = cfg.getPositiveIntProperty(CodeSwarmConfig.FONT_SIZE);
     Integer fontSizeBold = cfg.getPositiveIntProperty(CodeSwarmConfig.FONT_SIZE_BOLD);
     font = createFont(fontName, fontSize);
-    boldFont = createFont(fontName + ".bold", fontSizeBold);
+    boldFont = createFont(boldFontName, fontSizeBold);
 
     textFont(font);
 

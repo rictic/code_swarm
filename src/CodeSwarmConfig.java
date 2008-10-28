@@ -44,12 +44,10 @@ public class CodeSwarmConfig {
   public static final String TAKE_SNAPSHOTS_KEY = "TakeSnapshots";
   /** R,G,B Determines the background color */
   public static final String BACKGROUND_KEY = "Background";
-  /** R,G,B Determines the default font color */
   public static final String FONT_COLOR_KEY = "FontColor";
   public static final String FONT_KEY = "Font";
-  /** R,G,B Determines the background color */
   public static final String FONT_SIZE = "FontSize";
-  /** R,G,B Determines the background color */
+  public static final String FONT_KEY_BOLD = "BoldFont";
   public static final String FONT_SIZE_BOLD = "BoldFontSize";
   /** Rules for color coding nodes */
   public static final String COLOR_ASSIGN_KEY  =  "ColorAssign";
