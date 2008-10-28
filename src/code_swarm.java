@@ -1488,22 +1488,25 @@ public class code_swarm extends PApplet {
       if (isAlive()) {
         textAlign(CENTER, CENTER);
 
+        PFont curFont = font;
+        if (life >= minBold)
+          curFont = boldFont;
+        textFont(curFont);
+        
         /** TODO: proportional font size, or light intensity,
                   or some sort of thing to disable the flashing */
+        float pctAlive = ((float)life)/PERSON_LIFE_INIT;
         int size = 1;
         if (icon != null){
           colorMode(RGB);
-          tint(255,255,255,max(0,life-80));
-          size = (int)(avatarFetcher.size * (((float)life)/PERSON_LIFE_INIT));
-          radius = (int)(sqrt(pow(size,2) * 2)/ 2) ;
+          tint(255,255,255,max(0,255 * pctAlive));
+          size = (int)(avatarFetcher.size * pctAlive);
+          radius = (int)(sqrt(pow(size+curFont.ascent,2) * 2)/ 2);
           drawImage(icon, mPosition.x-(size / 2), mPosition.y-(size/2), size, size);
         }
         
-        textFont(font);
-        if (life >= minBold)
-          textFont(boldFont);
-        fill(fontColor, life);
-        text(name, mPosition.x, mPosition.y+(size / 2));
+        fill(fontColor, 255 * pctAlive);
+        text(name, mPosition.x, mPosition.y+(size / 2) + curFont.ascent);
       }
     }
 
