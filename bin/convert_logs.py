@@ -60,6 +60,9 @@ def main(argv):
     elif opts.mercurial_log:
         log_file = opts.mercurial_log
         parser = parse_mercurial_log
+    elif opts.gnu_log:
+        log_file = opts.gnu_log
+        parser = parse_gnu_changelog
     elif opts.perforce_path:
         #special case
         create_event_xml(parse_perforce_path(opts.perforce_path), output)
@@ -141,12 +144,18 @@ def parse_args(argv):
         metavar="<log file>",
         help="input mercurial log to convert to standard event xml")
 
+    p.add_option("-l", "--gnu-changelog", dest="gnu_log",
+        metavar="<log file>",
+        help="input GNU Changelog to convert to standard event xml")
+
     p.add_option( "-p", "--perforce-path", dest="perforce_path",
         metavar="<log file>",
         help="get data from perforce and save it to standard event xml")
+    
     p.add_option( "-o", "--output-log", dest="output_log", 
         metavar="<log file>",
         help="specify event log output file")
+    
     p.add_option("--nosort", dest="nosort", default=False, action="store_true",
         help="use if the input log is already in chronological order for speed")
 
@@ -322,6 +331,61 @@ def parse_mercurial_log(file_handle, opts):
             state = 0
         else:
             print >>stderr, 'Error: undifined state'
+
+def parse_gnu_changelog(file_handle, opts):
+    newdate_re = re.compile("(\d{4})\-(\d\d)\-(\d\d) (.*) (<|\()")
+    olddate_re = re.compile("(\w{3} .* \d{4}) (.*) (<|\()")
+    filename_re = re.compile("\*\s([\w\./\-_]*):?")
+    for line in file_handle:
+        # Newer, common date format for GNU Changelogs
+        m = newdate_re.match(line)
+        
+        #Found a person and a date, now just have to know which files were modified
+        if m:
+            year  = m.group(1)
+            month = m.group(2)
+            day   = m.group(3)
+            
+            if(int(month) > 12): #Malformed date? Try to fix it.
+                tmp = month;
+                month = day;
+                day = tmp;
+            
+            date = year+month+day
+            date = time.strptime(date,"%Y%m%d")
+            date = int(time.mktime(date))*1000
+
+            author = m.group(4).strip()
+            
+            line = file_handle.next()
+            #Now read lines as long as we find files to add to this person.
+            while not line[0].isdigit() and not line[0].isalpha():
+                n = filename_re.search(line)
+                if n:
+                    filename = n.group(1)
+                    yield Event(filename,date,author)
+                line = file_handle.next()
+            continue
+                
+        #Try older date format
+        m = olddate_re.match(line)
+        
+        if m:
+            date = m.group(1)
+            date = time.strptime(date) #Format string defaults to ctime(), which is what matched
+            date = int(time.mktime(date))*1000
+            
+            author = m.group(2).strip()
+            
+            line = file_handle.next()
+            #Now read lines as long as we find files to add to this person.
+            while not line[0].isdigit() and not line[0].isalpha():
+                n = filename_re.search(line)
+                if n:
+                    filename = n.group(1)
+                    yield Event(filename,date,author)
+                line = file_handle.next()
+            continue
 
 def parse_perforce_path(file_handle, opts):
     changelists = run_marshal('p4 -G changelists "' + opts.perforce_path + '"')
