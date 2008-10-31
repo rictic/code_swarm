@@ -8,6 +8,7 @@ import time
 from xml.sax.saxutils import escape as h
 from sys import stderr
 import re
+import sre_constants
 
 # Some global variables
 SVN_SEP = "------------------------------------------------------------------------"
@@ -56,7 +57,7 @@ def main(argv):
         parser = parse_starteam_log
     elif opts.wikiswarm_log:
         log_file = opts.wikiswarm_log
-        parser = parse_wikistorm_log
+        parser = parse_wikiswarm_log
     elif opts.mercurial_log:
         log_file = opts.mercurial_log
         parser = parse_mercurial_log
@@ -68,8 +69,17 @@ def main(argv):
         create_event_xml(parse_perforce_path(opts.perforce_path), output)
         return
     else:
-        print >>stderr, "No repository format given, for more info see:\n   convert_logs.py help"
+        print >>stderr, "No repository format given, for more info see:\n   convert_logs.py --help"
         sys.exit(1)
+
+    # check for valid cmd line arguments before doing anything
+    if opts.ignore_author is not None:
+        try:
+            re.compile(opts.ignore_author)
+        except sre_constants.error:
+            print >>stderr, "Unable to compile author reg ex: %s" % \
+                  opts.ignore_author
+            sys.exit(1)
     
     if not os.path.exists(log_file):
         #hacky, but OptionParse doesn't support options that only sometimes
@@ -83,7 +93,11 @@ def main(argv):
         log_file = open(log_file, 'r')
 
     events = parser(log_file, opts)
-    
+
+    # Remove all authors we wanted to ignore here
+    if opts.ignore_author is not None:
+        events = remove_ignored_author(opts.ignore_author, events)
+        
     #its really best if we don't have to sort, but by default most are
     # in the reverse order that we want, so we sort by default
     if not opts.nosort:
@@ -158,6 +172,10 @@ def parse_args(argv):
     
     p.add_option("--nosort", dest="nosort", default=False, action="store_true",
         help="use if the input log is already in chronological order for speed")
+
+    p.add_option("--ignore-author", dest="ignore_author", default=None,
+                action="store",
+                help="Ignore authors that match this regular expression.")
 
 
     (options, args) = p.parse_args(argv)
@@ -396,6 +414,14 @@ def parse_perforce_path(file_handle, opts):
             for key_name, file_name in fi.iteritems():
                 if file_key_re.match(key_name):
                     yield Event(file_name, int(changelist['time'] + '000'), changelist['user'])
+
+
+def remove_ignored_author(ignore, events):
+    """ Remove the events that match the given ignore reg ex. """
+    events = filter(lambda evt: re.match(ignore, evt.author) is None,
+                    events)
+    return events
+
 
 def run_marshal(command):
     import marshal
