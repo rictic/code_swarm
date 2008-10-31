@@ -92,7 +92,7 @@ def main(argv):
     else:
         log_file = open(log_file, 'r')
 
-     events = parser(log_file, opts)
+    events = parser(log_file, opts)
 
     # Remove all authors we wanted to ignore here
     if opts.ignore_author is not None:
