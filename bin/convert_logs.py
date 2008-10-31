@@ -69,7 +69,7 @@ def main(argv):
         create_event_xml(parse_perforce_path(opts.perforce_path), output)
         return
     else:
-        print >>stderr, "No repository format given, for more info see:\n   convert_logs.py help"
+        print >>stderr, "No repository format given, for more info see:\n   convert_logs.py --help"
         sys.exit(1)
 
     # check for valid cmd line arguments before doing anything
