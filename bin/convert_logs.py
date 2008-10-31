@@ -57,7 +57,7 @@ def main(argv):
         parser = parse_starteam_log
     elif opts.wikiswarm_log:
         log_file = opts.wikiswarm_log
-        parser = parse_wikistorm_log
+        parser = parse_wikiswarm_log
     elif opts.mercurial_log:
         log_file = opts.mercurial_log
         parser = parse_mercurial_log
