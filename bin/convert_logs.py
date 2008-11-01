@@ -9,6 +9,7 @@ from xml.sax.saxutils import escape as h
 from sys import stderr
 import re
 import sre_constants
+from itertools import ifilter
 
 # Some global variables
 SVN_SEP = "------------------------------------------------------------------------"
@@ -418,7 +419,7 @@ def parse_perforce_path(file_handle, opts):
 
 def remove_ignored_author(ignore, events):
     """ Remove the events that match the given ignore reg ex. """
-    events = filter(lambda evt: re.match(ignore, evt.author) is None,
+    events = ifilter(lambda evt: re.match(ignore, evt.author) is None,
                     events)
     return events
 
