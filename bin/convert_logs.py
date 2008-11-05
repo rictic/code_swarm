@@ -24,6 +24,14 @@ class Event(object):
         self.filename = filename
         self.date = date
         self.author = author
+    
+    def properties(self):
+        """returns a dict of properties and their names for XML serialization"""
+        return {
+                "date": str(self.date),
+                "filename": self.filename,
+                "author": self.author
+        }
         
     # Some version control system's logs are not in chronological order, so
     # this compare method will return a compare of the date attributes.
@@ -111,27 +119,21 @@ def main(argv):
 def create_event_xml(events, output):
     """ Write out the final XML given an input iterator of events."""
     from xml.sax.saxutils import XMLGenerator
-    from xml.sax.xmlreader import AttributesNSImpl
     
     generator = XMLGenerator(output, "utf-8")
-    generator.startDocument()
-    
-    generator.startElementNS((None, 'file_events'), 'file_events', AttributesNSImpl({},{}))
+    generator.startDocument()    
+    generator.startElement('file_events', {})
     
     qnames = {(None, "date"):"date",
               (None, "filename"):"filename",
               (None, "author"):"author"}
     
     for event in events:
-        generator.startElementNS((None, "event"), "event", AttributesNSImpl({
-                (None,"date"):str(event.date),
-                (None,"filename"):event.filename,
-                (None,"author"):event.author
-        }, qnames))
+        generator.startElement("event", event.properties())
         
-        generator.endElementNS((None, "event"), "event")
+        generator.endElement("event")
     
-    generator.endElementNS((None, 'file_events'), 'file_events')
+    generator.endElement('file_events')
     generator.endDocument()
 
 def parse_args(argv):
