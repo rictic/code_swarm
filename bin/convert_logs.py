@@ -11,6 +11,7 @@ import re
 import sre_constants
 from itertools import ifilter
 
+
 # Some global variables
 SVN_SEP = "------------------------------------------------------------------------"
 CVS_SEP = "----------------------------"
@@ -109,21 +110,29 @@ def main(argv):
 
 def create_event_xml(events, output):
     """ Write out the final XML given an input iterator of events."""
-    # Create new empty xml file.
-    output.write('<?xml version="1.0"?>\n')
-    output.write('<file_events>\n')
-    # Make sure the events are sorted in ascending order by date, then
-    # write the events into the xml file.
-    # If we can get a guarantee that this sort isn't necessary somehow it 
-    # could be a big win for decreasing startup time
+    from xml.sax.saxutils import XMLGenerator
+    from xml.sax.xmlreader import AttributesNSImpl
+    
+    generator = XMLGenerator(output, "utf-8")
+    generator.startDocument()
+    
+    generator.startElementNS((None, 'file_events'), 'file_events', AttributesNSImpl({},{}))
+    
+    qnames = {(None, "date"):"date",
+              (None, "filename"):"filename",
+              (None, "author"):"author"}
+    
     for event in events:
-        try:
-            output.write('<event date="%s" filename="%s" author="%s" />\n' % \
-                (event.date, h(event.filename), h(event.author)))
-        except:
-            print >>stderr, "Error when writing %s to %s" % (event, output)
-    output.write('</file_events>\n')
-    output.close()
+        generator.startElementNS((None, "event"), "event", AttributesNSImpl({
+                (None,"date"):str(event.date),
+                (None,"filename"):event.filename,
+                (None,"author"):event.author
+        }, qnames))
+        
+        generator.endElementNS((None, "event"), "event")
+    
+    generator.endElementNS((None, 'file_events'), 'file_events')
+    generator.endDocument()
 
 def parse_args(argv):
     """ Parses command line arguments and returns an options object

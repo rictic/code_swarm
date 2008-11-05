@@ -196,27 +196,27 @@ def do_git(dir):
     tmp = os.path.join(dir, "temp.log")
     xml = os.path.join(dir, "log.xml")
 
-    return do_cmds('git log --name-status --pretty=format:"%s" > %s'%(fmt, tmp)
-                  ,"convert_logs.py -g %s -o %s" % (tmp, xml)
-                  ,"rm " + tmp)
+    return do_cmds('git log --name-status --pretty=format:"%s" > "%s"'%(fmt, tmp)
+                  ,"convert_logs.py -g '%s' -o '%s'" % (tmp, xml)
+                  ,"rm %s" % tmp)
 
 
 def do_svn(dir):
     tmp = os.path.join(dir, "temp.log")
     xml = os.path.join(dir, "log.xml")
 
-    return do_cmds("svn log -v > " + tmp
-                  ,"convert_logs.py -s %s -o %s" % (tmp, xml)
-                  ,"rm " + tmp)
+    return do_cmds("svn log -v > '%s'" % tmp
+                  ,"convert_logs.py -s '%s' -o '%s'" % (tmp, xml)
+                  ,"rm '%s'" % tmp)
 
 
 def do_hg(dir):
     tmp = os.path.join(dir, "unsorted_log.xml")
     xml = os.path.join(dir, "log.xml")
 
-    return do_cmds("hg_log.py -o %s ." % tmp
-                  ,"sort_code_swarm_input.py < %s > %s" % (tmp, xml)
-                  ,"rm " + tmp)
+    return do_cmds("hg_log.py -o '%s' ." % tmp
+                  ,"sort_code_swarm_input.py < '%s' > '%s'" % (tmp, xml)
+                  ,"rm '%s'" % tmp)
 
 def do_freebase(domain):
     dir = os.path.abspath(tempfile.gettempdir())
