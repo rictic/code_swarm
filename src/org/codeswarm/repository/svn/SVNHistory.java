@@ -83,13 +83,13 @@ public class SVNHistory extends AbstractSVNHistoryVisitor {
     public boolean handleFetchingLatestRepositoryRevision(Long pRevision) {
         long revision = pRevision.longValue();
         Preferences p = Preferences.userNodeForPackage(SVNHistory.class);
-        long l= p.getLong(this.url+"_lastRevision", -1l);
+        long l= p.getLong(Integer.toString(this.url.hashCode()), -1l);
         if(l==revision){
             LOGGER.log(Level.FINE,"skip fetching {0} (latest revision is {1}) for {2}",new Object[]{String.valueOf(l),revision,this.url});
             return false;
         }else{
             LOGGER.log(Level.FINE, "proceed fetching (latest revision is {0} , cached revision is {1} for repository {2}", new Object[]{String.valueOf(pRevision), String.valueOf(l), this.url});
-            Preferences.userNodeForPackage(SVNHistory.class).putLong(this.url+"_lastRevision", revision);
+            Preferences.userNodeForPackage(SVNHistory.class).putLong(Integer.toString(this.url.hashCode()), revision);
             try {
                 Preferences.userNodeForPackage(SVNHistory.class).flush();
             } catch (BackingStoreException ex) {
