@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# Standard library imports
+#!/usr/bin/env python
+
 from datetime import datetime
 from optparse import OptionParser
 import os
@@ -16,125 +16,6 @@ from itertools import ifilter
 SVN_SEP = "------------------------------------------------------------------------"
 CVS_SEP = "----------------------------"
 
-
-class Event(object):
-    """ Event to hold all of the separate events as we parse them from the logs. """
-    
-    def __init__(self, filename, date, author):
-        self.filename = filename
-        self.date = date
-        self.author = author
-    
-    def properties(self):
-        """returns a dict of properties and their names for XML serialization"""
-        return {
-                "date": str(self.date),
-                "filename": self.filename,
-                "author": self.author
-        }
-        
-    # Some version control system's logs are not in chronological order, so
-    # this compare method will return a compare of the date attributes.
-    def __cmp__(self, other):
-        return cmp(self.date, other.date)
-    
-
-def main(argv):
-    """ Calls the parse_args function based on the 
-    command-line inputs and handles parsed arguments.
-    """
-    (opts, args) = parse_args(argv)
-    output = sys.stdout
-    # If the user specified an output log file, then use that.
-    if opts.output_log is not None:
-        output = open(opts.output_log, "w")
-        
-    # Handle parsed options.
-    if opts.svn_log:
-        log_file = opts.svn_log
-        parser = parse_svn_log
-    elif opts.git_log:
-        log_file = opts.git_log
-        parser = parse_svn_log
-    elif opts.cvs_log:
-        log_file = opts.cvs_log
-        parser = parse_cvs_log
-    elif opts.vss_log:
-        log_file = opts.vss_log
-        parser = parse_vss_log
-    elif opts.starteam_log:
-        log_file = opts.starteam_log
-        parser = parse_starteam_log
-    elif opts.wikiswarm_log:
-        log_file = opts.wikiswarm_log
-        parser = parse_wikiswarm_log
-    elif opts.mercurial_log:
-        log_file = opts.mercurial_log
-        parser = parse_mercurial_log
-    elif opts.gnu_log:
-        log_file = opts.gnu_log
-        parser = parse_gnu_changelog
-    elif opts.perforce_path:
-        #special case
-        create_event_xml(parse_perforce_path(opts.perforce_path), output)
-        return
-    else:
-        print >>stderr, "No repository format given, for more info see:\n   convert_logs.py --help"
-        sys.exit(1)
-
-    # check for valid cmd line arguments before doing anything
-    if opts.ignore_author is not None:
-        try:
-            re.compile(opts.ignore_author)
-        except sre_constants.error:
-            print >>stderr, "Unable to compile author reg ex: %s" % \
-                  opts.ignore_author
-            sys.exit(1)
-    
-    if not os.path.exists(log_file):
-        #hacky, but OptionParse doesn't support options that only sometimes
-        # have an extra value
-        if log_file == "stdin":
-            log_file = sys.stdin
-        else:
-            print >>stderr, "Unable to find input log %s" % log_file
-            sys.exit(1)
-    else:
-        log_file = open(log_file, 'r')
-
-    events = parser(log_file, opts)
-
-    # Remove all authors we wanted to ignore here
-    if opts.ignore_author is not None:
-        events = remove_ignored_author(opts.ignore_author, events)
-        
-    #its really best if we don't have to sort, but by default most are
-    # in the reverse order that we want, so we sort by default
-    if not opts.nosort:
-        events= sorted(list(events))
-    # Generate standard event xml file from event_list.
-    create_event_xml(events, output)
-
-
-def create_event_xml(events, output):
-    """ Write out the final XML given an input iterator of events."""
-    from xml.sax.saxutils import XMLGenerator
-    
-    generator = XMLGenerator(output, "utf-8")
-    generator.startDocument()    
-    generator.startElement('file_events', {})
-    
-    qnames = {(None, "date"):"date",
-              (None, "filename"):"filename",
-              (None, "author"):"author"}
-    
-    for event in events:
-        generator.startElement("event", event.properties())
-        
-        generator.endElement("event")
-    
-    generator.endElement('file_events')
-    generator.endDocument()
 
 def parse_args(argv):
     """ Parses command line arguments and returns an options object
@@ -193,6 +74,107 @@ def parse_args(argv):
     (options, args) = p.parse_args(argv)
 
     return (options, args)
+
+
+def main(argv):
+    """ Calls the parse_args function based on the 
+    command-line inputs and handles parsed arguments.
+    """
+    (opts, args) = parse_args(argv)
+    output = sys.stdout
+    # If the user specified an output log file, then use that.
+    if opts.output_log is not None:
+        output = open(opts.output_log, "w")
+        
+    # Handle parsed options.
+    if opts.svn_log:
+        log_file = opts.svn_log
+        parser = parse_svn_log
+    elif opts.git_log:
+        log_file = opts.git_log
+        parser = parse_svn_log
+    elif opts.cvs_log:
+        log_file = opts.cvs_log
+        parser = parse_cvs_log
+    elif opts.vss_log:
+        log_file = opts.vss_log
+        parser = parse_vss_log
+    elif opts.starteam_log:
+        log_file = opts.starteam_log
+        parser = parse_starteam_log
+    elif opts.wikiswarm_log:
+        log_file = opts.wikiswarm_log
+        parser = parse_wikiswarm_log
+    elif opts.mercurial_log:
+        log_file = opts.mercurial_log
+        parser = parse_mercurial_log
+    elif opts.gnu_log:
+        log_file = opts.gnu_log
+        parser = parse_gnu_changelog
+    elif opts.perforce_path:
+        #special case
+        create_event_xml(parse_perforce_path(opts.perforce_path), output)
+        return
+    else:
+        print >>stderr, "No repository format given, for more info see:\n   convert_logs.py --help"
+        sys.exit(1)
+
+    # check for valid cmd line arguments before doing anything
+    if opts.ignore_author is not None:
+        try:
+            opts.ignore_author = re.compile(opts.ignore_author)
+        except sre_constants.error:
+            print >>stderr, "Unable to compile author reg ex: %s" % \
+                  opts.ignore_author
+            sys.exit(1)
+    
+    if not os.path.exists(log_file):
+        #hacky, but OptionParse doesn't support options that only sometimes
+        # take an argument
+        if log_file == "stdin":
+            log_file = sys.stdin
+        else:
+            print >>stderr, "Unable to find input log %s" % log_file
+            sys.exit(1)
+    else:
+        log_file = open(log_file, 'r')
+
+    #Parse the log_file into an iterable of Events
+    events = parser(log_file, opts)
+
+    # Remove all authors we wanted to ignore here
+    if opts.ignore_author is not None:
+        events = ifilter(lambda e: opts.ignore_author.match(e.author) is None,
+                        events)
+        
+    #its really best if we don't have to sort, but most data sources are
+    # in the reverse order that we want, so we sort by default
+    if not opts.nosort:
+        events= sorted(list(events))
+    # Generate standard event xml file from event_list.
+    create_event_xml(events, output)
+
+
+def create_event_xml(events, output):
+    """ Write out the final XML given an input iterator of events."""
+    from xml.sax.saxutils import XMLGenerator
+    
+    generator = XMLGenerator(output, "utf-8")
+    generator.startDocument()    
+    generator.startElement('file_events', {})
+    
+    qnames = {(None, "date"):"date",
+              (None, "filename"):"filename",
+              (None, "author"):"author"}
+    
+    for event in events:
+        generator.startElement("event", event.properties())
+        
+        generator.endElement("event")
+    
+    generator.endElement('file_events')
+    generator.endDocument()
+
 
 
 def parse_svn_log(file_handle, opts):
@@ -428,12 +410,6 @@ def parse_perforce_path(file_handle, opts):
                     yield Event(file_name, int(changelist['time'] + '000'), changelist['user'])
 
 
-def remove_ignored_author(ignore, events):
-    """ Remove the events that match the given ignore reg ex. """
-    events = ifilter(lambda evt: re.match(ignore, evt.author) is None,
-                    events)
-    return events
-
 
 def run_marshal(command):
     import marshal
@@ -448,6 +424,27 @@ def run_marshal(command):
         pass
     stream.close()
     return results
+
+class Event(object):
+    """ Event to hold all of the separate events as we parse them from the logs. """
+
+    def __init__(self, filename, date, author):
+        self.filename = filename
+        self.date = date
+        self.author = author
+
+    def properties(self):
+        """returns a dict of properties and their names for XML serialization"""
+        return {
+                "date": str(self.date),
+                "filename": self.filename,
+                "author": self.author
+        }
+
+    # Some version control system's logs are not in chronological order, so
+    # this compare method will return a compare of the date attributes.
+    def __cmp__(self, other):
+        return cmp(self.date, other.date)
 
 
 # Main entry point.
