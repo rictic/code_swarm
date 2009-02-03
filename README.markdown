@@ -9,22 +9,15 @@ Google Group/Mailing List: http://groups.google.com/group/codeswarm
 
 # Building #
 
-More detail is available at http://code.google.com/p/codeswarm/wiki/HowtoBuild
-
-This quick guide explains how to setup your development environment to build
-and run code_swarm.
-
-
 ## Prerequisites ##
 
-You will need Apache's "ant" build tool, at least version 5 of the Java SDK from Sun, and for some features, Python version 2.4 or later.
-
+You will need Apache's "ant" build tool, at least version 5 of the Java SDK from Sun, and for some features, Python version 2.4 or later.  Linux users: we've been unable to get code_swarm to run under the GNU jvm, Sun's jvm is strongly recommended. 
 
 
 ### Linux ###
 
-This guide is written with a Debian based Linux, Ubuntu 8.04. The process is likely
-to be similar with other linux distributions.
+These instructions were tested with Ubuntu 8.04, the process is probably
+similar to other linux distributions.
 
 This should ensure that ant and java6 are installed and configured:
 
@@ -59,8 +52,6 @@ If you have DarwinPorts/MacPorts, you can simply:
 
 ## Getting the source code ##
 
-code_swarm is still a very young project.  At the moment, the best way to get it going is to download the source code and build it.
-
 ### git ###
 
 A git fork of the main code_swarm repository is maintained at <http://github.com/rictic/code_swarm/tree/master>
@@ -84,16 +75,16 @@ Unix-like users would get their native "Subversion" package.
 For more information, see http://code.google.com/p/codeswarm/source/checkout
 
 
-## Building and Running ##
+## Running code_swarm ##
 
-With Java and ant installed, and the `code_swarm` source downloaded, running `code_swarm` on any given git, svn, or hg based project is quite easy.
+With Java and ant installed, and the code_swarm source downloaded, running it on a git, svn, or hg based project is easy:
 
 * Add `code_swarm/bin` to your PATH.  A line like `export PATH=$PATH:/path/to/code_swarm/bin` in your `~/.profile` or `~/.bash_profile` should do it
-* `$ cd project/to/visualize`
-* `$ code_swarm`
+* `cd project/to/visualize`
+* `code_swarm`
 
 
-### Other ways of running code_swarm ###
+## Other ways of running code_swarm ##
 
 There are a couple of other ways of invoking code_swarm.  For an experimental GUI where you can specify a svn url to visualize:
 
