@@ -11,44 +11,43 @@ Google Group/Mailing List: http://groups.google.com/group/codeswarm
 
 ## Prerequisites ##
 
-You will need Apache's "ant" build tool, at least version 5 of the Java SDK from Sun, and for some features, Python version 2.4 or later.  Linux users: we've been unable to get code_swarm to run under the GNU jvm, Sun's jvm is strongly recommended. 
+You will need the Apache ant build tool, at least version 5 of the Java SDK from Sun, and Python version 2.4 or later.  Linux users: we've been unable to get code_swarm to compile with the GNU toolchain, Sun's implementation is strongly recommended.  If you're able to get it to compile with another toolchain, we'll be glad to include instructions here on how to do so.
+
+
+### Mac ###
+
+Recent versions of OS X come with a good java compiler and Python interpreter, so all you need to do is get and install ant.
+
+If you have DarwinPorts/MacPorts, you can simply:
+    sudo port install apache-ant
 
 
 ### Linux ###
-
-These instructions were tested with Ubuntu 8.04, the process is probably
-similar to other linux distributions.
-
-This should ensure that ant and java6 are installed and configured:
 
     sudo apt-get install ant 
     sudo apt-get install sun-java6-jdk 
     sudo update-java-alternatives -s java-6-sun 
 
-You should also ensure that Python is installed.
+Tested with Ubuntu 8.04, probably similar in other linux distributions.
+
+You should also ensure that Python is installed.  Run `python` in the terminal if you're unsure.
 
 ### Windows ###
 
-* download ant for all platforms at http://ant.apache.org/bindownload.cgi
-* unpack it where you want it to be installed, and add the location of
-  its binaries to the the `PATH` environment variable. For instance, add at the end : 
+* download ant: <http://ant.apache.org/bindownload.cgi>
+* unpack it and add the location of its binaries to the the
+ `PATH` environment variable. For instance, add at the end : 
   `C:\apache-ant-1.7.0\bin;` 
 
-* download Sun Java SDK at http://java.sun.com/javase/downloads/index.jsp
-* install it and add the "javac" Java compiler to the PATH : 
+* download the Sun Java SDK at <http://java.sun.com/javase/downloads/index.jsp>
+* install it and add the Java binaries to the `PATH` : 
   `C:\Program Files\Java\jdk1.6.0_06\bin;`
 
 * then create a new environment variable called JAVA_HOME and set its path to 
   `C:\Program Files\Java\jdk1.6.0_06;`
 
-* download and install Python from http://www.python.org/download/
-
-### Mac ###
-
-Recent versions of OS X come with a good java compiler and Python interpreter, so all you need to do is get and install Apache ant.
-
-If you have DarwinPorts/MacPorts, you can simply:
-    sudo port install apache-ant
+* download and install Python from <http://www.python.org/download/> and 
+  ensure that it too is in the `PATH`
 
 ## Getting the source code ##
 
@@ -56,7 +55,8 @@ If you have DarwinPorts/MacPorts, you can simply:
 
 A git fork of the main code_swarm repository is maintained at <http://github.com/rictic/code_swarm/tree/master>
 
-This fork contains a number of patches which improve the speed of `code_swarm` significantly, as well as the `code_swarm` executable, which makes visualizing a new project on Linux and the Mac a one-step process.  
+This fork contains a number of patches which improve the speed of code_swarm significantly, 
+as well as an executable, which makes running code_swarm a one-step process.
 
 To obtain a clone of the repository, simply use:
 
@@ -65,14 +65,10 @@ To obtain a clone of the repository, simply use:
 
 ### Subversion ###
 
-code_swarm's source code is on a Google Code Subversion repository (svn) :
-http://codeswarm.googlecode.com/svn/trunk/
+The main code_swarm repository however is on Google Code: 
+<http://codeswarm.googlecode.com/>
 
-See Subversion homepage at http://subversion.tigris.org/ for all appropriate 
-tools and documents. I would recommend [TortoiseSVN](http://tortoisesvn.tigris.org/) for Windows users. 
-Unix-like users would get their native "Subversion" package.
-
-For more information, see http://code.google.com/p/codeswarm/source/checkout
+To get the source, see <http://code.google.com/p/codeswarm/source/checkout>
 
 
 ## Running code_swarm ##
@@ -86,10 +82,7 @@ With Java and ant installed, and the code_swarm source downloaded, running it on
 
 ## Other ways of running code_swarm ##
 
-There are a couple of other ways of invoking code_swarm.  For an experimental GUI where you can specify a svn url to visualize:
-
-* cd path/to/code_swarm
-* ant run
+### Running manually ###
 
 While code_swarm was developed to visualize source code repositories, its input format is generic, and some have experimented with visualizing other collaborative environments, including user activity on wikis and freebase.com.
 
@@ -99,6 +92,11 @@ Example config files can be seen in `data/sample.config` and `bin/config.templat
 
 To invoke `code_swarm` with a given config file, use `./run.sh path/to/project.config`
 
+#### SVN GUI ####
+For an experimental GUI where you can specify a svn url to visualize:
+
+* `cd path/to/code_swarm`
+* `ant run`
 
 Other commands:
 
