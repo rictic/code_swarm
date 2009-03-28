@@ -33,3 +33,10 @@ IsInputSorted=true
 
 # Uncomment to not use avatars
 #AvatarFetcher=NoAvatar
+
+# To use local avatars, uncomment this line:
+#AvatarFetcher=LocalAvatar
+
+# then place png files named after the usernames of committers in 
+# the data/local_avatars directory
+# data/local_avatars/default.png is used by default
