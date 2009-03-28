@@ -9,3 +9,4 @@ frames
 *.proof
 image_cache
 defaults/user.config
+personal/
