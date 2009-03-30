@@ -6,6 +6,9 @@ import os
 import sys
 import time
 from xml.sax.saxutils import escape as h
+from xml.sax import make_parser
+from xml.sax.handler import ContentHandler
+from xml.sax._exceptions import SAXParseException
 from sys import stderr
 import re
 import sre_constants
@@ -50,6 +53,10 @@ def parse_args(argv):
     p.add_option("-m", "--mercurial-log", dest="mercurial_log", 
         metavar="<log file>",
         help="input mercurial log to convert to standard event xml")
+
+    p.add_option("-d", "--darcs-log", dest="darcs_xml",
+        metavar="<log file>",
+        help="output of 'darcs changes -s --xml-output'")
 
     p.add_option("-l", "--gnu-changelog", dest="gnu_log",
         metavar="<log file>",
@@ -108,6 +115,9 @@ def main(argv):
     elif opts.mercurial_log:
         log_file = opts.mercurial_log
         parser = parse_mercurial_log
+    elif opts.darcs_xml:
+        log_file = opts.darcs_xml
+        parser = parse_darcs_xml
     elif opts.gnu_log:
         log_file = opts.gnu_log
         parser = parse_gnu_changelog
@@ -398,6 +408,57 @@ def parse_gnu_changelog(file_handle, opts):
                     yield Event(filename,date,author)
                 line = file_handle.next()
             continue
+
+def parse_darcs_xml(file_handle, opts):
+    class DarcsParser(ContentHandler):
+        def __init__(self):
+            self.events = []
+            self.author = None
+            self.date = None
+            self.getFilename = False
+            self.filename = ""
+            self.capture_events = ["add_file", "modify_file", "remove_file"]
+
+        def startElement(self, name, attrs):
+            if name in self.capture_events:
+                self.getFilename = True
+                self.filename = ""
+                return
+            if name == "patch":
+                self.author = attrs["author"].strip()
+                date = re.sub("[A-Za-z ]+ (\d\d\d\d)$", " \\1", attrs["date"])
+                date = re.sub("\s+"," ",date).strip() # normalize whitespace
+                try:
+                    date = time.strptime(date,"%Y%m%d%H%M%S")
+                except ValueError, e:
+                    date = time.strptime(date,"%a %b %d %H:%M:%S  %Y")
+                
+                self.date = int(time.mktime(date))*1000
+            elif name == "move":
+                self.newEvent(attrs["from"])
+                self.newEvent(attrs["to"])
+            elif name not in ["summary","name","changelog","added_lines"
+                             ,"removed_lines", "add_directory", "remove_directory"
+                             ,"comment", "replaced_tokens"]:
+                print >> stderr, "warning: unknown tag '%s'" % name 
+            
+        def characters(self,str):
+            if self.getFilename:
+                self.filename += str
+        
+        def endElement(self, name):
+            if name in self.capture_events:
+                self.newEvent(self.filename)
+                self.getFilename = False
+        
+        def newEvent(self, name):
+            self.events.append(Event(name.strip(),self.date,self.author))
+    
+    parser = make_parser()
+    dp = DarcsParser()
+    parser.setContentHandler(dp)
+    parser.parse(file_handle)
+    return dp.events
 
 def parse_perforce_path(file_handle, opts):
     changelists = run_marshal('p4 -G changelists "' + opts.perforce_path + '"')

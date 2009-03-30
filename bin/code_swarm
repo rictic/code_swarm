@@ -147,24 +147,25 @@ def invoke_code_swarm(code_swarm_jar, proj_cfg, options):
 def code_swarm_dir(repo):
     """Returns a directory within the current working directory that
     we can use for storage within the given repository directory."""
-    if repo[0] == '.':
-        repo = repo[1:]
-    return os.path.join(os.getcwd(), "." + repo, ".code_swarm")
+    return os.path.join(os.getcwd(), repo, ".code_swarm")
 
 
 def autogenerate_files(options):
     """docstring for autogenerate_files"""
     if os.path.exists(".git"):
-        dir = code_swarm_dir("git")
+        dir = code_swarm_dir(".git")
         generate_log = do_git
     elif os.path.exists(".svn"):
-        dir = code_swarm_dir("svn")
+        dir = code_swarm_dir(".svn")
         generate_log = do_svn
     elif os.path.exists(".hg"):
-        dir = code_swarm_dir("hg")
+        dir = code_swarm_dir(".hg")
         generate_log = do_hg
+    elif os.path.exists("_darcs"):
+        dir = code_swarm_dir("_darcs")
+        generate_log = do_darcs
     else:
-        msg  = "This directory isn't an svn, git, or hg project. "
+        msg  = "This directory isn't an svn, git, hg, or darcs project. "
         msg += "Run in the base directory of a source-controlled project."
         print >>sys.stderr, msg
         sys.exit(2)
@@ -198,7 +199,7 @@ def do_git(dir):
 
     return do_cmds('git log --name-status --pretty=format:"%s" > "%s"'%(fmt, tmp)
                   ,"convert_logs.py -g '%s' -o '%s'" % (tmp, xml)
-                  ,"rm %s" % tmp)
+                  ,"rm -f '%s'" % tmp)
 
 
 def do_svn(dir):
@@ -207,7 +208,7 @@ def do_svn(dir):
 
     return do_cmds("svn log -v > '%s'" % tmp
                   ,"convert_logs.py -s '%s' -o '%s'" % (tmp, xml)
-                  ,"rm '%s'" % tmp)
+                  ,"rm -f '%s'" % tmp)
 
 
 def do_hg(dir):
@@ -217,6 +218,14 @@ def do_hg(dir):
     return do_cmds("hg_log.py -o '%s' ." % tmp
                   ,"sort_code_swarm_input.py < '%s' > '%s'" % (tmp, xml)
                   ,"rm '%s'" % tmp)
+
+def do_darcs(dir):
+    tmp = os.path.join(dir, "darcs.xml")
+    xml = os.path.join(dir, "log.xml")
+    
+    return do_cmds("darcs changes -s --xml-output > '%s'" % tmp
+                  ,"convert_logs.py -d '%s' -o '%s'" % (tmp, xml)
+                  ,"rm -f '%s'" % tmp)
 
 def do_freebase(domain):
     dir = os.path.abspath(tempfile.gettempdir())
