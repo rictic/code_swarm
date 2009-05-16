@@ -1,0 +1,5 @@
+#!/bin/sh
+
+date=`date +%d-%b-%Y`
+home=.code_swarm
+mencoder mf://$home/frames/*.png -mf fps=24:type=png -ovc lavc -oac copy -o $home/video-$date.avi

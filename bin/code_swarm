@@ -153,7 +153,7 @@ def code_swarm_dir(repo):
 def autogenerate_files(options):
     """docstring for autogenerate_files"""
     if os.path.exists(".git"):
-        dir = code_swarm_dir(".git")
+        dir = code_swarm_dir("")
         generate_log = do_git
     elif os.path.exists(".svn"):
         dir = code_swarm_dir(".svn")
