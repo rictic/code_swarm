@@ -69,6 +69,7 @@ public class code_swarm extends PApplet {
   // Data storage
   BlockingQueue<FileEvent> eventsQueue;
   boolean isInputSorted = false;
+	boolean showUserName = false;
   protected static Map<String, FileNode> nodes;
   protected static Map<Pair<FileNode, PersonNode>, Edge> edges;
   protected static Map<String, PersonNode> people;
@@ -230,6 +231,7 @@ public class code_swarm extends PApplet {
     UPDATE_DELTA = (long) (86400000 / framesperday);
 
     isInputSorted = cfg.getBooleanProperty(CodeSwarmConfig.IS_INPUT_SORTED_KEY);
+		showUserName = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_USER_NAME_KEY);
     
     avatarFetcher = getAvatarFetcher(cfg.getStringProperty("AvatarFetcher"));
 
@@ -1492,11 +1494,12 @@ public class code_swarm extends PApplet {
           textFont(font);
         
         fill(fontColor, life);
-        text(name, mPosition.x, mPosition.y+10);
+				if(showUserName)
+        	text(name, mPosition.x, mPosition.y+10);
         if (icon != null){
           colorMode(RGB);
           tint(255,255,255,max(0,life-80));
-          image(icon, mPosition.x-(avatarFetcher.size / 2), mPosition.y-(avatarFetcher.size - 5));
+          image(icon, mPosition.x-(avatarFetcher.size / 2), mPosition.y-(avatarFetcher.size - ( showUserName ? 5 : 15)));
         }
       }
     }
