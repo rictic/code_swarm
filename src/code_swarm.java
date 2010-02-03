@@ -63,6 +63,7 @@ public class code_swarm extends PApplet {
   int FRAME_RATE = 24;
   long UPDATE_DELTA = -1;
   String SPRITE_FILE = "particle.png";
+	String MASK_FILE = "src/mask.png";
   String SCREENSHOT_FILE;
   int background;
 
@@ -93,6 +94,7 @@ public class code_swarm extends PApplet {
   PFont font;
   PFont boldFont;
   PImage sprite;
+	PImage avatarMask;
 
   boolean paused = false;
   
@@ -332,6 +334,8 @@ public class code_swarm extends PApplet {
     String SPRITE_FILE = cfg.getStringProperty(CodeSwarmConfig.SPRITE_FILE_KEY);
     // Create the file particle image
     sprite = loadImage(SPRITE_FILE);
+		avatarMask = loadImage(MASK_FILE);
+		avatarMask.resize(cfg.getPositiveIntProperty("AvatarSize"), cfg.getPositiveIntProperty("AvatarSize"));
     // Add translucency (using itself in this case)
     sprite.mask(sprite);
   }
@@ -1476,7 +1480,10 @@ public class code_swarm extends PApplet {
       mLastPosition.add(mPhysicsEngine.startVelocity(this));
       mFriction = 0.99f;
       String iconFile = avatarFetcher.fetchUserImage(name);
-      if (iconFile != null) icon = loadImage(iconFile, "unknown");
+      if (iconFile != null) {
+				icon = loadImage(iconFile, "unknown");
+				icon.mask(avatarMask);
+			}
     }
 
     /**
