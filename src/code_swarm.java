@@ -499,7 +499,7 @@ public class code_swarm extends PApplet {
    */
   public void drawHistory() {
     int counter = 0;
-    
+    strokeWeight(PARTICLE_SIZE);
     for (ColorBins cb : history) {
       if (cb.num > 0) {
         int color = cb.colorList[0];
@@ -1282,6 +1282,7 @@ public class code_swarm extends PApplet {
     protected Vector2f mPosition;
     protected Vector2f mLastPosition;
     protected float mFriction;
+		protected float currentWidth;
 
     /**
      * mass of the node
@@ -1348,7 +1349,18 @@ public class code_swarm extends PApplet {
         if (drawFilesJelly) {
           drawJelly();
         }
-
+				// Draw motion blur
+				// float d = mPosition.distance(mLastPosition);
+				
+				float nx = mPosition.x - mLastPosition.x;
+				float ny = mPosition.y - mLastPosition.y;
+				float d = (float) Math.sqrt(nx * nx + ny * ny);
+				
+				stroke(nodeHue, min(255f * (d / 10f), 255f) / 10f);
+				strokeCap(ROUND);
+				strokeWeight(currentWidth / 4f);
+				// strokeWeight((float)life / 10.0 * (float)PARTICLE_SIZE);
+				line(mPosition.x, mPosition.y, mLastPosition.x, mLastPosition.y);
         /** TODO : this would become interesting on some special event, or for special materials
          * colorMode( RGB ); fill( 0, life ); textAlign( CENTER, CENTER ); text( name, x, y );
          * Example below:
@@ -1419,7 +1431,7 @@ public class code_swarm extends PApplet {
       colorMode(RGB);
       fill(nodeHue, life);
       float w = 3 * PARTICLE_SIZE;
-
+			currentWidth = w;
       if (life >= minBold) {
         stroke(255, 128);
         w *= 2;
@@ -1435,6 +1447,7 @@ public class code_swarm extends PApplet {
       tint(nodeHue, life);
 
       float w = (8 + (sqrt(touches) * 4)) * PARTICLE_SIZE;
+			currentWidth = w;
       // not used float dubw = w * 2;
       float halfw = w / 2;
       if (life >= minBold) {
@@ -1453,6 +1466,7 @@ public class code_swarm extends PApplet {
       else
         stroke(nodeHue, life);
       float w = sqrt(touches) * PARTICLE_SIZE;
+			currentWidth = w;
       ellipseMode(CENTER);
       ellipse(mPosition.x, mPosition.y, w, w);
     }
