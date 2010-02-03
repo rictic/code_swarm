@@ -67,6 +67,7 @@ public class code_swarm extends PApplet {
 	String MASK_FILE = "src/mask.png";
   String SCREENSHOT_FILE;
   int background;
+	int PARTICLE_SIZE = 2;
 
   // Data storage
   BlockingQueue<FileEvent> eventsQueue;
@@ -1417,7 +1418,7 @@ public class code_swarm extends PApplet {
     public void drawSharp() {
       colorMode(RGB);
       fill(nodeHue, life);
-      float w = 3;
+      float w = 3 * PARTICLE_SIZE;
 
       if (life >= minBold) {
         stroke(255, 128);
@@ -1433,7 +1434,7 @@ public class code_swarm extends PApplet {
     public void drawFuzzy() {
       tint(nodeHue, life);
 
-      float w = 8 + (sqrt(touches) * 4);
+      float w = (8 + (sqrt(touches) * 4)) * PARTICLE_SIZE;
       // not used float dubw = w * 2;
       float halfw = w / 2;
       if (life >= minBold) {
@@ -1451,7 +1452,7 @@ public class code_swarm extends PApplet {
         stroke(255);
       else
         stroke(nodeHue, life);
-      float w = sqrt(touches);
+      float w = sqrt(touches) * PARTICLE_SIZE;
       ellipseMode(CENTER);
       ellipse(mPosition.x, mPosition.y, w, w);
     }
