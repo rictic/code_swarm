@@ -1,0 +1,321 @@
+------------------------------------------------------------------------
+r50456 | kbosselman | 2009-10-01 12:05:14 -0400 (Thu, 01 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlHistory.java
+
+Properly init dbFactory key
+
+------------------------------------------------------------------------
+r50382 | elentz | 2009-09-25 10:43:02 -0400 (Fri, 25 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.java
+
+Created Guest Order migration part 2 - The update of UCS order number in AGI_GUEST_ORDER_MAPPING
+------------------------------------------------------------------------
+r50322 | kbosselman | 2009-09-22 16:57:49 -0400 (Tue, 22 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/SnapshotTimestamp.java
+
+add isTimestampSet() method
+
+------------------------------------------------------------------------
+r50317 | kbosselman | 2009-09-22 13:16:22 -0400 (Tue, 22 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+
+Update getUserIdsForFullUcsCreate for beta users
+
+------------------------------------------------------------------------
+r50260 | elentz | 2009-09-17 14:19:52 -0400 (Thu, 17 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.hbm.xml
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.java
+
+Added UCS customer number back in
+------------------------------------------------------------------------
+r50117 | elentz | 2009-09-08 08:26:28 -0400 (Tue, 08 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+
+Fixed query so that it actually returns beta and non-beta customers correctly.
+------------------------------------------------------------------------
+r50031 | elentz | 2009-09-01 10:02:58 -0400 (Tue, 01 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.hbm.xml
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.java
+
+Added first name and last name to GuestOrderMapping
+------------------------------------------------------------------------
+r50024 | elentz | 2009-08-31 10:40:19 -0400 (Mon, 31 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.java
+
+Realized difficulties with using ID to page against because of grouping. Paging now against e-mail address.
+------------------------------------------------------------------------
+r50022 | elentz | 2009-08-31 09:14:22 -0400 (Mon, 31 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.java
+
+Added order by on select of Guest Orders to ensure IDs are ordered for paging inquires.
+------------------------------------------------------------------------
+r50006 | elentz | 2009-08-28 15:51:49 -0400 (Fri, 28 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.java
+
+Added a lookup for getting all unique e-mail accounts from the GuestOrderMapping
+------------------------------------------------------------------------
+r49993 | kbosselman | 2009-08-27 12:36:32 -0400 (Thu, 27 Aug 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.hbm.xml
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.java
+
+Add new accessors
+
+------------------------------------------------------------------------
+r49968 | elentz | 2009-08-26 14:18:09 -0400 (Wed, 26 Aug 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+   M /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/member/AuditMembersNotMigrated.java
+   M /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/order/OrderMigration.java
+
+- Fixed some errors introduced into the invalid accounts checking
+- Fixed queries for the AuditMembersNotMigrated class and supporting MigrationControlDAOImpl
+------------------------------------------------------------------------
+r49947 | elentz | 2009-08-25 14:12:51 -0400 (Tue, 25 Aug 2009) | 3 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+   M /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/member/AuditMembersNotMigrated.java
+   M /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/member/Delta.java
+   M /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/member/GuestMemberMigration.java
+   M /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/member/MemberMigration.java
+   M /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/member/Tracking.java
+
+- Updated the query returned from MigrationControlDAOImpl
+- Updated Tracking and Delta to use pst for comparing dates
+- Other incremental Member migration changes
+------------------------------------------------------------------------
+r49834 | elentz | 2009-08-20 08:50:06 -0400 (Thu, 20 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAO.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+   A /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/member/AuditMembersNotMigrated.java
+   M /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/order/OrderMigration.java
+
+Added a user auditing capability so that we can reconcile the members that we are not migrating against what QA is saying.
+------------------------------------------------------------------------
+r49701 | kbosselman | 2009-08-13 10:23:59 -0400 (Thu, 13 Aug 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAO.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+
+Update migration control queries
+
+------------------------------------------------------------------------
+r49639 | kbosselman | 2009-08-07 20:13:57 -0400 (Fri, 07 Aug 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/SnapshotTimestamp.java
+
+Synchronize getTimestampDate
+
+------------------------------------------------------------------------
+r49578 | elentz | 2009-07-31 12:10:29 -0400 (Fri, 31 Jul 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAO.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+   M /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/controller/MigrationController.java
+   D /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/controller/UserMigrationSelector.java
+   A /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/controller/impl
+   A /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/controller/impl/UserMigrationSelector.java (from /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/controller/UserMigrationSelector.java:49568)
+   A /trunk/bedrock/utilities/DataMigration/src/com/photoworks/datamigration/controller/impl/UserMigrationSelectorFullLoadMode.java
+
+Set up the controller to read a different query when performing a full initial load of the DB. It accepts a parameter in the client properties file.
+------------------------------------------------------------------------
+r49576 | elentz | 2009-07-31 11:34:57 -0400 (Fri, 31 Jul 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.java
+
+Added address back into GuestOrderMapping
+------------------------------------------------------------------------
+r49537 | kbosselman | 2009-07-29 15:33:15 -0400 (Wed, 29 Jul 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+
+Add STAGE_CODe 1 TO QUERY
+
+------------------------------------------------------------------------
+r49514 | elentz | 2009-07-28 09:16:35 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+
+Grabbed the wrong revision when I restored yesterday
+------------------------------------------------------------------------
+r49501 | kbosselman | 2009-07-27 18:31:11 -0400 (Mon, 27 Jul 2009) | 2 lines
+Changed paths:
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/InProcessException.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/NoMigrationException.java
+
+Check for NoMigration status
+
+------------------------------------------------------------------------
+r49496 | elentz | 2009-07-27 16:37:31 -0400 (Mon, 27 Jul 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+
+Reverted to previous version. Misunderstood the intent recent changes. Will test and make changes if necessary.
+------------------------------------------------------------------------
+r49494 | elentz | 2009-07-27 15:59:06 -0400 (Mon, 27 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+
+The check for beta customers was outside of the parentheses and needed to be inside for the LEFT JOIN to work correctly. Furthermore, when looking for beta customers if there was no AGI_MIGRATION_CONTROL, then records would have been selected. When looking for beta, we only want beta, so the control table must be there and flag them as such. If there is no control table, then customers can be retrieved and they are treated as regular customers.
+
+The solution was to break the query into two so beta and non-beta get separate treatment.
+------------------------------------------------------------------------
+r49460 | elentz | 2009-07-24 13:04:24 -0400 (Fri, 24 Jul 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/db/01737U_SCHEMA_ag_migration.sql
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.hbm.xml
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.java
+
+Removed uscCustomer and address from AGI_GUEST_ORDER_MAPPING. UCS customer mapping will be handled by looking up the cross-reference from within the order migration on providerid within customerprofile. Address isn't being used.
+------------------------------------------------------------------------
+r49360 | kbosselman | 2009-07-21 19:45:15 -0400 (Tue, 21 Jul 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+
+Modify getUsersByQueuedMigrationControls to include new members
+
+------------------------------------------------------------------------
+r49312 | elentz | 2009-07-20 07:48:13 -0400 (Mon, 20 Jul 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAO.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+
+getQueuedMigrationControls - rename from other method name and changes to it
+------------------------------------------------------------------------
+r49191 | kbosselman | 2009-07-14 18:51:38 -0400 (Tue, 14 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/config/spring-hibernate.xml
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.hbm.xml
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/GuestOrderMapping.java
+
+add GuestOrderMapping
+
+
+------------------------------------------------------------------------
+r49153 | kbosselman | 2009-07-13 20:10:41 -0400 (Mon, 13 Jul 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlHistory.java
+
+usage migration updates
+
+------------------------------------------------------------------------
+r49045 | elentz | 2009-07-09 10:52:25 -0400 (Thu, 09 Jul 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+
+Added a limit to the number of rows that getQueuedMigrationControls returns
+------------------------------------------------------------------------
+r49028 | kbosselman | 2009-07-08 17:21:39 -0400 (Wed, 08 Jul 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/config/spring-hibernate.xml
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAO.java
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlDAOImpl.java
+
+add getQueuedMigrationControls
+
+------------------------------------------------------------------------
+r48828 | kbosselman | 2009-06-30 13:53:23 -0400 (Tue, 30 Jun 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/SnapshotTimestamp.java
+
+Fix MigrationTimestamp logic
+------------------------------------------------------------------------
+r48398 | kbosselman | 2009-06-16 11:43:49 -0400 (Tue, 16 Jun 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/config/spring-hibernate.xml
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/MemMigrationQueue.hbm.xml
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/MemMigrationQueue.java
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/SnapshotTimestamp.hbm.xml
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/SnapshotTimestamp.java
+
+Migration Control Records
+------------------------------------------------------------------------
+r48080 | kbosselman | 2009-06-03 12:22:53 -0400 (Wed, 03 Jun 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationServerHistory.hbm.xml
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationServerHistory.java
+
+update MigrationServerHistory
+------------------------------------------------------------------------
+r48064 | kbosselman | 2009-06-02 19:07:57 -0400 (Tue, 02 Jun 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/config/spring-hibernate.xml
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationServerHistory.hbm.xml
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationServerHistory.java
+
+add MigrationServerHistory
+------------------------------------------------------------------------
+r47758 | kbosselman | 2009-05-15 19:46:50 -0400 (Fri, 15 May 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlHistory.java
+
+Migration counts
+------------------------------------------------------------------------
+r47748 | kbosselman | 2009-05-15 16:26:51 -0400 (Fri, 15 May 2009) | 2 lines
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/DbObject.java
+   M /trunk/bedrock/mw/java/src/phaAPI/DbObjectDAO.java
+   M /trunk/bedrock/mw/java/src/phaAPI/DbObjectDAOImpl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/DbObjectDAOOraImpl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlHistory.java
+
+Add add() and update() methods
+Update MigrationControl method signatures
+------------------------------------------------------------------------
+r47744 | kbosselman | 2009-05-15 14:33:59 -0400 (Fri, 15 May 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.hbm.xml
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlHistory.hbm.xml
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlHistory.java
+
+rename timestamp field
+------------------------------------------------------------------------
+r47597 | kbosselman | 2009-05-07 19:37:34 -0400 (Thu, 07 May 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/idl/phaBO.idl
+   M /trunk/bedrock/mw/java/config/spring-hibernate.xml
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.hbm.xml
+   M /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlHistory.hbm.xml
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControlHistory.java
+
+Add migration control history
+------------------------------------------------------------------------
+r47415 | kbosselman | 2009-04-27 16:00:29 -0400 (Mon, 27 Apr 2009) | 1 line
+Changed paths:
+   M /trunk/bedrock/mw/idl/phaBO.idl
+   M /trunk/bedrock/mw/java/config/spring-hibernate.xml
+   M /trunk/bedrock/mw/java/src/phaAPI/DbObject.java
+   M /trunk/bedrock/mw/java/src/phaAPI/DbObjectDAO.java
+   M /trunk/bedrock/mw/java/src/phaAPI/DbObjectDAOImpl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/DbObjectDAOOraImpl.java
+   M /trunk/bedrock/mw/java/src/phaAPI/PwSqlQuery.java
+   A /trunk/bedrock/mw/java/src/phaAPI/migration
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.hbm.xml
+   A /trunk/bedrock/mw/java/src/phaAPI/migration/MigrationControl.java
+
+AG Migration Control Changes
+

@@ -1,0 +1,1276 @@
+------------------------------------------------------------------------
+r48016 | malexander | 2009-06-01 16:42:17 -0400 (Mon, 01 Jun 2009) | 5 lines
+Changed paths:
+   M /trunk/quadshot/build.xml
+   M /trunk/quadshot/webservices/opal/build.xml
+   M /trunk/quadshot/webservices/quadshot/build.xml
+
+Removing hibernate, haystack, component mgr and 
+other jars that were included due to dependencies 
+on pha.jar. These should no longer be needed.
+
+
+------------------------------------------------------------------------
+r48063 | malexander | 2009-06-02 19:03:16 -0400 (Tue, 02 Jun 2009) | 4 lines
+Changed paths:
+   M /trunk/quadshot/assets/CSOrder.xsd
+
+Fix for oddity in Ink2 xsd. Will amke compatible
+with Jaxb2.0 and fixes an issue in the verdor service.
+
+
+------------------------------------------------------------------------
+r48087 | malexander | 2009-06-03 16:31:05 -0400 (Wed, 03 Jun 2009) | 7 lines
+Changed paths:
+   M /trunk/quadshot/assets/CSOrder.xsd
+
+Had to adjust the INK2 xsd to allow some fields
+not to be present given the use of the "all"
+construct (rather the the "choice" for different 
+sequences of elements.
+
+
+
+------------------------------------------------------------------------
+r48330 | cmiller | 2009-06-11 16:33:51 -0400 (Thu, 11 Jun 2009) | 3 lines
+Changed paths:
+   A /trunk/quadshot/assets/end_sheet_my_world_back_8x8.jpg
+   A /trunk/quadshot/assets/end_sheet_my_world_front_8x8.jpg
+   M /trunk/quadshot/assets/vendor_sku_codes.properties
+
+Added in new endsheets and vendor_sku properties for the My World board book. 
+
+
+------------------------------------------------------------------------
+r48333 | malexander | 2009-06-11 18:47:37 -0400 (Thu, 11 Jun 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/end_sheet_my_world_back_8x8.jpg
+   M /trunk/quadshot/assets/end_sheet_my_world_front_8x8.jpg
+
+Updated with new files received from Joe.
+
+
+------------------------------------------------------------------------
+r48726 | malexander | 2009-06-26 13:07:45 -0400 (Fri, 26 Jun 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/webservices/vendor/src/AbstractVendorService.java
+   M /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/simulator/VendorOrderItem.java
+
+Small change to start handling of images.
+
+
+------------------------------------------------------------------------
+r48948 | malexander | 2009-07-06 19:24:20 -0400 (Mon, 06 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/build.xml
+
+Removal of irelevant dependency.
+
+
+------------------------------------------------------------------------
+r48969 | cmiller | 2009-07-07 15:48:13 -0400 (Tue, 07 Jul 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-qa2.properties
+
+Adding test url for Rastar 4.0 API
+------------------------------------------------------------------------
+r48973 | malexander | 2009-07-07 16:23:26 -0400 (Tue, 07 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/Rastar_OFI.xsd
+
+Adding "Version" element for OFI 4.0 compliance.
+
+
+------------------------------------------------------------------------
+r49031 | malexander | 2009-07-08 20:43:56 -0400 (Wed, 08 Jul 2009) | 3 lines
+Changed paths:
+   A /trunk/quadshot/assets/msg_queue
+   A /trunk/quadshot/assets/msg_queue/msg_queue_cfg.qa1.xml
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+   M /trunk/quadshot/build.xml
+
+Inital build modifications to include all the active mq jars.
+
+
+------------------------------------------------------------------------
+r49050 | malexander | 2009-07-09 13:02:41 -0400 (Thu, 09 Jul 2009) | 3 lines
+Changed paths:
+   D /trunk/quadshot/assets/msg_queue/msg_queue_cfg.qa1.xml
+   A /trunk/quadshot/assets/msg_queue/vendor_client.qa1.xml (from /trunk/quadshot/assets/msg_queue/msg_queue_cfg.qa1.xml:49031)
+
+Creating base spring conext xml.
+
+
+------------------------------------------------------------------------
+r49058 | malexander | 2009-07-09 20:31:08 -0400 (Thu, 09 Jul 2009) | 8 lines
+Changed paths:
+   A /trunk/quadshot/assets/msg_queue/qa1
+   A /trunk/quadshot/assets/msg_queue/qa1/base_vendor_client.qa1.xml
+   A /trunk/quadshot/assets/msg_queue/qa1/cds_client.xml
+   A /trunk/quadshot/assets/msg_queue/qa1/ezprints_client.xml
+   A /trunk/quadshot/assets/msg_queue/qa1/ink2_client.xml
+   A /trunk/quadshot/assets/msg_queue/qa1/iyp_client.xml
+   A /trunk/quadshot/assets/msg_queue/qa1/planet_jill_client.xml
+   A /trunk/quadshot/assets/msg_queue/qa1/rastar_client.xml
+   A /trunk/quadshot/assets/msg_queue/qa1/rpi_client.xml
+   A /trunk/quadshot/assets/msg_queue/qa1/vendor_status_client.xml
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+   M /trunk/quadshot/build.xml
+   M /trunk/quadshot/src/com/photoworks/iyp/station/IYPPrepOrdersWorker.java
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+
+First quadshot with a MQ Client integrated. IYP is only station which is set to initialize
+the queue client (via a property in quadshot worker props). Current implementation simply
+tries to parse the iml and write it to file. Once this is working, processing can be triggered
+by invoking the doJob method passing in the File object where the iml xml was written.
+Need to add a flag so that processing is only allowed from one or the other queue (legacy
+or beta).
+
+
+------------------------------------------------------------------------
+r49068 | malexander | 2009-07-10 12:06:50 -0400 (Fri, 10 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/build.xml
+
+Fixed classpath for spring context files.
+
+
+------------------------------------------------------------------------
+r49071 | malexander | 2009-07-10 14:33:50 -0400 (Fri, 10 Jul 2009) | 6 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+
+Neglected to instantiate the imlMarshaller (it was not ever used previously).
+With this change the quadshot stations are capable of receiving iml xml via 
+apache MQ.
+
+
+
+------------------------------------------------------------------------
+r49079 | malexander | 2009-07-10 20:31:54 -0400 (Fri, 10 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/webservices/opal/build.xml
+
+Adding msg queue jars and config to opal build.
+
+
+------------------------------------------------------------------------
+r49106 | malexander | 2009-07-12 15:36:38 -0400 (Sun, 12 Jul 2009) | 8 lines
+Changed paths:
+   M /trunk/quadshot/build.xml
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+
+Updates to have abstrat station build a suborder state change message for 
+sending to the output queue.
+
+Made a "working" change to have the build go against the trunk version
+of the MsgQueueClient jar rather than a tagged version to minimize the
+amount of svn thrashing for every update to the queue code.
+
+
+------------------------------------------------------------------------
+r49151 | malexander | 2009-07-13 18:58:19 -0400 (Mon, 13 Jul 2009) | 7 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/cds_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/ink2_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/iyp_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/planet_jill_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/rastar_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/rpi_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/vendor_status_client.xml
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+   A /trunk/quadshot/testsrc/com/photoworks/quadshot/station/AbstractPrepOrderTest.java
+   A /trunk/quadshot/testsrc/com/photoworks/quadshot/station/shoggoth_iml.xml
+
+Fixed type in JaxbContext and redid all queue consumer names (using constants
+from MQC.java. This is now working in qa1 to send properly formatted responses
+to order processing.
+
+
+
+
+------------------------------------------------------------------------
+r49152 | malexander | 2009-07-13 19:11:24 -0400 (Mon, 13 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/cds_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/ink2_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/iyp_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/planet_jill_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/rastar_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/rpi_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/vendor_status_client.xml
+
+Got rid of unneeded Listener, an adapter is used instead.
+
+
+------------------------------------------------------------------------
+r49194 | malexander | 2009-07-14 19:25:54 -0400 (Tue, 14 Jul 2009) | 5 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/base_vendor_client.qa1.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/cds_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/ink2_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/iyp_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/planet_jill_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/rastar_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/rpi_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/vendor_status_client.xml
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+
+Added input queue for requeue and made a lot of tweaks and fixes in the
+error handling for the processOrder method.
+
+
+
+------------------------------------------------------------------------
+r49232 | malexander | 2009-07-16 20:08:19 -0400 (Thu, 16 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/ink2_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/iyp_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/vendor_status_client.xml
+
+Tweaks to correct minor issues in config.
+
+
+------------------------------------------------------------------------
+r49244 | cmiller | 2009-07-17 09:58:51 -0400 (Fri, 17 Jul 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+
+Checking in file with 4.0 API URL for posting orders on QA1
+------------------------------------------------------------------------
+r49265 | malexander | 2009-07-17 16:38:01 -0400 (Fri, 17 Jul 2009) | 4 lines
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+   M /trunk/quadshot/src/com/photoworks/cds/station/CDSPrepOrdersWorker.java
+   M /trunk/quadshot/src/com/photoworks/ezprints/station/EzPrintsPrepOrdersWorker.java
+   M /trunk/quadshot/src/com/photoworks/ink2/station/Ink2PrepOrdersWorker.java
+   M /trunk/quadshot/src/com/photoworks/planetjill/station/PlanetJillPrepOrdersWorker.java
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+   M /trunk/quadshot/src/com/photoworks/rastar/station/RastarPrepOrder.java
+
+Added code in Abstract to call doJob on iml received from the queue
+and added the queue initialization to all the stations (except RPI).
+
+
+------------------------------------------------------------------------
+r49267 | malexander | 2009-07-17 17:53:33 -0400 (Fri, 17 Jul 2009) | 4 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/quadshot/db/IMLOrder.java
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+
+Fix for dealing with files from beta and order directories from legacy.
+Ditched the date processing in IMLOrder and substituted the current date.
+
+
+------------------------------------------------------------------------
+r49338 | malexander | 2009-07-20 18:58:43 -0400 (Mon, 20 Jul 2009) | 5 lines
+Changed paths:
+   M /trunk/quadshot/webservices/opal/assets/web.xml
+   M /trunk/quadshot/webservices/opal/build.xml
+
+Added hooks to instantiate the spring context via a listener
+and to fix the jars needed for the queue client.
+
+
+
+------------------------------------------------------------------------
+r49341 | malexander | 2009-07-20 20:12:36 -0400 (Mon, 20 Jul 2009) | 4 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/vendor_status_client.xml
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+
+Fixed some typos based upon testing all the quadshot
+stations this morning with the new queues.
+
+
+------------------------------------------------------------------------
+r49359 | malexander | 2009-07-21 19:25:40 -0400 (Tue, 21 Jul 2009) | 4 lines
+Changed paths:
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+   M /trunk/quadshot/webservices/opal/src/CDSOrderStatus.java
+
+First test code that should be able to get the spring context and send messages.
+Once the message sending is validated, the remaining logic will be put in place.
+
+
+------------------------------------------------------------------------
+r49406 | malexander | 2009-07-22 19:41:47 -0400 (Wed, 22 Jul 2009) | 5 lines
+Changed paths:
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+
+Verified that message queue client is working and properly configured
+test code was removed and proper message properties are being set.
+
+
+
+------------------------------------------------------------------------
+r49432 | malexander | 2009-07-23 18:43:12 -0400 (Thu, 23 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+   M /trunk/quadshot/src/com/photoworks/rastar/station/RastarPrepOrder.java
+
+Adding apache mq capability to Rastar station for sending updates to UCS.
+
+
+------------------------------------------------------------------------
+r49464 | malexander | 2009-07-24 14:17:31 -0400 (Fri, 24 Jul 2009) | 8 lines
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+   M /trunk/quadshot/src/com/photoworks/ezprints/station/EzPrintsPrepOrdersWorker.java
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/QSC.java
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+
+Changes for mapping internal image processor url's to external image processor urls.
+This is needed as order processing generates a url that is internal (and points to
+a specific image processor). When we expose the image processors externally, we
+want to expose them on a host (alias) that we can load balance across the image
+processors we want to use.
+
+
+
+------------------------------------------------------------------------
+r49507 | malexander | 2009-07-27 20:16:53 -0400 (Mon, 27 Jul 2009) | 4 lines
+Changed paths:
+   A /trunk/quadshot/assets/msg_queue/prod
+   A /trunk/quadshot/assets/msg_queue/prod/base_vendor_client.prod.xml
+   A /trunk/quadshot/assets/msg_queue/prod/cds_client.xml
+   A /trunk/quadshot/assets/msg_queue/prod/ezprints_client.xml
+   A /trunk/quadshot/assets/msg_queue/prod/ink2_client.xml
+   A /trunk/quadshot/assets/msg_queue/prod/iyp_client.xml
+   A /trunk/quadshot/assets/msg_queue/prod/planet_jill_client.xml
+   A /trunk/quadshot/assets/msg_queue/prod/rastar_client.xml
+   A /trunk/quadshot/assets/msg_queue/prod/rpi_client.xml
+   A /trunk/quadshot/assets/msg_queue/prod/vendor_status_client.xml
+   M /trunk/quadshot/assets/quadshot-worker-dc3.properties
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+   M /trunk/quadshot/build.xml
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+
+Had to redo some of the properties to allow for values to be picked up 
+on a per environement basis.
+
+
+------------------------------------------------------------------------
+r49520 | malexander | 2009-07-28 12:29:10 -0400 (Tue, 28 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/build.xml
+
+Fix for class path to only include the non-env specific path for the message queue configs.
+
+
+------------------------------------------------------------------------
+r49524 | malexander | 2009-07-28 16:59:52 -0400 (Tue, 28 Jul 2009) | 5 lines
+Changed paths:
+   M /trunk/quadshot/testsrc/com/photoworks/quadshot/station/PDFImageStitcherTest.java
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+   M /trunk/quadshot/webservices/opal/src/EzPrintsOrderStatus.java
+   M /trunk/quadshot/webservices/opal/src/IYPStatus.java
+   M /trunk/quadshot/webservices/opal/src/PlanetJillOrderStatus.java
+
+Had to fix a couple spots for the servlet init with thte ServletContext.
+Also wrapped the queue call in opal with an exception so it does not 
+have the potential to mess up the calls to update quadshot and bedrock.
+
+
+------------------------------------------------------------------------
+r49529 | cmiller | 2009-07-29 13:41:03 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-dc3.properties
+
+Added Rastar 4.0 url for production
+------------------------------------------------------------------------
+r49553 | malexander | 2009-07-30 17:22:30 -0400 (Thu, 30 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/quadshot/db/OrderJob.java
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/PDFImageStitcher.java
+
+Removing access to System.err from two of the quadshot classes.
+
+
+------------------------------------------------------------------------
+r49559 | malexander | 2009-07-30 19:01:48 -0400 (Thu, 30 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoaccess/PObj/ConnectionPoolManager.java
+   M /trunk/quadshot/src/com/photoaccess/PObj/DBConnectionPool.java
+   M /trunk/quadshot/src/com/photoaccess/PObj/DBObj.java
+   M /trunk/quadshot/src/com/photoaccess/PObj/Factory.java
+   M /trunk/quadshot/src/com/photoaccess/PObj/FieldInfo.java
+   D /trunk/quadshot/src/com/photoaccess/PObj/PropSetEditor.java
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/PDFImageStitcher.java
+
+Getting rid of System.err and System.out calls by adding loggers to old PObj
+classes. Dumped PropSetEditor, it is not used.
+
+------------------------------------------------------------------------
+r49560 | malexander | 2009-07-30 19:06:19 -0400 (Thu, 30 Jul 2009) | 2 lines
+Changed paths:
+   A /retired/trunk/quadshot/src/com/photoworks/rpi (from /trunk/quadshot/src/com/photoworks/rpi:49559)
+   D /trunk/quadshot/src/com/photoworks/rpi
+
+Retiring rpi station.
+
+------------------------------------------------------------------------
+r49561 | malexander | 2009-07-30 19:10:53 -0400 (Thu, 30 Jul 2009) | 3 lines
+Changed paths:
+   A /retired/trunk/quadshot/webservices/opal/src/RPIOrderStatus.java (from /trunk/quadshot/webservices/opal/src/RPIOrderStatus.java:49560)
+   D /trunk/quadshot/webservices/opal/src/RPIOrderStatus.java
+
+Retiring RPI order status.
+
+
+------------------------------------------------------------------------
+r49563 | malexander | 2009-07-30 19:14:18 -0400 (Thu, 30 Jul 2009) | 2 lines
+Changed paths:
+   A /retired/trunk/quadshot/assets/iPads_Order_Ack.xsd (from /trunk/quadshot/assets/iPads_Order_Ack.xsd:49562)
+   D /trunk/quadshot/assets/iPads_Order_Ack.xsd
+
+Retiring RPI xsd
+
+------------------------------------------------------------------------
+r49564 | malexander | 2009-07-30 19:15:16 -0400 (Thu, 30 Jul 2009) | 2 lines
+Changed paths:
+   A /retired/trunk/quadshot/assets/iPads_Order4PW.xsd (from /trunk/quadshot/assets/iPads_Order4PW.xsd:49563)
+   D /trunk/quadshot/assets/iPads_Order4PW.xsd
+
+Retiring RPI xsd.
+
+------------------------------------------------------------------------
+r49565 | malexander | 2009-07-30 19:16:10 -0400 (Thu, 30 Jul 2009) | 3 lines
+Changed paths:
+   A /retired/trunk/quadshot/assets/iPads_Order.xsd (from /trunk/quadshot/assets/iPads_Order.xsd:49564)
+   D /trunk/quadshot/assets/iPads_Order.xsd
+
+Retiring RPI xsd.
+
+
+------------------------------------------------------------------------
+r49567 | malexander | 2009-07-30 19:20:00 -0400 (Thu, 30 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-dc3.properties
+   M /trunk/quadshot/assets/quadshot-worker-junit.properties
+   M /trunk/quadshot/assets/quadshot-worker-prod.properties
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+   M /trunk/quadshot/assets/quadshot-worker-qa2.properties
+   M /trunk/quadshot/build.xml
+   D /trunk/quadshot/scripts/rpiPrepOrders.sh
+
+Removing RPI start up script, RPI props from the quadshot worker props and removing
+the RPI specific tasks from the build.
+
+------------------------------------------------------------------------
+r49572 | malexander | 2009-07-31 11:09:00 -0400 (Fri, 31 Jul 2009) | 3 lines
+Changed paths:
+   A /retired/trunk/quadshot/testsrc/com/photoworks/rpi (from /trunk/quadshot/testsrc/com/photoworks/rpi:49571)
+   D /trunk/quadshot/testsrc/com/photoworks/rpi
+
+Retiring RPI test code.
+
+
+------------------------------------------------------------------------
+r49574 | malexander | 2009-07-31 11:24:26 -0400 (Fri, 31 Jul 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/base_vendor_client.qa1.xml
+
+Added credentials.
+
+
+------------------------------------------------------------------------
+r49584 | malexander | 2009-07-31 15:49:40 -0400 (Fri, 31 Jul 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/scripts/quadshot
+
+Removed rpi start up script.
+
+------------------------------------------------------------------------
+r49590 | malexander | 2009-07-31 19:01:23 -0400 (Fri, 31 Jul 2009) | 2 lines
+Changed paths:
+   A /trunk/quadshot/assets/msg_queue/junit
+   A /trunk/quadshot/assets/msg_queue/junit/base_vendor_client.xml
+   A /trunk/quadshot/assets/msg_queue/junit/cds_client.xml
+   A /trunk/quadshot/assets/msg_queue/junit/ezprints_client.xml
+   A /trunk/quadshot/assets/msg_queue/junit/ink2_client.xml
+   A /trunk/quadshot/assets/msg_queue/junit/iyp_client.xml
+   A /trunk/quadshot/assets/msg_queue/junit/planet_jill_client.xml
+   A /trunk/quadshot/assets/msg_queue/junit/rastar_client.xml
+   A /trunk/quadshot/assets/msg_queue/junit/rpi_client.xml
+   A /trunk/quadshot/assets/msg_queue/junit/vendor_status_client.xml
+
+Adding config for junit testing with embedded mq server.
+
+------------------------------------------------------------------------
+r49598 | cmiller | 2009-08-03 14:17:48 -0400 (Mon, 03 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/IYPShippingNotification.xsd
+
+Changed Schema definition per Richard Dettman
+------------------------------------------------------------------------
+r49637 | malexander | 2009-08-07 19:11:20 -0400 (Fri, 07 Aug 2009) | 5 lines
+Changed paths:
+   M /trunk/quadshot/webservices/opal/src/PlanetJillOrderStatus.java
+   A /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response
+   A /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response/AbstractResponse.java
+   A /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response/IYPShipNotification.java
+   A /trunk/quadshot/webservices/vendor/testsrc/com
+   A /trunk/quadshot/webservices/vendor/testsrc/com/photoworks
+   A /trunk/quadshot/webservices/vendor/testsrc/com/photoworks/vendor
+   A /trunk/quadshot/webservices/vendor/testsrc/com/photoworks/vendor/response
+   A /trunk/quadshot/webservices/vendor/testsrc/com/photoworks/vendor/response/IYPShipNotificationTest.java
+
+Adding classes for generating and sending vendor ship messages. Starting with IYP.
+This works for sending to qa1, need to do more work on handling the response and
+getting the message correct.
+
+
+------------------------------------------------------------------------
+r49659 | cmiller | 2009-08-11 12:49:50 -0400 (Tue, 11 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/vendor_sku_codes.properties
+
+Removed sleeves and vellum for all products exact for 12X12, where the vellum was left.
+------------------------------------------------------------------------
+r49680 | cmiller | 2009-08-12 10:25:31 -0400 (Wed, 12 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/vendor_sku_codes.properties
+
+Fixed vellum issue with the 12x12 Matte and Glossy covers
+------------------------------------------------------------------------
+r49728 | malexander | 2009-08-14 13:34:16 -0400 (Fri, 14 Aug 2009) | 7 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/rastar/station/RastarPrepOrder.java
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+   M /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response/AbstractResponse.java
+   M /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response/IYPShipNotification.java
+
+Changes to update to the latest SuborderStateChange format per the shoggoth.xsd.
+
+This adds shipper and ship method to go along with the tracking number.
+
+The simulated ship message code is now working for IYP.
+
+
+------------------------------------------------------------------------
+r49799 | malexander | 2009-08-18 15:02:20 -0400 (Tue, 18 Aug 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/rastar/station/RastarPrepOrder.java
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+
+Call to set tracking number got orderridden in changing to ShipItem type.
+
+
+------------------------------------------------------------------------
+r49813 | malexander | 2009-08-18 18:57:52 -0400 (Tue, 18 Aug 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response/AbstractResponse.java
+   M /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response/IYPShipNotification.java
+   A /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response/Ink2CSOrderState.java
+   A /trunk/quadshot/webservices/vendor/testsrc/com/photoworks/vendor/response/Ink2CSOrderStateTest.java
+
+Adding code for genearating Ink2 shipping notifications.
+
+
+------------------------------------------------------------------------
+r49832 | malexander | 2009-08-19 18:35:44 -0400 (Wed, 19 Aug 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/vendor_sku_codes.properties
+
+Adding BK-020 in matte and glossy versions.
+
+
+------------------------------------------------------------------------
+r49866 | malexander | 2009-08-20 19:11:44 -0400 (Thu, 20 Aug 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/vendor_ship_codes.properties
+   M /trunk/quadshot/assets/vendor_sku_codes.properties
+
+Added inital codes for walnut and white metro, removed rpi ship codes.
+
+
+------------------------------------------------------------------------
+r49870 | malexander | 2009-08-20 19:31:25 -0400 (Thu, 20 Aug 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/prod/base_vendor_client.prod.xml
+   D /trunk/quadshot/assets/msg_queue/vendor_client.qa1.xml
+
+Updated to sync with the authentication schema.
+
+
+------------------------------------------------------------------------
+r49871 | malexander | 2009-08-20 19:47:54 -0400 (Thu, 20 Aug 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/base_vendor_client.qa1.xml
+
+Commiting queue name changes to be in sync with stage release tomorrow.
+
+------------------------------------------------------------------------
+r49872 | malexander | 2009-08-20 19:58:14 -0400 (Thu, 20 Aug 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+
+Enabling queues.
+
+
+------------------------------------------------------------------------
+r49873 | malexander | 2009-08-20 21:01:21 -0400 (Thu, 20 Aug 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/base_vendor_client.qa1.xml
+
+Apparently this is where the broker is!
+
+------------------------------------------------------------------------
+r49874 | malexander | 2009-08-20 21:02:55 -0400 (Thu, 20 Aug 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/base_vendor_client.qa1.xml
+
+Drop the dev prefix...
+
+------------------------------------------------------------------------
+r49881 | malexander | 2009-08-21 11:41:21 -0400 (Fri, 21 Aug 2009) | 4 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/junit/base_vendor_client.xml
+   M /trunk/quadshot/assets/msg_queue/junit/cds_client.xml
+   M /trunk/quadshot/assets/msg_queue/junit/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/junit/ink2_client.xml
+   M /trunk/quadshot/assets/msg_queue/junit/iyp_client.xml
+   M /trunk/quadshot/assets/msg_queue/junit/planet_jill_client.xml
+   M /trunk/quadshot/assets/msg_queue/junit/rastar_client.xml
+   D /trunk/quadshot/assets/msg_queue/junit/rpi_client.xml
+   M /trunk/quadshot/assets/msg_queue/junit/vendor_status_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/cds_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/ink2_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/iyp_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/planet_jill_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/rastar_client.xml
+   D /trunk/quadshot/assets/msg_queue/prod/rpi_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/vendor_status_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/cds_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/ink2_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/iyp_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/planet_jill_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/rastar_client.xml
+   D /trunk/quadshot/assets/msg_queue/qa1/rpi_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/vendor_status_client.xml
+
+Switched everything to Default container (from simple) and change
+selector to match the received directoy names. Dumped RPI....
+
+
+------------------------------------------------------------------------
+r49921 | malexander | 2009-08-24 14:39:45 -0400 (Mon, 24 Aug 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/scripts/cleanQuadshot.sh
+   M /trunk/quadshot/scripts/prune.sh
+
+Removing RPI from clean up scripts.
+
+------------------------------------------------------------------------
+r49936 | bscheld | 2009-08-24 21:57:38 -0400 (Mon, 24 Aug 2009) | 2 lines
+Changed paths:
+   A /trunk/quadshot/db/db_props.dc3_qa3
+   A /trunk/quadshot/db/db_props.dc3_qa4
+
+Added back qa3 and qa4 in case we need to run some legacy parts again.
+
+------------------------------------------------------------------------
+r49955 | malexander | 2009-08-25 17:14:32 -0400 (Tue, 25 Aug 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/base_vendor_client.qa1.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/cds_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/ink2_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/iyp_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/planet_jill_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/rastar_client.xml
+
+Changes to deal witht the reality of stage...
+
+
+------------------------------------------------------------------------
+r49967 | malexander | 2009-08-26 14:14:05 -0400 (Wed, 26 Aug 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/assets/vendor_sku_codes.properties
+
+Removed rpi sku info.
+
+------------------------------------------------------------------------
+r49996 | malexander | 2009-08-27 13:32:06 -0400 (Thu, 27 Aug 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/planet_jill_client.xml
+
+Fixing to match shoggoth
+
+------------------------------------------------------------------------
+r49999 | malexander | 2009-08-27 20:18:59 -0400 (Thu, 27 Aug 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+   M /trunk/quadshot/src/com/photoworks/rastar/station/RastarPrepOrder.java
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+
+Fixes to send orderId and vendorId back up to shoggoth
+
+
+------------------------------------------------------------------------
+r50011 | malexander | 2009-08-28 16:29:03 -0400 (Fri, 28 Aug 2009) | 4 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/qa1/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/planet_jill_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/vendor_status_client.xml
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+
+Making queue client id's the same as the consumer names. Fix for AbstractPrepOrder
+to move the whole order directory to archived/errors instead of just the file.
+Not setting the suborder id in the header for Opal messages.
+
+------------------------------------------------------------------------
+r50012 | malexander | 2009-08-28 19:09:47 -0400 (Fri, 28 Aug 2009) | 10 lines
+Changed paths:
+   A /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response/EzPrintsCompleteShipment.java
+   A /trunk/quadshot/webservices/vendor/testsrc/com/photoworks/vendor/response/EzPrintsCompleteShipmentTest.java
+
+Adding classes for generating EZP ship notifications.
+
+These do not work. What has to happen is that the "shiping" or order complete
+messages have to be sent first. This causes the opal suborders to be created.
+If that does not happen, there are no opal suborders and the code in the junit 
+that tries to retrieve them to build the ship message retuns nothing and then
+the xml that goes out does not caontain anything.
+
+
+
+------------------------------------------------------------------------
+r50026 | cmiller | 2009-08-31 13:07:31 -0400 (Mon, 31 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/vendor_sku_codes.properties
+
+Fixed White and Walnut
+------------------------------------------------------------------------
+r50052 | cmiller | 2009-09-02 13:20:09 -0400 (Wed, 02 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+
+Add the orderid, vendorid, date, version nodes into shipped message. Re-added the subordernumber header, but set to -1 as it is required.
+------------------------------------------------------------------------
+r50060 | malexander | 2009-09-02 22:21:30 -0400 (Wed, 02 Sep 2009) | 5 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+
+Fixed the other half of the conditional to move the entire
+directory for beta orders into archived.
+
+
+
+------------------------------------------------------------------------
+r50129 | malexander | 2009-09-08 12:37:04 -0400 (Tue, 08 Sep 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrder.java
+
+Fix for sending only the order number in the suborder state change message.
+
+
+------------------------------------------------------------------------
+r50160 | malexander | 2009-09-10 14:48:12 -0400 (Thu, 10 Sep 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/CGX_DigitalPCS.xsd
+
+Adding fix for multiple tracking numbers in cds ship notices.
+
+
+------------------------------------------------------------------------
+r50161 | malexander | 2009-09-10 14:56:10 -0400 (Thu, 10 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/webservices/opal/src/CDSOrderStatus.java
+
+Adding logic to fish tracking number out of either the old message or the new message.
+
+------------------------------------------------------------------------
+r50189 | malexander | 2009-09-12 00:31:54 -0400 (Sat, 12 Sep 2009) | 23 lines
+Changed paths:
+   A /trunk/quadshot/assets/msg_queue/qa2
+   A /trunk/quadshot/assets/msg_queue/qa2/base_vendor_client.qa2.xml
+   A /trunk/quadshot/assets/msg_queue/qa2/vendor_status_client.xml
+
+########
+
+
+####
+
+##
+##
+##  DENNIS - this is the change I need merged into the release branch for
+##           the 9/15 release for the cds ship notice changes. This just
+##           is to get qa2 opal to function with the queues.
+##
+
+####
+
+
+#########
+
+
+Adding queue configs for qa2 opal, messages will be put on the qa1 queues
+as a temporary situation.
+
+
+
+------------------------------------------------------------------------
+r50282 | cmiller | 2009-09-21 12:00:34 -0400 (Mon, 21 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/vendor_sku_codes.properties
+
+Fixed the endsheet code on the Walnut Metro book
+------------------------------------------------------------------------
+r50378 | malexander | 2009-09-24 18:06:42 -0400 (Thu, 24 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/scripts/quadshot
+
+Shutting down pj station until we can figure out thf with dev orders getting produced.
+
+------------------------------------------------------------------------
+r50394 | malexander | 2009-09-25 14:31:02 -0400 (Fri, 25 Sep 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+
+Better exception handling on message queue exceptions.
+
+
+------------------------------------------------------------------------
+r50409 | cmiller | 2009-09-28 13:46:10 -0400 (Mon, 28 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/vendor_sku_codes.properties
+
+Added form factors for wallets, gloosy, lustre, and matte  (lustre is unused at present).
+------------------------------------------------------------------------
+r50415 | malexander | 2009-09-28 18:18:23 -0400 (Mon, 28 Sep 2009) | 11 lines
+Changed paths:
+   M /trunk/quadshot/build.xml
+   M /trunk/quadshot/src/com/photoworks/iyp/station/IYPPrepOrdersWorker.java
+   M /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/simulator/iyp/IYPVendorService.java
+   A /trunk/quadshot/wsdl/MfgOrderEntry_7.0.5.26.wsdl.dev
+
+Updates for IYP conversion back to centrics (order placement).
+
+
+####
+
+
+Not for the September release!!!
+
+
+###
+
+------------------------------------------------------------------------
+r50416 | malexander | 2009-09-28 18:37:23 -0400 (Mon, 28 Sep 2009) | 11 lines
+Changed paths:
+   M /trunk/quadshot/assets/IYPShippingNotification.xsd
+
+Updating for the switch back to centrics
+
+###
+
+
+Not for the spetember release!
+
+
+###
+
+
+------------------------------------------------------------------------
+r50432 | malexander | 2009-09-29 12:40:59 -0400 (Tue, 29 Sep 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/scripts/quadshot
+
+Adding pj back to the dev server start up
+
+
+------------------------------------------------------------------------
+r50435 | malexander | 2009-09-29 14:47:18 -0400 (Tue, 29 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+
+Updated to centrics dev url.
+
+------------------------------------------------------------------------
+r50455 | malexander | 2009-10-01 12:03:15 -0400 (Thu, 01 Oct 2009) | 3 lines
+Changed paths:
+   A /trunk/quadshot/doc/iyp/Centrics_7.0.5.26
+   A /trunk/quadshot/doc/iyp/Centrics_7.0.5.26/CentricsSellSystemsManufacturingInterface_7.0_5.26.2009.pdf
+   A /trunk/quadshot/doc/iyp/Centrics_7.0.5.26/ManufacturingOrders.xsd
+   A /trunk/quadshot/doc/iyp/Centrics_7.0.5.26/ManufacturingRequestPricingInfo.xsd
+   A /trunk/quadshot/doc/iyp/Centrics_7.0.5.26/MfgOrderEntry_7.0.5.26.wsdl.dev
+   A /trunk/quadshot/doc/iyp/Centrics_7.0.5.26/ProductionSchema.xsd
+   A /trunk/quadshot/doc/iyp/Centrics_7.0.5.26/ShippingNotification.wsdl
+
+Adding centrics docs.
+
+
+------------------------------------------------------------------------
+r50458 | malexander | 2009-10-01 12:28:32 -0400 (Thu, 01 Oct 2009) | 5 lines
+Changed paths:
+   D /trunk/quadshot/assets/qualex_sku_vendor_ref_map.properties
+
+Removing, this was relaced by ezprints_sku_vendor_ref_map.properties
+removing to reduce confusion.
+
+
+
+------------------------------------------------------------------------
+r50470 | malexander | 2009-10-02 14:09:55 -0400 (Fri, 02 Oct 2009) | 2 lines
+Changed paths:
+   A /trunk/quadshot/doc/iyp/CentricsSellSystemsManufacturingInterface_7.0_5.26.2009.zip
+
+Adding original doc archive
+
+------------------------------------------------------------------------
+r50471 | malexander | 2009-10-02 14:19:13 -0400 (Fri, 02 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/webservices/vendor
+   M /trunk/quadshot/webservices/vendor/build.xml
+   M /trunk/quadshot/webservices/vendor/testsrc/com/photoworks/vendor/response/IYPShipNotificationTest.java
+   M /trunk/quadshot/webservices/vendor/testsrc/com/photoworks/vendor/response/Ink2CSOrderStateTest.java
+
+Updates to test with centrics soap for iyp
+
+------------------------------------------------------------------------
+r50472 | malexander | 2009-10-02 14:22:47 -0400 (Fri, 02 Oct 2009) | 4 lines
+Changed paths:
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+   M /trunk/quadshot/webservices/opal/testsrc/AbstractOrderStatusTest.java
+
+Changes to only send SuborderStateChange message for OrderState's that
+correspond to suborders that have completely shipped.
+
+
+------------------------------------------------------------------------
+r50527 | cmiller | 2009-10-06 13:08:23 -0400 (Tue, 06 Oct 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/ezprints_sku_vendor_ref_map.properties
+
+Added new wallet vendorrefs to ezprints sku map.
+------------------------------------------------------------------------
+r50529 | malexander | 2009-10-06 13:16:54 -0400 (Tue, 06 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-dc3.properties
+
+Addeed production url for iyp/centrics cut over.
+
+------------------------------------------------------------------------
+r50537 | malexander | 2009-10-07 12:44:17 -0400 (Wed, 07 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/prod/base_vendor_client.prod.xml
+   M /trunk/quadshot/assets/msg_queue/prod/cds_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/ezprints_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/ink2_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/iyp_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/planet_jill_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/rastar_client.xml
+   M /trunk/quadshot/assets/msg_queue/prod/vendor_status_client.xml
+   M /trunk/quadshot/assets/quadshot-worker-dc3.properties
+
+Fixed prod queue config data and enabled queues for quadshot stations.
+
+------------------------------------------------------------------------
+r50541 | malexander | 2009-10-07 15:40:50 -0400 (Wed, 07 Oct 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+
+Adding logic to queue error/cancel/hold messages.
+
+
+------------------------------------------------------------------------
+r50544 | malexander | 2009-10-07 17:40:14 -0400 (Wed, 07 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-dc3.properties
+
+Adding mapping for internal image processor names to external.
+
+------------------------------------------------------------------------
+r50545 | malexander | 2009-10-07 18:07:32 -0400 (Wed, 07 Oct 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+
+Setting the remaining properties on cancel state change messgage.
+
+
+------------------------------------------------------------------------
+r50567 | malexander | 2009-10-08 19:03:17 -0400 (Thu, 08 Oct 2009) | 2 lines
+Changed paths:
+   A /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response/CDSNotification.java
+   M /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response/Ink2CSOrderState.java
+   A /trunk/quadshot/webservices/vendor/src/com/photoworks/vendor/response/PlanetJillOrderShipped.java
+
+Adding CDS and PJ and the cancel code for ink2 (commented out).
+
+------------------------------------------------------------------------
+r50568 | malexander | 2009-10-08 19:03:56 -0400 (Thu, 08 Oct 2009) | 2 lines
+Changed paths:
+   A /trunk/quadshot/webservices/vendor/testsrc/com/photoworks/vendor/response/CDSNotificationTest.java
+   A /trunk/quadshot/webservices/vendor/testsrc/com/photoworks/vendor/response/PlanetJillOrderShippedTest.java
+
+Adding test drivers for cds an pj.
+
+------------------------------------------------------------------------
+r50569 | malexander | 2009-10-08 19:07:38 -0400 (Thu, 08 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/testsrc/com/photoworks/cds/cgx/schema/REQUESTTest.java
+
+Updates for the cds ship notice change over.
+
+------------------------------------------------------------------------
+r50572 | malexander | 2009-10-08 19:26:17 -0400 (Thu, 08 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/prod/rastar_client.xml
+   M /trunk/quadshot/assets/msg_queue/qa1/rastar_client.xml
+   M /trunk/quadshot/assets/quadshot-worker-dc3.properties
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+   M /trunk/quadshot/src/com/photoworks/rastar/station/RastarPrepOrder.java
+
+Fixes to properly initialize the vendor status bean for Rastar.
+
+------------------------------------------------------------------------
+r50573 | malexander | 2009-10-08 19:41:45 -0400 (Thu, 08 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/prod/base_vendor_client.prod.xml
+
+Undoing change to prod config.
+
+------------------------------------------------------------------------
+r50574 | malexander | 2009-10-08 19:45:38 -0400 (Thu, 08 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/webservices/opal/src/AbstractOrderStatus.java
+
+Fix to propertly set the output mesage type.
+
+------------------------------------------------------------------------
+r50588 | malexander | 2009-10-09 12:30:21 -0400 (Fri, 09 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/rastar/station/RastarPrepOrder.java
+
+Fix to get the type property set correctly on rastar messages to ucs.
+
+------------------------------------------------------------------------
+r50594 | malexander | 2009-10-09 14:58:13 -0400 (Fri, 09 Oct 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/assets/msg_queue/prod/base_vendor_client.prod.xml
+
+Credentials are correct!
+
+
+------------------------------------------------------------------------
+r50595 | malexander | 2009-10-09 16:02:45 -0400 (Fri, 09 Oct 2009) | 2 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/rastar/station/RastarPrepOrder.java
+
+Missed updates to the ship message code in the rastar status update.
+
+------------------------------------------------------------------------
+r50706 | malexander | 2009-10-21 15:56:19 -0400 (Wed, 21 Oct 2009) | 3 lines
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/iyp/station/IYPPrepOrdersWorker.java
+   M /trunk/quadshot/src/com/photoworks/rastar/station/RastarPrepOrder.java
+   M /trunk/quadshot/testsrc/com/photoworks/rastar/station/RastarPrepOrderTest.java
+
+Changes for sending single rastar ship message and getting the first name/last name
+stuff squared away for IYP centrics.
+
+------------------------------------------------------------------------
+r50778 | cmiller | 2009-11-02 14:53:58 -0500 (Mon, 02 Nov 2009) | 1 line
+Changed paths:
+   A /trunk/quadshot/src/com/photoworks/pw
+   A /trunk/quadshot/src/com/photoworks/pw/station
+   A /trunk/quadshot/src/com/photoworks/pw/station/PWConstants.java
+   A /trunk/quadshot/src/com/photoworks/pw/station/PWPrepOrdersWorker.java
+
+First run at a dead-end station for Photoworks Vendor orders.
+------------------------------------------------------------------------
+r50779 | cmiller | 2009-11-02 15:14:42 -0500 (Mon, 02 Nov 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/PHAConstants.java
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/QSC.java
+
+Added constants for Photoworks vendor.
+------------------------------------------------------------------------
+r50780 | cmiller | 2009-11-02 15:19:13 -0500 (Mon, 02 Nov 2009) | 1 line
+Changed paths:
+   A /trunk/quadshot/scripts/pwPrepOrders.sh
+
+Controller script for the Photoworks Station.
+------------------------------------------------------------------------
+r50781 | cmiller | 2009-11-02 15:39:41 -0500 (Mon, 02 Nov 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/PHAConstants.java
+
+Updating the PW constant.
+------------------------------------------------------------------------
+r50790 | cmiller | 2009-11-03 10:27:27 -0500 (Tue, 03 Nov 2009) | 1 line
+Changed paths:
+   A /trunk/quadshot/src/com/photoworks/photoworks
+   A /trunk/quadshot/src/com/photoworks/photoworks/station
+   A /trunk/quadshot/src/com/photoworks/photoworks/station/PhotoworksConstants.java
+   A /trunk/quadshot/src/com/photoworks/photoworks/station/PhotoworksPrepOrdersWorker.java
+   D /trunk/quadshot/src/com/photoworks/pw
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/PHAConstants.java
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/QSC.java
+
+Removing PW folder, adding Photoworks as the vendor station.
+------------------------------------------------------------------------
+r50791 | cmiller | 2009-11-03 10:28:56 -0500 (Tue, 03 Nov 2009) | 1 line
+Changed paths:
+   A /trunk/quadshot/scripts/photoworksPrepOrders.sh (from /trunk/quadshot/scripts/pwPrepOrders.sh:50780)
+   D /trunk/quadshot/scripts/pwPrepOrders.sh
+
+Changed PW station script to Photoworks.
+------------------------------------------------------------------------
+r50792 | cmiller | 2009-11-03 11:46:53 -0500 (Tue, 03 Nov 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/photoworks/station/PhotoworksPrepOrdersWorker.java
+   M /trunk/quadshot/src/com/photoworks/quadshot/station/QSC.java
+
+Updating Photoworks-specific constants.
+------------------------------------------------------------------------
+r50794 | cmiller | 2009-11-04 14:27:35 -0500 (Wed, 04 Nov 2009) | 1 line
+Changed paths:
+   A /trunk/quadshot/assets/msg_queue/prod/photoworks_client.xml
+   A /trunk/quadshot/assets/msg_queue/qa1/photoworks_client.xml
+   A /trunk/quadshot/assets/msg_queue/qa2/photoworks_client.xml
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+
+Added queue and prop configurations for qa1.
+------------------------------------------------------------------------
+r50797 | cmiller | 2009-11-05 10:41:45 -0500 (Thu, 05 Nov 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/photoworks/station/PhotoworksPrepOrdersWorker.java
+   A /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrderNoCorbaQueues.java
+   A /trunk/quadshot/src/com/photoworks/quadshot/station/BaseStationNoCorbaQueues.java
+   A /trunk/quadshot/src/com/photoworks/quadshot/station/WorkerNoCorbaQueues.java
+
+Created a set of classes designed to eliminate the dependence on the legacy CORBA queues.
+------------------------------------------------------------------------
+r50798 | cmiller | 2009-11-05 13:03:43 -0500 (Thu, 05 Nov 2009) | 1 line
+Changed paths:
+   D /trunk/quadshot/assets/msg_queue/prod/photoworks_client.xml
+   D /trunk/quadshot/assets/msg_queue/qa1/photoworks_client.xml
+   D /trunk/quadshot/assets/msg_queue/qa2/photoworks_client.xml
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+   M /trunk/quadshot/build.xml
+   M /trunk/quadshot/src/com/photoworks/photoworks/station/PhotoworksPrepOrdersWorker.java
+   D /trunk/quadshot/src/com/photoworks/quadshot/station/AbstractPrepOrderNoCorbaQueues.java
+   D /trunk/quadshot/src/com/photoworks/quadshot/station/BaseStationNoCorbaQueues.java
+   D /trunk/quadshot/src/com/photoworks/quadshot/station/WorkerNoCorbaQueues.java
+
+Revert out new corbaless classes. Unncessary.
+------------------------------------------------------------------------
+r50799 | cmiller | 2009-11-05 13:23:09 -0500 (Thu, 05 Nov 2009) | 1 line
+Changed paths:
+   A /trunk/quadshot/assets/msg_queue/prod/photoworks_client.xml
+   A /trunk/quadshot/assets/msg_queue/qa1/photoworks_client.xml
+   A /trunk/quadshot/assets/msg_queue/qa2/photoworks_client.xml
+   M /trunk/quadshot/assets/quadshot-worker-qa1.properties
+
+Adding in files lost in the previous reversion of code.
+------------------------------------------------------------------------
+r50800 | cmiller | 2009-11-05 14:15:33 -0500 (Thu, 05 Nov 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/build.xml
+
+Reverted out accidental changes to build.xml.
+------------------------------------------------------------------------
+r50805 | cmiller | 2009-11-09 16:10:44 -0500 (Mon, 09 Nov 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/quadshot-worker-dc3.properties
+
+Adding in production values for deploy.
+------------------------------------------------------------------------
+r50812 | cmiller | 2009-11-11 11:34:35 -0500 (Wed, 11 Nov 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/photoworks/station/PhotoworksPrepOrdersWorker.java
+
+Removed unused imports and init calls.
+------------------------------------------------------------------------
+r50815 | cmiller | 2009-11-13 11:17:54 -0500 (Fri, 13 Nov 2009) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/iyp/station/IYPPrepOrdersWorker.java
+
+Fixed issue with first name not going to the vendor.
+------------------------------------------------------------------------
+r50837 | cmiller | 2010-01-21 12:28:53 -0500 (Thu, 21 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/ezprints/station/EzPrintsPrepOrdersWorker.java
+
+Added in conditions and formatting for EZP Project Builder.
+------------------------------------------------------------------------
+r50838 | cmiller | 2010-01-21 12:29:35 -0500 (Thu, 21 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/EzPrints_Orders.xsd
+
+Added in elements and attributes for EZP Project Builder.
+------------------------------------------------------------------------
+r50839 | cmiller | 2010-01-21 13:07:15 -0500 (Thu, 21 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/vendor_sku_codes.properties
+
+Added in vendorref 82101 for EZP Project Builder.
+------------------------------------------------------------------------
+r50842 | cmiller | 2010-01-27 16:04:52 -0500 (Wed, 27 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/vendor_sku_codes.properties
+
+Added vendor ref for EZP project Builder.
+------------------------------------------------------------------------
+r50844 | cmiller | 2010-02-01 11:42:52 -0500 (Mon, 01 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/EzPrints_Orders.xsd
+
+Removed the requirement for an imageid or productid in light of the EZP ProjectBuilder.
+------------------------------------------------------------------------
+r50845 | cmiller | 2010-02-01 11:59:29 -0500 (Mon, 01 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/ezprints/station/EzPrintsPrepOrdersWorker.java
+
+Corrected handling of empty vendorProjectId node.
+------------------------------------------------------------------------
+r50846 | cmiller | 2010-02-01 12:29:01 -0500 (Mon, 01 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/ezprints/station/EzPrintsPrepOrdersWorker.java
+
+Corrected handling of empty vendorProjectId node.
+------------------------------------------------------------------------
+r50847 | cmiller | 2010-02-01 13:40:02 -0500 (Mon, 01 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/ezprints/station/EzPrintsPrepOrdersWorker.java
+
+Corrected handling of empty vendorProjectId node.
+------------------------------------------------------------------------
+r50848 | cmiller | 2010-02-01 13:54:35 -0500 (Mon, 01 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/ezprints/station/EzPrintsPrepOrdersWorker.java
+
+Corrected handling of empty vendorProjectId node.
+------------------------------------------------------------------------
+r50849 | cmiller | 2010-02-01 14:34:23 -0500 (Mon, 01 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/assets/ezprints_sku_vendor_ref_map.properties
+
+Fixing the PROJBUILD1 vendorRef.
+------------------------------------------------------------------------
+r50851 | cmiller | 2010-02-01 15:43:04 -0500 (Mon, 01 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/ezprints/station/EzPrintsPrepOrdersWorker.java
+
+Added changes for Project Builder: Do not send Position or ProductId values if Project Builder.
+------------------------------------------------------------------------
+r50852 | cmiller | 2010-02-01 16:08:52 -0500 (Mon, 01 Feb 2010) | 1 line
+Changed paths:
+   M /trunk/quadshot/src/com/photoworks/ezprints/station/EzPrintsPrepOrdersWorker.java
+
+Added changes for Project Builder: Do not send Position or ProductId values if Project Builder.
+

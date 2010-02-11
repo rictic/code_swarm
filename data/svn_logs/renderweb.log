@@ -1,0 +1,1042 @@
+------------------------------------------------------------------------
+r63986 | mstack | 2010-01-26 11:56:06 -0500 (Tue, 26 Jan 2010) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+   M /java-projects/renderWeb/trunk/src/prod-RENDERING_SERVLETS.properties
+   M /java-projects/renderWeb/trunk/src/stage-RENDERING_SERVLETS.properties
+   M /java-projects/renderWeb/trunk/src/unix-RENDERING_SERVLETS.properties
+   M /java-projects/renderWeb/trunk/src/windows-RENDERING_SERVLETS.properties
+   M /java-projects/renderWeb/trunk/src/work-RENDERING_SERVLETS.properties
+   M /java-projects/renderWeb/trunk/src/xoop-RENDERING_SERVLETS.properties
+
+parameterzing cache TTL rather than hard-coding it
+------------------------------------------------------------------------
+r57154 | mstack | 2009-11-17 09:35:53 -0500 (Tue, 17 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+remove stale import
+------------------------------------------------------------------------
+r57153 | mstack | 2009-11-17 09:31:37 -0500 (Tue, 17 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+updated version of photoworks jar from rendering
+------------------------------------------------------------------------
+r57152 | mstack | 2009-11-17 09:31:12 -0500 (Tue, 17 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/TemplateSetHelper.java
+
+reduce log pollution
+------------------------------------------------------------------------
+r57151 | mstack | 2009-11-17 09:30:56 -0500 (Tue, 17 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+
+change the cache key to not reference the template set filename
+------------------------------------------------------------------------
+r57150 | mstack | 2009-11-17 09:30:20 -0500 (Tue, 17 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/GetPageTemplateThumb.java
+
+reduce log pollution / email traffic
+------------------------------------------------------------------------
+r57051 | mstack | 2009-11-16 14:58:26 -0500 (Mon, 16 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+change the amount of time we keep images around in cache
+------------------------------------------------------------------------
+r55092 | mstack | 2009-11-05 15:49:23 -0500 (Thu, 05 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/JaxbPagedCalendar.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/ProjectRenderCalendarParameter.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/GetPageTemplateThumb.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+clean up of a bunch of direct-field accesses - put all field accesses behind getter/setter methods
+------------------------------------------------------------------------
+r55003 | mstack | 2009-11-05 11:26:26 -0500 (Thu, 05 Nov 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/lib/mail.jar
+   A /java-projects/renderWeb/trunk/lib-deploy/mail.jar
+
+add mail.jar so log4j can send emails in the case of FATAL errors
+------------------------------------------------------------------------
+r54893 | mstack | 2009-11-04 15:50:55 -0500 (Wed, 04 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+updated jar to include caching changes
+------------------------------------------------------------------------
+r54892 | mstack | 2009-11-04 15:50:44 -0500 (Wed, 04 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+updated jar to include caching changes
+------------------------------------------------------------------------
+r54891 | mstack | 2009-11-04 15:48:56 -0500 (Wed, 04 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/prod-RENDERING_SERVLETS.properties
+
+use memcache pool for caching in render servlets
+------------------------------------------------------------------------
+r51611 | mstack | 2009-10-14 15:24:58 -0400 (Wed, 14 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+log messages to help me make sure it's functioning properly
+------------------------------------------------------------------------
+r51582 | mstack | 2009-10-14 13:56:07 -0400 (Wed, 14 Oct 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/lib/java_memcached-release_2.0.1.jar
+   A /java-projects/renderWeb/trunk/lib-deploy/java_memcached-release_2.0.1.jar
+
+memcache driver needed for memcache
+------------------------------------------------------------------------
+r51555 | mstack | 2009-10-14 12:31:18 -0400 (Wed, 14 Oct 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/logs
+
+removing logs directory from SVN
+------------------------------------------------------------------------
+r51554 | mstack | 2009-10-14 12:30:04 -0400 (Wed, 14 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+new jars for caching
+------------------------------------------------------------------------
+r51553 | mstack | 2009-10-14 12:29:36 -0400 (Wed, 14 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/prod-RENDERING_SERVLETS.properties
+
+new properties to support memcache
+------------------------------------------------------------------------
+r51552 | mstack | 2009-10-14 12:29:24 -0400 (Wed, 14 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+cache to memcache instead of disk
+------------------------------------------------------------------------
+r51551 | mstack | 2009-10-14 12:29:12 -0400 (Wed, 14 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/Cache.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/CacheImpl.java
+
+changing cache implementation for servlets to make them perform the same way as the rest of rendering. Also changing the cache implementation - no longer cache to disk - instead, cache to memcache 
+------------------------------------------------------------------------
+r51549 | mstack | 2009-10-14 12:26:47 -0400 (Wed, 14 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+new photoworks code jar which contains cache code replacement for previous disk cache
+------------------------------------------------------------------------
+r47514 | mrahija | 2009-09-17 10:59:53 -0400 (Thu, 17 Sep 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/.classpath
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r47513 | mrahija | 2009-09-17 10:59:32 -0400 (Thu, 17 Sep 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+
+bug fix to show year on calendar covers.
+------------------------------------------------------------------------
+r47307 | mrahija | 2009-09-16 10:36:11 -0400 (Wed, 16 Sep 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/.classpath
+
+
+------------------------------------------------------------------------
+r47301 | mrahija | 2009-09-16 10:28:33 -0400 (Wed, 16 Sep 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/logs
+
+
+------------------------------------------------------------------------
+r46444 | mstack | 2009-09-09 15:45:54 -0400 (Wed, 09 Sep 2009) | 1 line
+Changed paths:
+   R /java-projects/renderWeb/trunk/lib-deploy/commons-lang-2.1.jar
+
+
+------------------------------------------------------------------------
+r46443 | mstack | 2009-09-09 15:45:34 -0400 (Wed, 09 Sep 2009) | 4 lines
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/JaxbPagedCalendar.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/holiday
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/holiday/DynamicHolidayProvider.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/holiday/HolidayInfoInterface.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/holiday/HolidayProvider.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/holiday/HolidayProviderFactory.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/holiday/HolidayProviderInterface.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/holiday/StaticHolidayProvider.java
+
+1. code clean up
+2. Removed pha.jar & phaAPI.jar (die!die!die!)
+3. brought over 5 or 6 new classes to support removal of phaAPI (die!die!die!)
+
+------------------------------------------------------------------------
+r46442 | mstack | 2009-09-09 15:45:24 -0400 (Wed, 09 Sep 2009) | 4 lines
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   D /java-projects/renderWeb/trunk/lib/pha.jar
+   D /java-projects/renderWeb/trunk/lib/phaSerialize.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   D /java-projects/renderWeb/trunk/lib-deploy/pha.jar
+   D /java-projects/renderWeb/trunk/lib-deploy/phaSerialize.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+1. code clean up
+2. Removed pha.jar & phaAPI.jar (die!die!die!)
+3. brought over 5 or 6 new classes to support removal of phaAPI (die!die!die!)
+
+------------------------------------------------------------------------
+r46427 | mstack | 2009-09-09 15:21:58 -0400 (Wed, 09 Sep 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/ByteArrayOutputHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/Cache.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/CacheImpl.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/TemplateSetHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/GetPageTemplateThumb.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+a bit of clean-up
+------------------------------------------------------------------------
+r46410 | mstack | 2009-09-09 15:07:31 -0400 (Wed, 09 Sep 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/src/prod-RENDERING_SERVLETS.properties
+
+adding support for production properties file
+------------------------------------------------------------------------
+r46407 | mstack | 2009-09-09 15:04:53 -0400 (Wed, 09 Sep 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/TemplateSetHelper.java
+
+replaced System.out.println w/ log4j
+------------------------------------------------------------------------
+r46406 | mstack | 2009-09-09 15:04:18 -0400 (Wed, 09 Sep 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+
+replaced System.out.println w/ log.debug
+------------------------------------------------------------------------
+r46404 | mstack | 2009-09-09 15:03:48 -0400 (Wed, 09 Sep 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/JaxbPagedCalendar.java
+
+removed System.out.println replaced w/ log.debug
+------------------------------------------------------------------------
+r46403 | mstack | 2009-09-09 15:03:12 -0400 (Wed, 09 Sep 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+
+removed System.out.println
+------------------------------------------------------------------------
+r43153 | mrahija | 2009-08-21 14:14:13 -0400 (Fri, 21 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/stage-RENDERING_SERVLETS.properties
+   M /java-projects/renderWeb/trunk/src/work-RENDERING_SERVLETS.properties
+
+restored stg and wrk urls to non-vip.
+------------------------------------------------------------------------
+r43152 | mrahija | 2009-08-21 14:13:34 -0400 (Fri, 21 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r42981 | mrahija | 2009-08-20 16:07:35 -0400 (Thu, 20 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/stage-RENDERING_SERVLETS.properties
+   M /java-projects/renderWeb/trunk/src/work-RENDERING_SERVLETS.properties
+
+changed to use virtual server names.
+------------------------------------------------------------------------
+r42980 | mrahija | 2009-08-20 16:07:08 -0400 (Thu, 20 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r42409 | mstack | 2009-08-18 09:49:26 -0400 (Tue, 18 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/ProjectRenderCalendarParameter.java
+
+formatting changes
+------------------------------------------------------------------------
+r42309 | mrahija | 2009-08-17 14:33:10 -0400 (Mon, 17 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r42308 | mrahija | 2009-08-17 14:32:58 -0400 (Mon, 17 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/JaxbPagedCalendar.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/ByteArrayOutputHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+removed holidays, added new thumbnail flag, performance improvement class added.
+------------------------------------------------------------------------
+r42305 | mrahija | 2009-08-17 14:31:33 -0400 (Mon, 17 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r41430 | mrahija | 2009-08-12 15:45:44 -0400 (Wed, 12 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/CacheImpl.java
+
+performance improvements changed file io.
+------------------------------------------------------------------------
+r41374 | mrahija | 2009-08-12 13:27:24 -0400 (Wed, 12 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/resouces/test_urls.txt
+
+
+------------------------------------------------------------------------
+r41334 | mrahija | 2009-08-12 10:32:45 -0400 (Wed, 12 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/Cache.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/CacheImpl.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+   M /java-projects/renderWeb/trunk/test/com/ag/photoworks/rendering/helper/CacheImplTester.java
+   M /java-projects/renderWeb/trunk/test/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpTester.java
+
+refactored cache to reduce coupling to PageTemplateThumbHelper class
+------------------------------------------------------------------------
+r41213 | mrahija | 2009-08-11 16:04:25 -0400 (Tue, 11 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/.classpath
+
+
+------------------------------------------------------------------------
+r41212 | mrahija | 2009-08-11 16:04:12 -0400 (Tue, 11 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r41211 | mrahija | 2009-08-11 16:04:01 -0400 (Tue, 11 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r41210 | mrahija | 2009-08-11 16:03:45 -0400 (Tue, 11 Aug 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/Cache.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/CacheImpl.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+   A /java-projects/renderWeb/trunk/test/com/ag/photoworks/rendering/helper/CacheImplTester.java
+   M /java-projects/renderWeb/trunk/test/com/ag/photoworks/rendering/helper/PageTemplateThumbHelperTester.java
+   M /java-projects/renderWeb/trunk/test/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpTester.java
+
+new Cache objects and refactoring for impl.
+------------------------------------------------------------------------
+r41209 | mrahija | 2009-08-11 16:02:58 -0400 (Tue, 11 Aug 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/src/stage-RENDERING_SERVLETS.properties (from /java-projects/renderWeb/trunk/src/stg-pw2-render1-RENDERING_SERVLETS.properties:40519)
+   D /java-projects/renderWeb/trunk/src/stg-pw2-render1-RENDERING_SERVLETS.properties
+   A /java-projects/renderWeb/trunk/src/work-RENDERING_SERVLETS.properties (from /java-projects/renderWeb/trunk/src/wrk-pw2-render1-RENDERING_SERVLETS.properties:40519)
+   D /java-projects/renderWeb/trunk/src/wrk-pw2-render1-RENDERING_SERVLETS.properties
+
+rename properties files
+------------------------------------------------------------------------
+r40529 | mrahija | 2009-08-07 16:26:04 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r40528 | mrahija | 2009-08-07 16:25:51 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/test/com/ag/photoworks/rendering/servlets
+   A /java-projects/renderWeb/trunk/test/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpTester.java
+
+new test class
+------------------------------------------------------------------------
+r40527 | mrahija | 2009-08-07 16:25:41 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/test
+   A /java-projects/renderWeb/trunk/test/com
+   A /java-projects/renderWeb/trunk/test/com/ag
+   A /java-projects/renderWeb/trunk/test/com/ag/photoworks
+   A /java-projects/renderWeb/trunk/test/com/ag/photoworks/rendering
+   A /java-projects/renderWeb/trunk/test/com/ag/photoworks/rendering/helper
+   A /java-projects/renderWeb/trunk/test/com/ag/photoworks/rendering/helper/PageTemplateThumbHelperTester.java
+
+new test class
+------------------------------------------------------------------------
+r40526 | mrahija | 2009-08-07 16:25:23 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/utils
+
+remove hack code, new renderproperties class refactoring incorps these classes now.
+------------------------------------------------------------------------
+r40524 | mrahija | 2009-08-07 16:24:39 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+refactored for new RenderProperties class and properties files
+------------------------------------------------------------------------
+r40522 | mrahija | 2009-08-07 16:23:01 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/TemplateSetHelper.java
+
+refactored for testing code
+------------------------------------------------------------------------
+r40521 | mrahija | 2009-08-07 16:21:45 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+
+refactored to use new properties file names and class
+------------------------------------------------------------------------
+r40520 | mrahija | 2009-08-07 16:21:32 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/JaxbPagedCalendar.java
+
+refactored to use new properties file names and class
+------------------------------------------------------------------------
+r40519 | mrahija | 2009-08-07 16:20:45 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/src/rw_stg-pw2-render1.properties
+   D /java-projects/renderWeb/trunk/src/rw_unix.properties
+   D /java-projects/renderWeb/trunk/src/rw_windows.properties
+   D /java-projects/renderWeb/trunk/src/rw_wrk-pw2-render1.properties
+   D /java-projects/renderWeb/trunk/src/rw_xoop.properties
+   A /java-projects/renderWeb/trunk/src/stg-pw2-render1-RENDERING_SERVLETS.properties (from /java-projects/renderWeb/trunk/src/rw_stg-pw2-render1.properties:40315)
+   A /java-projects/renderWeb/trunk/src/unix-RENDERING_SERVLETS.properties (from /java-projects/renderWeb/trunk/src/rw_unix.properties:40086)
+   A /java-projects/renderWeb/trunk/src/windows-RENDERING_SERVLETS.properties (from /java-projects/renderWeb/trunk/src/rw_windows.properties:40086)
+   A /java-projects/renderWeb/trunk/src/wrk-pw2-render1-RENDERING_SERVLETS.properties (from /java-projects/renderWeb/trunk/src/rw_wrk-pw2-render1.properties:40315)
+   A /java-projects/renderWeb/trunk/src/xoop-RENDERING_SERVLETS.properties (from /java-projects/renderWeb/trunk/src/rw_xoop.properties:40086)
+
+added new application naming to properties files for the windows env.
+------------------------------------------------------------------------
+r40518 | mrahija | 2009-08-07 16:20:10 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r40433 | mstack | 2009-08-07 12:38:12 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+
+fixed up situations where streams weren't closed properly, and had to reformat code so I could read it :)
+------------------------------------------------------------------------
+r40432 | mstack | 2009-08-07 12:37:42 -0400 (Fri, 07 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/TemplateSetHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/GetPageTemplateThumb.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+fixed issues w/ file closing - reformatted code so I could read it :)
+------------------------------------------------------------------------
+r40315 | mrahija | 2009-08-06 16:35:48 -0400 (Thu, 06 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/rw_stg-pw2-render1.properties
+   M /java-projects/renderWeb/trunk/src/rw_wrk-pw2-render1.properties
+
+point to correct server name
+------------------------------------------------------------------------
+r40284 | mrahija | 2009-08-06 15:38:39 -0400 (Thu, 06 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+minor code clean-up no functional changes.
+------------------------------------------------------------------------
+r40283 | mrahija | 2009-08-06 15:38:15 -0400 (Thu, 06 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r40088 | mrahija | 2009-08-05 15:34:33 -0400 (Wed, 05 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/resouces/log4j.properties
+
+
+------------------------------------------------------------------------
+r40087 | mrahija | 2009-08-05 15:34:23 -0400 (Wed, 05 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+
+------------------------------------------------------------------------
+r40036 | mrahija | 2009-08-05 13:15:28 -0400 (Wed, 05 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/resouces/log4j.properties
+
+
+------------------------------------------------------------------------
+r40035 | mrahija | 2009-08-05 13:08:36 -0400 (Wed, 05 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/.classpath
+
+
+------------------------------------------------------------------------
+r40017 | mrahija | 2009-08-05 11:40:05 -0400 (Wed, 05 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/WebRoot/WEB-INF
+
+
+------------------------------------------------------------------------
+r40016 | mrahija | 2009-08-05 11:32:57 -0400 (Wed, 05 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/resouces/GetPageTemplateThumb.doc
+
+updated doc to reflect refactoring changes sku, prod type, etc. new url's and screen shots added.
+------------------------------------------------------------------------
+r40008 | mrahija | 2009-08-05 11:08:24 -0400 (Wed, 05 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r40007 | mrahija | 2009-08-05 11:08:09 -0400 (Wed, 05 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/resouces/GetPageTemplateThumb.doc
+   M /java-projects/renderWeb/trunk/resouces/test_urls.txt
+
+updated doc to reflect refactoring changes sku, prod type, etc. new url's and screen shots added.
+------------------------------------------------------------------------
+r40006 | mrahija | 2009-08-05 11:07:14 -0400 (Wed, 05 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/ProjectRenderCalendarParameter.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/TemplateSetHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+refactor and cleanup, removed sku, legacy product type num
+------------------------------------------------------------------------
+r40002 | mrahija | 2009-08-05 11:06:04 -0400 (Wed, 05 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r39825 | mrahija | 2009-08-04 13:01:34 -0400 (Tue, 04 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r39824 | mrahija | 2009-08-04 13:01:19 -0400 (Tue, 04 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r39822 | mrahija | 2009-08-04 12:57:01 -0400 (Tue, 04 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+
+------------------------------------------------------------------------
+r39821 | mrahija | 2009-08-04 12:56:51 -0400 (Tue, 04 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+latest build from render proj
+------------------------------------------------------------------------
+r39816 | mrahija | 2009-08-04 12:49:01 -0400 (Tue, 04 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/TemplateSetHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/utils/PropertyLoader.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/utils/RenderProperties.java
+
+refactored to use new properties file classes
+------------------------------------------------------------------------
+r39815 | mrahija | 2009-08-04 12:48:18 -0400 (Tue, 04 Aug 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/resouces/GetPageTemplateThumb.doc
+   M /java-projects/renderWeb/trunk/resouces/notes.txt
+   A /java-projects/renderWeb/trunk/resouces/test_urls.txt
+
+
+------------------------------------------------------------------------
+r39715 | mrahija | 2009-08-03 17:51:56 -0400 (Mon, 03 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+rebuild of render project
+------------------------------------------------------------------------
+r39714 | mrahija | 2009-08-03 17:51:27 -0400 (Mon, 03 Aug 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/utils
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/utils/Environment.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/utils/RenderProperties.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/utils/XMLUtilities.java
+
+refactored to use renderweb project property loader and data files.
+------------------------------------------------------------------------
+r39713 | mrahija | 2009-08-03 17:50:36 -0400 (Mon, 03 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+rebuild of render project
+------------------------------------------------------------------------
+r39712 | mrahija | 2009-08-03 17:49:54 -0400 (Mon, 03 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/JaxbPagedCalendar.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+
+refactored to use renderweb project property loader and data files.
+------------------------------------------------------------------------
+r39711 | mrahija | 2009-08-03 17:49:04 -0400 (Mon, 03 Aug 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/src/rw_stg-pw2-render1.properties
+   A /java-projects/renderWeb/trunk/src/rw_unix.properties
+   A /java-projects/renderWeb/trunk/src/rw_windows.properties
+   A /java-projects/renderWeb/trunk/src/rw_wrk-pw2-render1.properties
+   A /java-projects/renderWeb/trunk/src/rw_xoop.properties
+
+renderweb project specific properties files
+------------------------------------------------------------------------
+r39593 | mstack | 2009-08-03 13:11:11 -0400 (Mon, 03 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/resouces/log4j.properties
+
+remove phaAPI.log logger - it's causing problems at start-up because the directory doesn't exist. We don't need it anymore anyway - everything should be going to stdout (via log4j of course)
+------------------------------------------------------------------------
+r39587 | mstack | 2009-08-03 13:00:02 -0400 (Mon, 03 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+fixed merge conflicts
+------------------------------------------------------------------------
+r39415 | mstack | 2009-08-02 14:47:29 -0400 (Sun, 02 Aug 2009) | 3 lines
+Changed paths:
+   M /java-projects/renderWeb/trunk/build/build.xml
+
+render-servlets-trunk.jar was missing from the war when it was deployed
+fixed
+
+------------------------------------------------------------------------
+r39333 | mrahija | 2009-07-31 20:24:26 -0400 (Fri, 31 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+
+added commented code in fetchTemplateData() for File base URL protocol.
+------------------------------------------------------------------------
+r39330 | mrahija | 2009-07-31 20:14:20 -0400 (Fri, 31 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+latest build of michaels jars. 7/31
+------------------------------------------------------------------------
+r39329 | mrahija | 2009-07-31 20:13:47 -0400 (Fri, 31 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+latest build of michaels jars. 7/31
+------------------------------------------------------------------------
+r39328 | mrahija | 2009-07-31 20:12:22 -0400 (Fri, 31 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/ProjectRenderCalendarParameter.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/TemplateSetHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+   D /java-projects/renderWeb/trunk/src/unix.properties
+   D /java-projects/renderWeb/trunk/src/windows.properties
+
+refactored to use new service for template base URL
+------------------------------------------------------------------------
+r39297 | mstack | 2009-07-31 17:27:54 -0400 (Fri, 31 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+updated REnderProperties
+------------------------------------------------------------------------
+r39280 | mstack | 2009-07-31 16:56:41 -0400 (Fri, 31 Jul 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes
+
+only thing in WEB-INF should be the web.xml in SVN - everything else gets copied into it as part fo the build
+------------------------------------------------------------------------
+r39279 | mstack | 2009-07-31 16:56:04 -0400 (Fri, 31 Jul 2009) | 2 lines
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+need commons-lang in the lib-deploy directory as well
+
+------------------------------------------------------------------------
+r39278 | mrahija | 2009-07-31 16:55:49 -0400 (Fri, 31 Jul 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/lib-deploy/commons-lang-2.1.jar
+
+
+------------------------------------------------------------------------
+r39276 | mrahija | 2009-07-31 16:53:30 -0400 (Fri, 31 Jul 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/lib/commons-lang-2.1.jar
+
+
+------------------------------------------------------------------------
+r39268 | mstack | 2009-07-31 16:36:14 -0400 (Fri, 31 Jul 2009) | 2 lines
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+updated w/ new photoworks jar w/ new RenderProperties behavior
+
+------------------------------------------------------------------------
+r39267 | mstack | 2009-07-31 16:35:57 -0400 (Fri, 31 Jul 2009) | 2 lines
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+updated w/ new render properties behavior
+
+------------------------------------------------------------------------
+r39248 | mrahija | 2009-07-31 15:59:25 -0400 (Fri, 31 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/unix.properties
+
+changed  template dir to  /home/mstack/data/templates
+------------------------------------------------------------------------
+r38870 | mrahija | 2009-07-30 09:20:59 -0400 (Thu, 30 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+added code to use properties file for rendering service URL
+------------------------------------------------------------------------
+r38869 | mrahija | 2009-07-30 09:20:31 -0400 (Thu, 30 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+
+
+------------------------------------------------------------------------
+r38868 | mrahija | 2009-07-30 09:20:23 -0400 (Thu, 30 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+
+
+------------------------------------------------------------------------
+r38867 | mrahija | 2009-07-30 09:19:51 -0400 (Thu, 30 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+
+
+------------------------------------------------------------------------
+r38790 | mstack | 2009-07-29 16:41:13 -0400 (Wed, 29 Jul 2009) | 3 lines
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+
+I noticed that you were importing a phaAPI class that I'd already brought over, so I changed the import. 
+
+One down, 568923 to go!! :)
+------------------------------------------------------------------------
+r38783 | mstack | 2009-07-29 16:33:08 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+updated to the newer versions which have the appropriate logic for dealing w/ project types
+------------------------------------------------------------------------
+r38781 | mstack | 2009-07-29 16:32:04 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   M /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+
+updated to the newer versions which have the appropriate logic for dealing w/ project types
+------------------------------------------------------------------------
+r38773 | mstack | 2009-07-29 16:15:16 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/com
+   D /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/jsp
+
+remove class files from SVN
+------------------------------------------------------------------------
+r38754 | mrahija | 2009-07-29 15:33:30 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+
+changed prodType to int
+------------------------------------------------------------------------
+r38742 | mrahija | 2009-07-29 15:01:42 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/.project
+
+
+------------------------------------------------------------------------
+r38740 | mrahija | 2009-07-29 14:55:31 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/unix.properties
+   M /java-projects/renderWeb/trunk/src/windows.properties
+
+refactored to use a property value 
+------------------------------------------------------------------------
+r38739 | mrahija | 2009-07-29 14:55:20 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+refactored to use a property value 
+------------------------------------------------------------------------
+r38665 | mrahija | 2009-07-29 09:41:55 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/WebRoot/WEB-INF/jsp
+
+remove test jsp
+------------------------------------------------------------------------
+r38664 | mrahija | 2009-07-29 09:39:47 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/.classpath
+
+remove rendering project dep
+------------------------------------------------------------------------
+r38663 | mrahija | 2009-07-29 09:39:14 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/src/jsp
+
+remove test jsp
+------------------------------------------------------------------------
+r38662 | mrahija | 2009-07-29 09:38:58 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/JaxbPagedCalendar.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/ProjectRenderCalendarParameter.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/GetPageTemplateThumb.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java
+
+minor clean up and error handling refactoring
+------------------------------------------------------------------------
+r38661 | mrahija | 2009-07-29 09:38:22 -0400 (Wed, 29 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/src/unix.properties
+   M /java-projects/renderWeb/trunk/src/windows.properties
+
+fix months strings by removing " "
+------------------------------------------------------------------------
+r38601 | mstack | 2009-07-28 18:51:39 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/WebRoot/WEB-INF/lib
+
+auto-create this directory on build - remove it on distclean ant target
+------------------------------------------------------------------------
+r38600 | mstack | 2009-07-28 18:51:11 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/lib-deploy
+   A /java-projects/renderWeb/trunk/lib-deploy/commons-codec-1.3.jar
+   A /java-projects/renderWeb/trunk/lib-deploy/commons-httpclient-3.1.jar
+   A /java-projects/renderWeb/trunk/lib-deploy/commons-logging-1.1.1.jar
+   A /java-projects/renderWeb/trunk/lib-deploy/jaxb-photoworks-rendering-trunk.jar
+   A /java-projects/renderWeb/trunk/lib-deploy/log4j-1.2.15.jar
+   A /java-projects/renderWeb/trunk/lib-deploy/pha.jar
+   A /java-projects/renderWeb/trunk/lib-deploy/phaSerialize.jar
+   A /java-projects/renderWeb/trunk/lib-deploy/photoworks-rendering-trunk.jar
+
+deployable jar files (currently all jars in ./lib except for j2ee.jar)
+------------------------------------------------------------------------
+r38599 | mstack | 2009-07-28 18:50:44 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/build/build.properties
+   A /java-projects/renderWeb/trunk/build/build.xml
+
+new build files to generate war/jar/docs/reports
+------------------------------------------------------------------------
+r38598 | mstack | 2009-07-28 18:49:02 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/lib/junit-4.4.jar
+
+junit for unit tests, though there aren't any now I don't think
+------------------------------------------------------------------------
+r38597 | mstack | 2009-07-28 18:44:15 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/renderWeb/trunk/.classpath
+   M /java-projects/renderWeb/trunk/WebRoot/WEB-INF/web.xml
+   A /java-projects/renderWeb/trunk/lib
+   A /java-projects/renderWeb/trunk/lib/commons-codec-1.3.jar
+   A /java-projects/renderWeb/trunk/lib/commons-httpclient-3.1.jar
+   A /java-projects/renderWeb/trunk/lib/commons-logging-1.1.1.jar
+   A /java-projects/renderWeb/trunk/lib/j2ee.jar
+   A /java-projects/renderWeb/trunk/lib/jaxb-photoworks-rendering-trunk.jar
+   A /java-projects/renderWeb/trunk/lib/log4j-1.2.15.jar
+   A /java-projects/renderWeb/trunk/lib/pha.jar
+   A /java-projects/renderWeb/trunk/lib/phaSerialize.jar
+   A /java-projects/renderWeb/trunk/lib/photoworks-rendering-trunk.jar
+   D /java-projects/renderWeb/trunk/src/GetPageTemplateThumb.java
+   D /java-projects/renderWeb/trunk/src/PageTemplateThumbHelper.java
+   D /java-projects/renderWeb/trunk/src/PageTemplateThumbImpl.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   M /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/helper/PageTemplateThumbHelper.java (from /java-projects/renderWeb/trunk/src/PageTemplateThumbHelper.java:38589)
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/GetPageTemplateThumb.java (from /java-projects/renderWeb/trunk/src/GetPageTemplateThumb.java:38589)
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/rendering/servlets/PageTemplateThumbImpl.java (from /java-projects/renderWeb/trunk/src/PageTemplateThumbImpl.java:38589)
+
+fixed up project, created build.xml  including release/jar/war targets, copied over dependencies, moved classes from the default package and fixed up broken reach-ins to classes (direct field accesses changed to mutators and accessors)
+------------------------------------------------------------------------
+r38508 | mrahija | 2009-07-28 12:41:00 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/.mymetadata
+
+
+------------------------------------------------------------------------
+r38507 | mrahija | 2009-07-28 12:40:39 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/build/build.xml
+
+
+------------------------------------------------------------------------
+r38506 | mrahija | 2009-07-28 12:40:29 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/build.xml
+
+
+------------------------------------------------------------------------
+r38505 | mrahija | 2009-07-28 12:40:23 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/RenderWeb.war
+
+
+------------------------------------------------------------------------
+r38504 | mrahija | 2009-07-28 12:40:15 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/logs
+
+
+------------------------------------------------------------------------
+r38503 | mrahija | 2009-07-28 12:40:11 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   D /java-projects/renderWeb/trunk/.settings
+
+
+------------------------------------------------------------------------
+r38502 | mrahija | 2009-07-28 12:40:04 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb/trunk/.classpath
+   A /java-projects/renderWeb/trunk/.mymetadata
+   A /java-projects/renderWeb/trunk/.project
+   A /java-projects/renderWeb/trunk/.settings
+   A /java-projects/renderWeb/trunk/.settings/.jsdtscope
+   A /java-projects/renderWeb/trunk/.settings/org.eclipse.jdt.ui.prefs
+   A /java-projects/renderWeb/trunk/.settings/org.eclipse.wst.jsdt.ui.superType.container
+   A /java-projects/renderWeb/trunk/.settings/org.eclipse.wst.jsdt.ui.superType.name
+   A /java-projects/renderWeb/trunk/RenderWeb.war
+   A /java-projects/renderWeb/trunk/WebRoot
+   A /java-projects/renderWeb/trunk/WebRoot/META-INF
+   A /java-projects/renderWeb/trunk/WebRoot/META-INF/MANIFEST.MF
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/GetPageTemplateThumb.class
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/PageTemplateThumbHelper.class
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/PageTemplateThumbImpl.class
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/com
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/com/ag
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/com/ag/photoworks
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/com/ag/photoworks/product
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/com/ag/photoworks/product/preview
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/com/ag/photoworks/product/preview/CalendarProject.class
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/com/ag/photoworks/product/preview/JaxbPagedCalendar$JaxbDayNoteComparator.class
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/com/ag/photoworks/product/preview/JaxbPagedCalendar.class
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/com/ag/photoworks/product/preview/Project.class
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/com/ag/photoworks/product/preview/ProjectRenderCalendarParameter.class
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/jsp
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/jsp/MyJsp.jsp
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/log4j.properties
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/notes.txt
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/unix.properties
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/classes/windows.properties
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/jsp
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/jsp/MyJsp.jsp
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/lib
+   A /java-projects/renderWeb/trunk/WebRoot/WEB-INF/web.xml
+   A /java-projects/renderWeb/trunk/WebRoot/index.jsp
+   A /java-projects/renderWeb/trunk/build
+   A /java-projects/renderWeb/trunk/build/build.xml
+   A /java-projects/renderWeb/trunk/build.xml
+   A /java-projects/renderWeb/trunk/logs
+   A /java-projects/renderWeb/trunk/logs/phaAPI.log
+   A /java-projects/renderWeb/trunk/resouces
+   A /java-projects/renderWeb/trunk/resouces/log4j.properties
+   A /java-projects/renderWeb/trunk/resouces/notes.txt
+   A /java-projects/renderWeb/trunk/src
+   A /java-projects/renderWeb/trunk/src/GetPageTemplateThumb.java
+   A /java-projects/renderWeb/trunk/src/PageTemplateThumbHelper.java
+   A /java-projects/renderWeb/trunk/src/PageTemplateThumbImpl.java
+   A /java-projects/renderWeb/trunk/src/com
+   A /java-projects/renderWeb/trunk/src/com/ag
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/CalendarProject.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/JaxbPagedCalendar.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/Project.java
+   A /java-projects/renderWeb/trunk/src/com/ag/photoworks/product/preview/ProjectRenderCalendarParameter.java
+   A /java-projects/renderWeb/trunk/src/jsp
+   A /java-projects/renderWeb/trunk/src/jsp/MyJsp.jsp
+   A /java-projects/renderWeb/trunk/src/unix.properties
+   A /java-projects/renderWeb/trunk/src/windows.properties
+
+
+------------------------------------------------------------------------
+r38463 | mrahija | 2009-07-28 10:33:59 -0400 (Tue, 28 Jul 2009) | 1 line
+Changed paths:
+   A /java-projects/renderWeb
+   A /java-projects/renderWeb/branches
+   A /java-projects/renderWeb/tags
+   A /java-projects/renderWeb/trunk
+
+GetPageTemplateThumb servlet and supporting classes.
+

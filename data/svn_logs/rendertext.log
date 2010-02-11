@@ -1,0 +1,367 @@
+------------------------------------------------------------------------
+r62727 | mstack | 2010-01-13 11:45:08 -0500 (Wed, 13 Jan 2010) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/FontManager.java
+
+Ticket 233507 - missing fonts causing loads of error messages in the logs. Adding code/comments to ignore errors about missing fonts as long as the missing fonts are part of the group of 3 fonts we know to be missing already.
+------------------------------------------------------------------------
+r62253 | mstack | 2010-01-07 14:09:02 -0500 (Thu, 07 Jan 2010) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/test/FitTextTester.java
+
+more test cases
+------------------------------------------------------------------------
+r62238 | mhebrank | 2010-01-07 13:13:40 -0500 (Thu, 07 Jan 2010) | 1 line
+Changed paths:
+   A /java-projects/text_renderer/trunk/lib-test/junit4-4.5.jar
+   A /java-projects/text_renderer/trunk/lib-test/org.springframework.core-3.0.0.RELEASE.jar
+   A /java-projects/text_renderer/trunk/lib-test/org.springframework.test-3.0.0.RELEASE.jar
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/TextFitter.java
+   A /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/test/TextFitterTest.java
+
+changed linear search to binary in text fitter. tb:238690
+------------------------------------------------------------------------
+r60484 | mstack | 2009-12-11 14:49:51 -0500 (Fri, 11 Dec 2009) | 3 lines
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/TextFitter.java
+
+TB#: 238689  - increase the number of characters we'll check before we give up. Otherwise, we mislead the customer into thinking more text fits into their bin than actually fits.
+
+however it is dreadfully slow now. I think we can improve it pretty easily. 
+------------------------------------------------------------------------
+r60045 | mstack | 2009-12-09 13:16:43 -0500 (Wed, 09 Dec 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/TextRenderer.java
+
+hacked in a fix where fgColor was sent as 'one' instead of a valid hex color code. TB# 238175
+------------------------------------------------------------------------
+r56957 | mstack | 2009-11-16 10:47:32 -0500 (Mon, 16 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/text_renderer.properties
+
+fixing text rendering
+------------------------------------------------------------------------
+r55090 | mstack | 2009-11-05 15:42:55 -0500 (Thu, 05 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/FontManager.java
+
+reduction in log spewage
+------------------------------------------------------------------------
+r55084 | mstack | 2009-11-05 15:38:09 -0500 (Thu, 05 Nov 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/FontManager.java
+
+ignore error messages about missing fonts we already know about
+------------------------------------------------------------------------
+r52954 | mstack | 2009-10-21 16:36:11 -0400 (Wed, 21 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/FontManager.java
+
+added note about referencing of fonts from war vs. file system vs. C3
+------------------------------------------------------------------------
+r52948 | mstack | 2009-10-21 16:31:55 -0400 (Wed, 21 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/TextFitter.java
+
+tone down logging
+------------------------------------------------------------------------
+r52372 | mstack | 2009-10-19 09:18:13 -0400 (Mon, 19 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/build.xml
+   A /java-projects/text_renderer/trunk/lib-test
+   A /java-projects/text_renderer/trunk/lib-test/commons-codec-1.3.jar
+   A /java-projects/text_renderer/trunk/lib-test/commons-httpclient-3.1.jar
+   A /java-projects/text_renderer/trunk/lib-test/commons-io-1.4.jar
+   A /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/test
+   A /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/test/FitTextTester.java
+
+Added dev tester for FitText servlet. Also added some new jars to support test class, and made modifications to build.xml
+------------------------------------------------------------------------
+r52093 | mstack | 2009-10-16 14:05:18 -0400 (Fri, 16 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/WEB-INF/web.xml
+
+update web.xml to include BinInfoServlet
+------------------------------------------------------------------------
+r52092 | mstack | 2009-10-16 14:05:03 -0400 (Fri, 16 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/BinInfoServlet.java
+
+formatting changes
+------------------------------------------------------------------------
+r52091 | mstack | 2009-10-16 14:04:45 -0400 (Fri, 16 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/text_renderer.properties
+
+change font path to point to filesystem rather than inside of war
+------------------------------------------------------------------------
+r52090 | mstack | 2009-10-16 14:04:31 -0400 (Fri, 16 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/FontManager.java
+
+Change font manager to use fonts from filesystem rather than war file
+------------------------------------------------------------------------
+r52088 | mstack | 2009-10-16 14:03:26 -0400 (Fri, 16 Oct 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/TextFitter.java
+
+TB: 229611 - fix text-cropping issues
+------------------------------------------------------------------------
+r48395 | mstack | 2009-09-23 16:37:40 -0400 (Wed, 23 Sep 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/BinInfoServlet.java
+
+cleanup and logging
+------------------------------------------------------------------------
+r48387 | mstack | 2009-09-23 16:23:18 -0400 (Wed, 23 Sep 2009) | 1 line
+Changed paths:
+   A /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/BinInfoServlet.java
+
+created a new servlet, similar in functionality to TextFitter. 
+------------------------------------------------------------------------
+r41198 | meberts | 2009-08-11 15:47:34 -0400 (Tue, 11 Aug 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/TextFitter.java
+
+Spaces are used as linebreaks and tend to disappear from the fit/unfit text. Adding them back in like this works on overflow text and doesn't seem to affect text that doesn't overflow
+------------------------------------------------------------------------
+r37217 | jlees | 2009-07-21 13:24:04 -0400 (Tue, 21 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/FontInfoRetriever.java
+
+refactored processRequest()
+------------------------------------------------------------------------
+r37214 | mstack | 2009-07-21 13:17:10 -0400 (Tue, 21 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/WEB-INF/web.xml
+
+added new FontInfoRetriever servlet mappings to web.xml
+------------------------------------------------------------------------
+r37211 | mstack | 2009-07-21 13:05:19 -0400 (Tue, 21 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/text_renderer.properties
+
+re-fixed broken properties file
+------------------------------------------------------------------------
+r37202 | jlees | 2009-07-21 12:52:49 -0400 (Tue, 21 Jul 2009) | 1 line
+Changed paths:
+   A /java-projects/text_renderer/trunk/lib/xstream-1.3.1.jar
+
+needed for FontInfoRetriever servlet
+------------------------------------------------------------------------
+r37201 | jlees | 2009-07-21 12:52:21 -0400 (Tue, 21 Jul 2009) | 1 line
+Changed paths:
+   A /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/FontInfoRetriever.java
+   A /java-projects/text_renderer/trunk/src/com/photoworks/xstream
+   A /java-projects/text_renderer/trunk/src/com/photoworks/xstream/ObjectFactory.java
+   A /java-projects/text_renderer/trunk/src/com/photoworks/xstream/PWXStream.java
+   A /java-projects/text_renderer/trunk/src/com/photoworks/xstream/XMLString.java
+   A /java-projects/text_renderer/trunk/src/com/photoworks/xstream/XMLStringConverter.java
+   A /java-projects/text_renderer/trunk/src/com/photoworks/xstream/XStreamDriver.java
+   A /java-projects/text_renderer/trunk/src/com/photoworks/xstream/XStreamWriter.java
+
+added FontInfoRetriever servlet and the classes it depends on for XML conversion of objects.
+------------------------------------------------------------------------
+r37169 | mstack | 2009-07-21 10:38:25 -0400 (Tue, 21 Jul 2009) | 1 line
+Changed paths:
+   M /java-projects/text_renderer/trunk/src/text_renderer.properties
+
+updated path to fonts 
+------------------------------------------------------------------------
+r32750 | mstack | 2009-06-19 12:42:27 -0400 (Fri, 19 Jun 2009) | 1 line
+Changed paths:
+   A /java-projects/text_renderer/trunk/META-INF
+   A /java-projects/text_renderer/trunk/META-INF/MANIFEST.MF
+   A /java-projects/text_renderer/trunk/WEB-INF
+   A /java-projects/text_renderer/trunk/WEB-INF/text_renderer.xml
+   A /java-projects/text_renderer/trunk/WEB-INF/web.xml
+   A /java-projects/text_renderer/trunk/build.xml
+   A /java-projects/text_renderer/trunk/data
+   A /java-projects/text_renderer/trunk/data/fonts
+   A /java-projects/text_renderer/trunk/data/fonts/16196___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/71849___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/BBAND___.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/BICKLEYS.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/CLBDE___.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/CLBD____.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/CLLT____.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/CLMD____.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/CLXB____.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/CaitlinAGAGI.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/CanteSanMedSwa.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Cenizas-Alt.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Cenizas-Reg.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Chalet-LondonNineteenEighty.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Chalet-LondonNineteenSevent.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Chalet-LondonNineteenSixty.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Chalet-NewYorkNineteenEight.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Chalet-NewYorkNineteenSeven.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Chalet-NewYorkNineteenSixty.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Chalet-ParisNineteenEighty.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Chalet-ParisNineteenSeventy.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Chalet-ParisNineteenSixty.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Chalet-Tokyo.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Court___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Courtb__.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Courtbi_.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Courti__.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/DalliRom.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/HOW_TO_ADD_FONTS.TXT
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTBAL.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTBIA.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTBIS.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTBIT.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTBLA.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTBOL.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTBSC.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTBSW.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTBWS.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTEN2.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTENG.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTFLE.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTIAL.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTISC.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTITA.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTKAL.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTKIA.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTKIS.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTKIT.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTKSC.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTKSW.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTKWS.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTRAL.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTROM.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTRSC.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTSWA.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HTEXTWSC.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/HelveticaNeueLTCom-LtCn.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/HenriAGI.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/IT337___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/JuLfHaEp.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/JuLfHaRg.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LEVIABLA.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/LEVIAKIT.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/LT_41167.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LT_50019.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LT_50277.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/LT_50535.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LT_50541.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LT_50617.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LT_51103.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/LTe50920.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LazyDazeAGI.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LucidaBrightDemiBold.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LucidaBrightDemiItalic.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LucidaBrightItalic.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LucidaBrightRegular.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LucidaSansDemiBold.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LucidaSansRegular.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LucidaTypewriterBold.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/LucidaTypewriterRegular.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Marcsc___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/MatriReg.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/MatriRegLin.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/MrsEavIta.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/P22Cezan-Reg.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/SCRIHJ__.TTF
+   A /java-projects/text_renderer/trunk/data/fonts/TB-Matrix.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Thonb___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Thonbi__.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Thonburi.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/Thoni___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/TxPl____.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/TypographyofCoop-Black.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/TypographyofCoop-Bold.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/TypographyofCoop-Condensed.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/TypographyofCoop-Flaired.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/TypographyofCoop-Forged.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/TypographyofCoop-Heavy.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/TypographyofCoop-Latin.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/TypographyofCoop-Light.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/WhimseyAGI.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/amrg____.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/baker_script.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/bem_____.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/bemba___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/bembe___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/build.xml
+   A /java-projects/text_renderer/trunk/data/fonts/comic.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/comicbd.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/confection.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/create_font_map.sh
+   A /java-projects/text_renderer/trunk/data/fonts/defs.xsl
+   A /java-projects/text_renderer/trunk/data/fonts/edwasai_.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/edwasi__.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/einht___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/felt tip roman-bold.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/felt tip roman-heavy.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/felt tip roman.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/font_map.xml
+   A /java-projects/text_renderer/trunk/data/fonts/fontsampler.xsl
+   A /java-projects/text_renderer/trunk/data/fonts/georgia.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/gil_____.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/gothic.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/gothicb.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/goudos.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/goudosb.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/goudosi.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/goudysto.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/gsros___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/gsrsc___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/impact.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lt_50278.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lt_50381.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lt_50543.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lt_50678.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lt_55840.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50070.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50214.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50277.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50278.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50336.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50383.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50406.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50516.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50535.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50537.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50541.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50617.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte50619.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte51005.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lte51103.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lucida-casual.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lucida_casual.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/lvrm____.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/merge_mappings.xsl
+   A /java-projects/text_renderer/trunk/data/fonts/rdr_____.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/stanj___.ttf
+   A /java-projects/text_renderer/trunk/data/fonts/static_font_map.xml
+   A /java-projects/text_renderer/trunk/data/fonts/tc059___.ttf
+   A /java-projects/text_renderer/trunk/lib
+   A /java-projects/text_renderer/trunk/lib/commons-logging-1.1.1.jar
+   A /java-projects/text_renderer/trunk/lib/commons-logging-adapters-1.1.1.jar
+   A /java-projects/text_renderer/trunk/lib/commons-logging-api-1.1.1.jar
+   A /java-projects/text_renderer/trunk/lib/json-1.0.jar
+   A /java-projects/text_renderer/trunk/lib/servlet-api.jar
+   A /java-projects/text_renderer/trunk/src
+   A /java-projects/text_renderer/trunk/src/com
+   A /java-projects/text_renderer/trunk/src/com/photoworks
+   A /java-projects/text_renderer/trunk/src/com/photoworks/text
+   A /java-projects/text_renderer/trunk/src/com/photoworks/text/FontManager.java
+   A /java-projects/text_renderer/trunk/src/com/photoworks/text/TextLayoutHelper.java
+   A /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets
+   A /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/TextFitter.java
+   A /java-projects/text_renderer/trunk/src/com/photoworks/text/servlets/TextRenderer.java
+   A /java-projects/text_renderer/trunk/src/text_renderer.properties
+
+adding from Matt Eberts
+------------------------------------------------------------------------
+r32748 | mstack | 2009-06-19 12:40:08 -0400 (Fri, 19 Jun 2009) | 1 line
+Changed paths:
+   A /java-projects/text_renderer
+   A /java-projects/text_renderer/branches
+   A /java-projects/text_renderer/tags
+   A /java-projects/text_renderer/trunk
+
+adding from Matt Eberts
+
