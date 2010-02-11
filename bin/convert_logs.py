@@ -178,9 +178,8 @@ def create_event_xml(events, output):
               (None, "author"):"author"}
     
     for event in events:
-        generator.startElement("event", event.properties())
-        
-        generator.endElement("event")
+        generator.startElement(event.kind, event.properties())
+        generator.endElement(event.kind)
     
     generator.endElement('file_events')
     generator.endDocument()
@@ -486,13 +485,20 @@ def run_marshal(command):
     stream.close()
     return results
 
-class Event(object):
+class AbstractEvent(object):
+    # Some version control system's logs are not in chronological order, so
+    # this compare method will return a compare of the date attributes.
+    def __cmp__(self, other):
+        return cmp(self.date, other.date)
+
+class Event(AbstractEvent):
     """ Event to hold all of the separate events as we parse them from the logs. """
 
     def __init__(self, filename, date, author):
         self.filename = filename
         self.date = date
         self.author = author
+        self.kind = "event"
 
     def properties(self):
         """returns a dict of properties and their names for XML serialization"""
@@ -502,11 +508,17 @@ class Event(object):
                 "author": self.author
         }
 
-    # Some version control system's logs are not in chronological order, so
-    # this compare method will return a compare of the date attributes.
-    def __cmp__(self, other):
-        return cmp(self.date, other.date)
-
+class Tag(AbstractEvent):
+    def __init__(self, name, date):
+        self.name
+        self.date
+        self.kind = "tag"
+    
+    def properties(self):
+        return {
+            "name": self.name,
+            "date": str(self.date)
+        }
 
 # Main entry point.
 if __name__ == "__main__":
