@@ -52,6 +52,16 @@ public class PhysicsEngineOrderly extends PhysicsEngine
   public void onRelax(code_swarm.PersonNode pNode) {
     Vector2f delta = new Vector2f();
 
+    // A gentle force to attract pNodes to the center
+    // NOTE: this should be done prior to attraction/repulsion forces, otherwise
+    // tends to generate a grid-like pattern
+    Vector2f midpoint = new Vector2f(code_swarm.width / 2, code_swarm.height / 2);
+    delta = new Vector2f();
+    delta.sub(midpoint, pNode.mPosition);
+
+    delta.scale(1 / delta.length() * 0.003f);
+    pNode.mPosition.add(delta);
+
     // All person nodes attract each other, but only to a certain point, then they repel with gentle force
     for (code_swarm.PersonNode n : code_swarm.getLivingPeople()) {
       if (pNode != n) {
@@ -76,15 +86,6 @@ public class PhysicsEngineOrderly extends PhysicsEngine
       }
     }
 
-
-    // A gentle force to attract pNodes to the center
-    Vector2f midpoint = new Vector2f(code_swarm.width / 2, code_swarm.height / 2);
-    delta = new Vector2f();
-    delta.sub(midpoint, pNode.mPosition);
-
-    delta.scale(1 / delta.length() * 0.003f);
-    pNode.mPosition.add(delta);
-    
     // place the edited files around the person
     Iterator<code_swarm.FileNode> editedFiles = pNode.editing.iterator();
     int index = 0;
