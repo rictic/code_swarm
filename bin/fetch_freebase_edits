@@ -17,24 +17,27 @@ null = None
 logging.basicConfig(level=logging.ERROR,
                     format='%(levelname)s: %(message)s')
 
-domain = "/base/tallships"
-if len(argv) == 2:
-    if argv[1][0] == '/':
-        sub_query =     {
-            "type" : [
-              {
-                "!/type/domain/types" : argv[1],
-                "id" : null
-              }
-            ],
-            "guid": null
+def domain_query(domain):
+    return {
+        "type" : [
+          {
+            "!/type/domain/types" : domain,
+            "id" : null
           }
+        ],
+        "guid": null
+      }
+
+if len(argv) == 2:
+    if argv[1][0] != '/':
+        sub_query = domain_query(argv[1])
     else:
         print argv[1]
         print loads(argv[1])
         exit
         sub_query = loads(argv[1])
-
+else:
+    sub_query = domain_query("/base/tallships")
 
 mss = HTTPMetawebSession('www.freebase.com')
 
@@ -68,4 +71,5 @@ def freebase_events(query):
         author = edit["creator"][6:]
         yield Event(name, date, author)
 
-create_event_xml(freebase_events(query), stdout)
+print query
+# create_event_xml(freebase_events(query), stdout)
