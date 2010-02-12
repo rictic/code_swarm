@@ -102,8 +102,10 @@ public class CodeSwarmConfig {
   /** Controls where the config files are for the Physical Engine */
   public static final String PHYSICS_ENGINE_CONF_DIR = "PhysicsEngineConfigDir";
   public static final String IS_INPUT_SORTED_KEY = "IsInputSorted";
+  public static final String SHOW_USER_NAME_KEY = "ShowUserName";
   /** Default regex and rgb values used to match anything not caught in the config file */
   public static String DEFAULT_COLOR_ASSIGN = "\"Misc\",\".*\",128,128,128,128,128,128";
+  public static final String DRAW_CIRCULAR_AVATARS = "CircularAvatars";
 
   private List<Properties> propStack;
   

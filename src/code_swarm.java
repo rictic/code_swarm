@@ -51,6 +51,7 @@ import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
 
+
 /**
  * 
  *
@@ -63,12 +64,15 @@ public class code_swarm extends PApplet {
   int FRAME_RATE = 24;
   long UPDATE_DELTA = -1;
   String SPRITE_FILE = "particle.png";
+  String MASK_FILE = "src/mask.png";
   String SCREENSHOT_FILE;
   int background;
+  int PARTICLE_SIZE = 2;
 
   // Data storage
   BlockingQueue<FileEvent> eventsQueue;
   boolean isInputSorted = false;
+  boolean showUserName = false;
   protected static Map<String, FileNode> nodes;
   protected static Map<Pair<FileNode, PersonNode>, Edge> edges;
   protected static Map<String, PersonNode> people;
@@ -92,6 +96,7 @@ public class code_swarm extends PApplet {
   PFont font;
   PFont boldFont;
   PImage sprite;
+  PImage avatarMask;
 
   boolean paused = false;
   
@@ -142,7 +147,7 @@ public class code_swarm extends PApplet {
   private boolean safeToToggle = false;
   private boolean wantToToggle = false;
   private boolean toggleDirection = false;
-
+  private boolean circularAvatars = false;
 
   // Default Physics Engine (class) name
   static final String PHYSICS_ENGINE_DEFAULT  = "PhysicsEngineOrderly";
@@ -194,17 +199,18 @@ public class code_swarm extends PApplet {
     int maxBackgroundThreads = cfg.getPositiveIntProperty(CodeSwarmConfig.MAX_THREADS_KEY);
     backgroundExecutor = new ThreadPoolExecutor(1, maxBackgroundThreads, Long.MAX_VALUE, TimeUnit.NANOSECONDS, new ArrayBlockingQueue<Runnable>(4 * maxBackgroundThreads), new ThreadPoolExecutor.CallerRunsPolicy());
     
-    showLegend     = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND);
-    showHistogram  = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY); 
-    showDate       = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DATE);
-    showEdges      = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_EDGES);
-    showDebug      = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DEBUG);
-    takeSnapshots  = cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY);
-    drawNamesSharp = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_SHARP);
-    drawNamesHalos = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS); 
-    drawFilesSharp = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_SHARP);
-    drawFilesFuzzy = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_FUZZY);
-    drawFilesJelly = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY);
+    showLegend      = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND);
+    showHistogram   = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY); 
+    showDate        = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DATE);
+    showEdges       = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_EDGES);
+    showDebug       = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DEBUG);
+    takeSnapshots   = cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY);
+    drawNamesSharp  = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_SHARP);
+    drawNamesHalos  = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS); 
+    drawFilesSharp  = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_SHARP);
+    drawFilesFuzzy  = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_FUZZY);
+    drawFilesJelly  = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY);
+    circularAvatars = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_CIRCULAR_AVATARS);
 
     background = cfg.getColorProperty(CodeSwarmConfig.BACKGROUND_KEY).getRGB();
     fontColor = cfg.getColorProperty(CodeSwarmConfig.FONT_COLOR_KEY).getRGB();
@@ -230,6 +236,7 @@ public class code_swarm extends PApplet {
     UPDATE_DELTA = (long) (86400000 / framesperday);
 
     isInputSorted = cfg.getBooleanProperty(CodeSwarmConfig.IS_INPUT_SORTED_KEY);
+    showUserName = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_USER_NAME_KEY);
     
     avatarFetcher = getAvatarFetcher(cfg.getStringProperty("AvatarFetcher"));
 
@@ -330,6 +337,8 @@ public class code_swarm extends PApplet {
     String SPRITE_FILE = cfg.getStringProperty(CodeSwarmConfig.SPRITE_FILE_KEY);
     // Create the file particle image
     sprite = loadImage(SPRITE_FILE);
+    avatarMask = loadImage(MASK_FILE);
+    avatarMask.resize(cfg.getPositiveIntProperty("AvatarSize"), cfg.getPositiveIntProperty("AvatarSize"));
     // Add translucency (using itself in this case)
     sprite.mask(sprite);
   }
@@ -491,7 +500,7 @@ public class code_swarm extends PApplet {
    */
   public void drawHistory() {
     int counter = 0;
-    
+    strokeWeight(PARTICLE_SIZE);
     for (ColorBins cb : history) {
       if (cb.num > 0) {
         int color = cb.colorList[0];
@@ -1274,6 +1283,7 @@ public class code_swarm extends PApplet {
     protected Vector2f mPosition;
     protected Vector2f mLastPosition;
     protected float mFriction;
+    protected float currentWidth;
 
     /**
      * mass of the node
@@ -1340,7 +1350,18 @@ public class code_swarm extends PApplet {
         if (drawFilesJelly) {
           drawJelly();
         }
-
+        // Draw motion blur
+        // float d = mPosition.distance(mLastPosition);
+        
+        float nx = mPosition.x - mLastPosition.x;
+        float ny = mPosition.y - mLastPosition.y;
+        float d = (float) Math.sqrt(nx * nx + ny * ny);
+        
+        stroke(nodeHue, min(255f * (d / 10f), 255f) / 10f);
+        strokeCap(ROUND);
+        strokeWeight(currentWidth / 4f);
+        // strokeWeight((float)life / 10.0 * (float)PARTICLE_SIZE);
+        line(mPosition.x, mPosition.y, mLastPosition.x, mLastPosition.y);
         /** TODO : this would become interesting on some special event, or for special materials
          * colorMode( RGB ); fill( 0, life ); textAlign( CENTER, CENTER ); text( name, x, y );
          * Example below:
@@ -1410,8 +1431,8 @@ public class code_swarm extends PApplet {
     public void drawSharp() {
       colorMode(RGB);
       fill(nodeHue, life);
-      float w = 3;
-
+      float w = 3 * PARTICLE_SIZE;
+      currentWidth = w;
       if (life >= minBold) {
         stroke(255, 128);
         w *= 2;
@@ -1426,7 +1447,8 @@ public class code_swarm extends PApplet {
     public void drawFuzzy() {
       tint(nodeHue, life);
 
-      float w = 8 + (sqrt(touches) * 4);
+      float w = (8 + (sqrt(touches) * 4)) * PARTICLE_SIZE;
+      currentWidth = w;
       // not used float dubw = w * 2;
       float halfw = w / 2;
       if (life >= minBold) {
@@ -1444,7 +1466,8 @@ public class code_swarm extends PApplet {
         stroke(255);
       else
         stroke(nodeHue, life);
-      float w = sqrt(touches);
+      float w = sqrt(touches) * PARTICLE_SIZE;
+      currentWidth = w;
       ellipseMode(CENTER);
       ellipse(mPosition.x, mPosition.y, w, w);
     }
@@ -1474,7 +1497,11 @@ public class code_swarm extends PApplet {
       mLastPosition.add(mPhysicsEngine.startVelocity(this));
       mFriction = 0.99f;
       String iconFile = avatarFetcher.fetchUserImage(name);
-      if (iconFile != null) icon = loadImage(iconFile, "unknown");
+      if (iconFile != null) {
+        icon = loadImage(iconFile, "unknown");
+        if (circularAvatars)
+          icon.mask(avatarMask);
+      }
     }
 
     /**
@@ -1492,11 +1519,12 @@ public class code_swarm extends PApplet {
           textFont(font);
         
         fill(fontColor, life);
-        text(name, mPosition.x, mPosition.y+10);
+        if(showUserName)
+          text(name, mPosition.x, mPosition.y+10);
         if (icon != null){
           colorMode(RGB);
           tint(255,255,255,max(0,life-80));
-          image(icon, mPosition.x-(avatarFetcher.size / 2), mPosition.y-(avatarFetcher.size - 5));
+          image(icon, mPosition.x-(avatarFetcher.size / 2), mPosition.y-(avatarFetcher.size - ( showUserName ? 5 : 15)));
         }
       }
     }
