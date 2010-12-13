@@ -96,9 +96,8 @@ def main():
 
 def root_path():
     "Returns the path of the code_swarm source directory"
-    path = os.path.dirname(__file__)
-    path = os.path.dirname(path)
-    return path
+    real_path = os.path.join(os.path.dirname(__file__), os.readlink(__file__))
+    return os.path.dirname(real_path)
 
 
 def invoke_code_swarm(code_swarm_jar, proj_cfg, options):
