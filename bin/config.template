@@ -6,7 +6,7 @@ InputFile=log.xml
 # Color assignment rules
 # Keep in order, do not skip numbers. Numbers start
 # at 1.
-# 
+#
 # Pattern:  "Label", "regex", R,G,B, R,G,B
 # Label is optional.  If it is omitted, the regex
 # will be used.
@@ -37,6 +37,6 @@ IsInputSorted=true
 # To use local avatars, uncomment this line:
 #AvatarFetcher=LocalAvatar
 
-# then place png files named after the usernames of committers in 
+# then place png files named after the usernames of committers in
 # the data/local_avatars directory
 # data/local_avatars/default.png is used by default

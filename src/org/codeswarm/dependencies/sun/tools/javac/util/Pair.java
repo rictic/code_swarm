@@ -2,7 +2,7 @@
  * So it turns out that there's not a decent implementation of Pair
  * in Java's supported API.  Fortunately it's open source,
  * so here's a decent version for the benefit of platforms without
- * it. 
+ * it.
  */
 
 /*

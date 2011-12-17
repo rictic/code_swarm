@@ -108,8 +108,8 @@ public class CodeSwarmConfig {
   public static final String DRAW_CIRCULAR_AVATARS = "CircularAvatars";
 
   private List<Properties> propStack;
-  
-  
+
+
 
   // Cache variables
   private Color _background = null;
@@ -118,7 +118,7 @@ public class CodeSwarmConfig {
     initPropStack();
     addPropertiesLayer(configFileName);
   }
-  
+
   public CodeSwarmConfig(Iterable<String> configFileNames) throws IOException {
     initPropStack();
     for (String filename: configFileNames)
@@ -134,12 +134,12 @@ public class CodeSwarmConfig {
     props.load(new FileInputStream(filename));
     addPropertiesLayer(props);
   }
-  
+
   protected void initPropStack() {
     propStack = new LinkedList<Properties>();
     propStack.add(createDefaults());
   }
-  
+
   private Properties createDefaults() {
     Properties def = new Properties();
     def.setProperty( COLOR_ASSIGN_KEY + "1" , DEFAULT_COLOR_ASSIGN );
@@ -148,7 +148,7 @@ public class CodeSwarmConfig {
 
 
   /**
-   * 
+   *
    * @param key
    * @return Returns the first key found in the stack of config files.
    */
@@ -163,7 +163,7 @@ public class CodeSwarmConfig {
     return stringToColor( getStringProperty(key) );
   }
 
-  
+
   /**
    * Specify the path to the Xml-input file containing the repository
    * entries.<br />
@@ -176,13 +176,13 @@ public class CodeSwarmConfig {
     propStack.get(0).setProperty(INPUT_FILE_KEY, filePath);
   }
 
-  
+
   public boolean getBooleanProperty(String key) {
     return Boolean.valueOf(getStringProperty(key));
   }
-  
+
   /**
-   * 
+   *
    * @param key
    * @return value of property if found, 0 if not found.
    */
@@ -191,7 +191,7 @@ public class CodeSwarmConfig {
   }
 
   /**
-   * 
+   *
    * @param key
    * @param defValue
    * @return value of property if found.
@@ -204,7 +204,7 @@ public class CodeSwarmConfig {
   }
 
   /**
-   * 
+   *
    * @param key
    * @param defValue
    * @return defValue if not found or found value isn't negative, Value of property if found.
@@ -219,7 +219,7 @@ public class CodeSwarmConfig {
 
 
   /**
-   * 
+   *
    * @param key
    * @return value of property if found, 0 if not found.
    */
@@ -228,7 +228,7 @@ public class CodeSwarmConfig {
   }
 
   /**
-   * 
+   *
    * @param key
    * @return value of property if found, 0 if not found.
    */
@@ -237,7 +237,7 @@ public class CodeSwarmConfig {
   }
 
   /**
-   * 
+   *
    * @param index
    * @return String containing the regex and rgb values used to colorcode nodes, null if not found
    */
@@ -246,7 +246,7 @@ public class CodeSwarmConfig {
   }
 
   /**
-   * 
+   *
    * @param str
    * @return Color object constructed from values in str
    */

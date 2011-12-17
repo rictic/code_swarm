@@ -24,7 +24,7 @@ import md5
 from random import random
 from threading import Thread
 from shutil import copy
-        
+
 def parse_args():
     from optparse import OptionParser
 
@@ -55,15 +55,15 @@ def parse_args():
 def main():
     """
     Visualizes the project in the current working directory.
-    
+
     Doing this automagically involves three steps:
     1) Discovering what kind of repository is used in the current working
         directory.
-    
+
     2) Converting the log formats from each kind of repository to the event
         xml format that code_swarm expects.
-    
-    3) Invoking code_swarm    
+
+    3) Invoking code_swarm
     """
 
     options = parse_args()[0]
@@ -127,7 +127,7 @@ def invoke_code_swarm(code_swarm_jar, proj_cfg, options):
             path_64 = os.path.join(path, "linux-x86_64")
             path = os.pathsep.join([path_64, path])
         return "-Djava.library.path=" + os.pathsep.join([path, old_path])
-    
+
     classpath = os.pathsep.join([code_swarm_jar, get_jars(), "."])
     ea = "-da"
     if options.debug: ea = "-ea"
@@ -175,15 +175,15 @@ def autogenerate_files(options):
 
     if options.reload or not os.path.exists(os.path.join(dir, "log.xml")):
         generate_log(dir)
-            
+
     proj_cfg = os.path.join(dir, "project.config")
     if not os.path.exists(proj_cfg):
         print >>sys.stderr, "Creating default config file at " + proj_cfg
         cp_tpl = os.path.join(root_path(), "bin", "config.template")
         copy(cp_tpl, proj_cfg)
-    
+
     return proj_cfg
-    
+
 
 def do_cmds(*cmds):
     for cmd in cmds:
@@ -222,7 +222,7 @@ def do_hg(dir):
 def do_darcs(dir):
     tmp = os.path.join(dir, "darcs.xml")
     xml = os.path.join(dir, "log.xml")
-    
+
     return do_cmds("darcs changes -s --xml-output > '%s'" % tmp
                   ,"convert_logs.py -d '%s' -o '%s'" % (tmp, xml)
                   ,"rm -f '%s'" % tmp)
@@ -240,7 +240,7 @@ def do_freebase(domain):
     cfgf.write("InputFile=%s\n" % xml)
     cfgf.close()
     return cfg
-    
-    
+
+
 if __name__ == "__main__":
     main()

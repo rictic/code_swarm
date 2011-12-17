@@ -44,7 +44,7 @@ public class CodeSwarmEventsSerializer {
     }
     /**
      * actually serializes the list to the file denoted by pathToFile
-     * @param pathToFile the path to the xml file to serialize to. 
+     * @param pathToFile the path to the xml file to serialize to.
      *          It gets created if it doesn't exist.
      * @throws javax.xml.parsers.ParserConfigurationException
      *          When the serialization failed
@@ -76,5 +76,5 @@ public class CodeSwarmEventsSerializer {
         t.transform(new DOMSource(d), result);
         out.close();
     }
-    
+
 }

@@ -53,11 +53,11 @@ import processing.core.PImage;
 
 
 /**
- * 
+ *
  *
  */
 public class code_swarm extends PApplet {
-  /** @remark needed for any serializable class */ 
+  /** @remark needed for any serializable class */
   public static final long serialVersionUID = 0;
 
   // User-defined variables
@@ -80,11 +80,11 @@ public class code_swarm extends PApplet {
   // Liveness cache
   static List<PersonNode> livingPeople = new ArrayList<PersonNode>();
   static List<Edge> livingEdges = new ArrayList<Edge>();
-  static List<FileNode> livingNodes = new ArrayList<FileNode>(); 
-  
+  static List<FileNode> livingNodes = new ArrayList<FileNode>();
+
   LinkedList<ColorBins> history;
   boolean finishedLoading = false;
-  
+
   // Temporary variables
   FileEvent currentEvent;
   Date nextDate;
@@ -99,8 +99,8 @@ public class code_swarm extends PApplet {
   PImage avatarMask;
 
   boolean paused = false;
-  
-  // Graphics state variables  
+
+  // Graphics state variables
   boolean showHistogram;
   boolean showDate;
   boolean showLegend;
@@ -115,11 +115,11 @@ public class code_swarm extends PApplet {
   boolean drawFilesSharp;
   boolean drawFilesFuzzy;
   boolean drawFilesJelly;
-  
+
   //used to ensure that input is sorted when we're told it is
   long maximumDateSeenSoFar = 0;
-  
-  
+
+
   // Color mapper
   ColorAssigner colorAssigner;
   int currentColor;
@@ -138,7 +138,7 @@ public class code_swarm extends PApplet {
   private float PERSON_MASS;
 
   private int HIGHLIGHT_PCT;
-  
+
   // Physics engine configuration
   String          physicsEngineConfigDir;
   String          physicsEngineSelection;
@@ -158,7 +158,7 @@ public class code_swarm extends PApplet {
   //kinda a hack that these two are static
   protected static CodeSwarmConfig cfg;
   protected static String userConfigFilename = null;
-  
+
   private long lastDrawDuration = 0;
   private String loadingMessage = "Reading input file";
   protected static int width=0;
@@ -178,8 +178,8 @@ public class code_swarm extends PApplet {
 
   private int fontColor;
 
-  
-  
+
+
   /**
    * Initialization
    */
@@ -195,18 +195,18 @@ public class code_swarm extends PApplet {
     } else {
       size(width, height);
     }
-    
+
     int maxBackgroundThreads = cfg.getPositiveIntProperty(CodeSwarmConfig.MAX_THREADS_KEY);
     backgroundExecutor = new ThreadPoolExecutor(1, maxBackgroundThreads, Long.MAX_VALUE, TimeUnit.NANOSECONDS, new ArrayBlockingQueue<Runnable>(4 * maxBackgroundThreads), new ThreadPoolExecutor.CallerRunsPolicy());
-    
+
     showLegend      = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_LEGEND);
-    showHistogram   = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY); 
+    showHistogram   = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_HISTORY);
     showDate        = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DATE);
     showEdges       = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_EDGES);
     showDebug       = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_DEBUG);
     takeSnapshots   = cfg.getBooleanProperty(CodeSwarmConfig.TAKE_SNAPSHOTS_KEY);
     drawNamesSharp  = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_SHARP);
-    drawNamesHalos  = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS); 
+    drawNamesHalos  = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_NAMES_HALOS);
     drawFilesSharp  = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_SHARP);
     drawFilesFuzzy  = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_FUZZY);
     drawFilesJelly  = cfg.getBooleanProperty(CodeSwarmConfig.DRAW_FILES_JELLY);
@@ -214,14 +214,14 @@ public class code_swarm extends PApplet {
 
     background = cfg.getColorProperty(CodeSwarmConfig.BACKGROUND_KEY).getRGB();
     fontColor = cfg.getColorProperty(CodeSwarmConfig.FONT_COLOR_KEY).getRGB();
-    
+
     // Ensure we have sane values.
     EDGE_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.EDGE_LIFE_KEY);
     FILE_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.FILE_LIFE_KEY);
     PERSON_LIFE_INIT = cfg.getPositiveIntProperty(CodeSwarmConfig.PERSON_LIFE_KEY);
-    
-    
-    
+
+
+
     /* enforce decrements < 0 */
     EDGE_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.EDGE_DECREMENT_KEY);
     FILE_LIFE_DECREMENT = cfg.getNegativeIntProperty(CodeSwarmConfig.FILE_DECREMENT_KEY);
@@ -237,7 +237,7 @@ public class code_swarm extends PApplet {
 
     isInputSorted = cfg.getBooleanProperty(CodeSwarmConfig.IS_INPUT_SORTED_KEY);
     showUserName = cfg.getBooleanProperty(CodeSwarmConfig.SHOW_USER_NAME_KEY);
-    
+
     avatarFetcher = getAvatarFetcher(cfg.getStringProperty("AvatarFetcher"));
 
     /**
@@ -255,7 +255,7 @@ public class code_swarm extends PApplet {
         String ConfigPath = physicsEngineConfigDir + System.getProperty("file.separator") + configFiles[i];
         CodeSwarmConfig physicsConfig = null;
         try {
-          
+
           physicsConfig = new CodeSwarmConfig(ConfigPath);
         } catch (IOException e) {
           e.printStackTrace();
@@ -291,8 +291,8 @@ public class code_swarm extends PApplet {
       System.exit(1);
     }
 
-    
-    
+
+
     smooth();
     frameRate(FRAME_RATE);
 
@@ -300,14 +300,14 @@ public class code_swarm extends PApplet {
     nodes         = new HashMap<String,FileNode>();
     edges         = new HashMap<Pair<FileNode, PersonNode>, Edge>();
     people        = new HashMap<String,PersonNode>();
-    history       = new LinkedList<ColorBins>(); 
+    history       = new LinkedList<ColorBins>();
     if (isInputSorted)
       //If the input is sorted, we only need to store the next few events
       eventsQueue = new ArrayBlockingQueue<FileEvent>(50000);
     else
       //Otherwise we need to store them all at once in a data structure that will sort them
       eventsQueue = new PriorityBlockingQueue<FileEvent>();
-    
+
     // Init color map
     initColors();
 
@@ -321,9 +321,9 @@ public class code_swarm extends PApplet {
 
     SCREENSHOT_FILE = cfg.getStringProperty(CodeSwarmConfig.SNAPSHOT_LOCATION_KEY);
     EDGE_LEN = cfg.getPositiveIntProperty(CodeSwarmConfig.EDGE_LENGTH_KEY);
-    
+
     maxFramesSaved = (int) Math.pow(10, SCREENSHOT_FILE.replaceAll("[^#]","").length());
-    
+
     // Create fonts
     String fontName = cfg.getStringProperty(CodeSwarmConfig.FONT_KEY);
     String boldFontName = cfg.getStringProperty(CodeSwarmConfig.FONT_KEY_BOLD);
@@ -404,7 +404,7 @@ public class code_swarm extends PApplet {
       node.draw();
     }
 
-    
+
     textFont(font);
 
     // Show the physics engine name
@@ -443,7 +443,7 @@ public class code_swarm extends PApplet {
     }
 
     // Stop animation when we run out of data
-    
+
     if (finishedLoading && eventsQueue.isEmpty()) {
       // noLoop();
       backgroundExecutor.shutdown();
@@ -589,7 +589,7 @@ public class code_swarm extends PApplet {
     text("Queue: " + eventsQueue.size(), 0, 20);
     text("Last render time: " + lastDrawDuration, 0, 30);
   }
-  
+
   /**
    * TODO This could be made to look a lot better.
    */
@@ -631,7 +631,7 @@ public class code_swarm extends PApplet {
       }
     }
   }
-  
+
   /**
    * @param name
    * @return physics engine instance
@@ -647,7 +647,7 @@ public class code_swarm extends PApplet {
       e.printStackTrace();
       System.exit(1);
     }
-    
+
     return pe;
   }
 
@@ -657,21 +657,21 @@ public class code_swarm extends PApplet {
   public static List<PersonNode> getLivingPeople() {
     return Collections.unmodifiableList (livingPeople);
   }
-  
+
   /**
    * @return list of edges whose life is > 0
    */
   public static List<Edge> getLivingEdges() {
     return Collections.unmodifiableList (livingEdges);
   }
-  
+
   /**
    * @return list of file nodes whose life is > 0
    */
   public static List<FileNode> getLivingNodes() {
     return Collections.unmodifiableList (livingNodes);
   }
-  
+
   private static <T extends Drawable> List<T> filterLiving(Collection<T> iter) {
     ArrayList<T> livingThings = new ArrayList<T>(iter.size());
     for (T thing : iter)
@@ -679,7 +679,7 @@ public class code_swarm extends PApplet {
         livingThings.add(thing);
     return livingThings;
   }
-  
+
   /**
    *  Take screenshot
    */
@@ -712,7 +712,7 @@ public class code_swarm extends PApplet {
       if (finishedLoading){
         currentEvent = eventsQueue.poll();
         if (currentEvent == null)
-          return; 
+          return;
       }
       else {
         try {
@@ -723,7 +723,7 @@ public class code_swarm extends PApplet {
           continue;
         }
       }
-      
+
       FileNode n = findNode(currentEvent.path + currentEvent.filename);
       if (n == null) {
         n = new FileNode(currentEvent);
@@ -743,16 +743,16 @@ public class code_swarm extends PApplet {
         p.freshen();
       }
       p.addColor(n.nodeHue);
-      
+
       Edge ped = findEdge(n, p);
       if (ped == null) {
         ped = new Edge(n, p);
         edges.put(new Pair<FileNode,PersonNode>(n,p), ped);
       } else
         ped.freshen();
-      
+
       n.setEditor(p);
-      
+
       /*
        * if ( currentEvent.date.equals( prevDate ) ) { Edge e = findEdge( n, prevNode
        * ); if ( e == null ) { e = new Edge( n, prevNode ); edges.add( e ); } else {
@@ -767,7 +767,7 @@ public class code_swarm extends PApplet {
         while(eventsQueue.isEmpty());
         currentEvent = eventsQueue.peek();
       }
-        
+
     }
 
     prevDate = nextDate;
@@ -790,13 +790,13 @@ public class code_swarm extends PApplet {
 
 	Have have to do it this way as the physics engine onRelax methods
 	loop on all living elements and filtering this for every element
-	gets too painfull slow on logs with over 100.000 entries.	
+	gets too painfull slow on logs with over 100.000 entries.
 	*/
 
     livingPeople = filterLiving(people.values());
     livingNodes = filterLiving(nodes.values());
     livingEdges = filterLiving(edges.values());
-    
+
     // update velocity
     for (Edge edge : getLivingEdges()) {
       mPhysicsEngine.onRelax(edge);
@@ -831,7 +831,7 @@ public class code_swarm extends PApplet {
 
     // Finalize frame:
     mPhysicsEngine.finalizeFrame();
-    
+
     safeToToggle = true;
     if (wantToToggle == true) {
       switchPhysicsEngine(toggleDirection);
@@ -873,14 +873,14 @@ public class code_swarm extends PApplet {
   public void loadRepEvents(String filename) {
     if (userConfigFilename  != null) {
       String parentPath = new File(userConfigFilename).getParentFile().getAbsolutePath();
-      File fileInConfigDir = new File(parentPath, filename); 
+      File fileInConfigDir = new File(parentPath, filename);
       if (fileInConfigDir.exists())
         filename = fileInConfigDir.getAbsolutePath();
     }
-    
+
     final String fullFilename = filename;
     Runnable eventLoader = new XMLQueueLoader(fullFilename, eventsQueue, isInputSorted);
-    
+
     if (isInputSorted)
       backgroundExecutor.execute(eventLoader);
     else
@@ -1021,7 +1021,7 @@ public class code_swarm extends PApplet {
     private BlockingQueue<FileEvent> queue;
     boolean isXMLSorted;
     private Set<String> peopleSeen = new TreeSet<String>();
-    
+
     private XMLQueueLoader(String fullFilename, BlockingQueue<FileEvent> queue, boolean isXMLSorted) {
       this.fullFilename = fullFilename;
       this.queue = queue;
@@ -1044,7 +1044,7 @@ public class code_swarm extends PApplet {
             String eventFilename = atts.getValue("filename");
             String eventDatestr = atts.getValue("date");
             long eventDate = Long.parseLong(eventDatestr);
-            
+
             //It's difficult for the user to tell that they're missing events,
             //so we should crash in this case
             if (isXMLSorted){
@@ -1055,19 +1055,19 @@ public class code_swarm extends PApplet {
               else
                 maximumDateSeenSoFar = eventDate;
             }
-            
+
             String eventAuthor = atts.getValue("author");
             // int eventLinesAdded = atts.getValue( "linesadded" );
             // int eventLinesRemoved = atts.getValue( "linesremoved" );
-            
+
             FileEvent evt = new FileEvent(eventDate, eventAuthor, "", eventFilename);
-            
+
             //We want to pre-fetch images to minimize lag as images are loaded
             if (!peopleSeen.contains(eventAuthor)){
               avatarFetcher.fetchUserImage(eventAuthor);
               peopleSeen.add(eventAuthor);
             }
-            
+
             try {
               queue.put(evt);
             } catch (InterruptedException e) {
@@ -1185,7 +1185,7 @@ public class code_swarm extends PApplet {
 
   /**
    * Base class for all drawable objects
-   * 
+   *
    *        Lists and implements features common to all drawable objects
    *        Edge and Node, FileNode and PersonNode
    */
@@ -1196,7 +1196,7 @@ public class code_swarm extends PApplet {
     final public int LIFE_DECREMENT;
     /**
      * 1) constructor(s)
-     * 
+     *
      * Init jobs common to all objects
      */
     Drawable(int lifeInit, int lifeDecrement) {
@@ -1206,7 +1206,7 @@ public class code_swarm extends PApplet {
       // init life relative vars
       life           = LIFE_INIT;
     }
-        
+
     /**
      *  4) shortening life.
      */
@@ -1228,14 +1228,14 @@ public class code_swarm extends PApplet {
      * 6) reseting life as if new.
      */
     public abstract void freshen();
-    
+
     /**
      * @return true if life > 0
      */
     public boolean isAlive() {
       return life > 0;
     }
-    
+
   }
 
   /**
@@ -1246,7 +1246,7 @@ public class code_swarm extends PApplet {
     protected PersonNode nodeTo;
     protected float len;
 
-    
+
     /**
      * 1) constructor.
      * @param from FileNode
@@ -1310,7 +1310,7 @@ public class code_swarm extends PApplet {
     private int minBold;
     protected int touches;
     private PersonNode lastEditor = null;
-    
+
     /**
      * @return file node as a string
      */
@@ -1352,11 +1352,11 @@ public class code_swarm extends PApplet {
         }
         // Draw motion blur
         // float d = mPosition.distance(mLastPosition);
-        
+
         float nx = mPosition.x - mLastPosition.x;
         float ny = mPosition.y - mLastPosition.y;
         float d = (float) Math.sqrt(nx * nx + ny * ny);
-        
+
         stroke(nodeHue, min(255f * (d / 10f), 255f) / 10f);
         strokeCap(ROUND);
         strokeWeight(currentWidth / 4f);
@@ -1385,7 +1385,7 @@ public class code_swarm extends PApplet {
         maxTouches = touches;
       }
     }
-    
+
     public boolean isAlive() {
       boolean alive = life > 0;
       if (!alive && lastEditor != null) {
@@ -1394,10 +1394,10 @@ public class code_swarm extends PApplet {
           lastEditor.editing.set(idx, null);
         lastEditor = null;
       }
-        
+
       return alive;
     }
-    
+
     public void setEditor(PersonNode editor) {
       if (editor == lastEditor)
         return;
@@ -1493,7 +1493,7 @@ public class code_swarm extends PApplet {
       mass = PERSON_MASS; // bigger mass to person then to node, to stabilize them
       touches = 1;
       mPosition.set(mPhysicsEngine.startLocation(this));
-      mLastPosition.set(new Vector2f(mPosition)); 
+      mLastPosition.set(new Vector2f(mPosition));
       mLastPosition.add(mPhysicsEngine.startVelocity(this));
       mFriction = 0.99f;
       String iconFile = avatarFetcher.fetchUserImage(name);
@@ -1517,7 +1517,7 @@ public class code_swarm extends PApplet {
           textFont(boldFont);
         else
           textFont(font);
-        
+
         fill(fontColor, life);
         if(showUserName)
           text(name, mPosition.x, mPosition.y+10);
@@ -1549,7 +1549,7 @@ public class code_swarm extends PApplet {
     try {
       if (args.length > 0) {
         userConfigFilename = args[0];
-        List<String> configFileStack = Arrays.asList(new String[]{"defaults/code_swarm.config", 
+        List<String> configFileStack = Arrays.asList(new String[]{"defaults/code_swarm.config",
                                                                   "defaults/user.config",
                                                                   args[0]});
         start(new CodeSwarmConfig(configFileStack));
@@ -1565,8 +1565,8 @@ public class code_swarm extends PApplet {
   /**
    * the alternative entry-point for code_swarm. It gets called from
    * {@link MainView} after fetching the repository log.
-   * @param config the modified config 
-   *        (it's InputFile-property has been changed to reflect the 
+   * @param config the modified config
+   *        (it's InputFile-property has been changed to reflect the
    *        fetched repository-log)
    */
   public static void start(CodeSwarmConfig config){

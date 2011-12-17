@@ -15,7 +15,7 @@ public class FreebaseAvatarFetcher extends AvatarFetcher{
   }
 
   static private Pattern imageIDPattern = Pattern.compile("\"image:id\"\\s*:\\s*\"(.*?)\"");
-  
+
   private static String readURLToString(URL url) {
     try {
       URLConnection con = url.openConnection();
@@ -25,7 +25,7 @@ public class FreebaseAvatarFetcher extends AvatarFetcher{
       if (length == -1){
         //read until exhausted
         while(true){
-          String line = reader.readLine(); 
+          String line = reader.readLine();
           if (line == null) break;
           sb.append(line);
         }
@@ -41,7 +41,7 @@ public class FreebaseAvatarFetcher extends AvatarFetcher{
       return null;
     }
   }
-  
+
   private static String getUserImageID(String username) {
     try {
       new File("image_cache").mkdirs();
@@ -58,7 +58,7 @@ public class FreebaseAvatarFetcher extends AvatarFetcher{
     }
     return null;
   }
-  
+
   public String fetchUserImage(String username) {
     String key = md5Hex("metaweb:" + username);
     if (imageCached(key))
@@ -66,9 +66,9 @@ public class FreebaseAvatarFetcher extends AvatarFetcher{
     try {
       String imageID = getUserImageID(username);
       if (imageID == null) return null;
-      return getImage(key, new URL("http://www.freebase.com/api/trans/image_thumb/" 
-                                   + imageID 
-                                   + "?maxheight=" + size 
+      return getImage(key, new URL("http://www.freebase.com/api/trans/image_thumb/"
+                                   + imageID
+                                   + "?maxheight=" + size
                                    + "&maxwidth=" + size
                                    + "&mode=fillcrop"));
     } catch (MalformedURLException e) {

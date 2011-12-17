@@ -22,7 +22,7 @@ import javax.vecmath.Vector2f;
 
 /**
  * @brief A modification of the Legacy engine to prevent people from piling up in the center
- * 
+ *
  * @see PhysicsEngine Physics Engine Interface
  */
 public class PhysicsEngineOrderly extends PhysicsEngine
@@ -30,7 +30,7 @@ public class PhysicsEngineOrderly extends PhysicsEngine
   private CodeSwarmConfig cfg;
 
   private float MIN_DISTANCE_SQR;
-  
+
   /**
    * Method for initializing parameters.
    * @param p The CodeSwarmConfig for this code_swarm instance
@@ -40,13 +40,13 @@ public class PhysicsEngineOrderly extends PhysicsEngine
     cfg = p;
     MIN_DISTANCE_SQR = 40000;
   }
-  
-    
+
+
   /**
    * Method that allows Physics Engine to modify Speed / Position during the relax phase.
-   * 
+   *
    * @param pNode the node to which the force apply
-   * 
+   *
    * @Note Standard physics is "Position Variation = Speed x Duration" with a convention of "Duration=1" between to frames
    */
   public void onRelax(code_swarm.PersonNode pNode) {
@@ -102,12 +102,12 @@ public class PhysicsEngineOrderly extends PhysicsEngine
         index = 0;
       }
       index++;
-      
+
       code_swarm.FileNode file = editedFiles.next();
       //leave a hole for the null files
       if (file == null) continue;
-      
-      final int place_around_ring = index * num_nodes_in_ring + salt; 
+
+      final int place_around_ring = index * num_nodes_in_ring + salt;
       int x = (int)(radius * Math.sin(place_around_ring));
       int y = (int)(radius * Math.cos(place_around_ring));
 
@@ -120,7 +120,7 @@ public class PhysicsEngineOrderly extends PhysicsEngine
   }
 
   /**
-   * 
+   *
    * @return Vector2f vector holding the starting location for a Person Node
    */
   public Vector2f pStartLocation(){

@@ -18,7 +18,7 @@ public class GravatarFetcher extends AvatarFetcher {
       return null;
     }
   }
-  
+
   private Pattern emailPattern = Pattern.compile("<(.*?@.*?\\..*?)>");
   private String getEmail(String username) {
     Matcher emailMatcher = emailPattern.matcher(username);

@@ -10,13 +10,13 @@ convert_logs.py supports more formats than we have documented here.  For more in
     cd path/to/svn/project
     svn log -v > my_svn.log
     python convert_logs.py -s path/to/svn/project/my_svn.log -o svn_log.xml
-    
+
 # git #
 
     cd path/to/git/project
     git-log --name-status --pretty=format:'%n------------------------------------------------------------------------%nr%h | %ae | %ai (%aD) | x lines%nChanged paths:' > my_git_project.log
     python convert_logs.py -g path/to/git/project/my_git_project -o git_log.xml
-    
+
 
 # Startteam #
 
