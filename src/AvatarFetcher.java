@@ -11,35 +11,35 @@ import java.security.NoSuchAlgorithmException;
 
 public class AvatarFetcher {
   protected CodeSwarmConfig cfg;
-  public int size; 
+  public int size;
   public AvatarFetcher(CodeSwarmConfig cfg) {
     this.cfg = cfg;
     size = cfg.getPositiveIntProperty("AvatarSize");
   }
-  
+
   public String fetchUserImage(String username) {
     throw new RuntimeException("Override fetchUserImage in your Avatar Fetcher");
   }
-  
+
   protected static String getFilename(String key){
     return "image_cache/" + key;
   }
-  
+
   protected static boolean imageCached(String key) {
     return new File(getFilename(key)).exists();
   }
-  
+
   protected static String getImage(String key, URL url) {
     String filename = getFilename(key);
     if (!imageCached(key)){
-      boolean successful = fetchImage(filename, url); 
+      boolean successful = fetchImage(filename, url);
       if (!successful)
         return null;
     }
-      
+
     return filename;
   }
-  
+
   protected static boolean fetchImage(String filename, URL url) {
     try {
       new File("image_cache").mkdirs();
@@ -72,7 +72,7 @@ public class AvatarFetcher {
       return false;
     }
   }
-  
+
   //these two methods taken from http://en.gravatar.com/site/implement/java
   private static String hex(byte[] array) {
     StringBuffer sb = new StringBuffer();
