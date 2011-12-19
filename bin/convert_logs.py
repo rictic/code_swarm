@@ -123,7 +123,7 @@ def main(argv):
         parser = parse_gnu_changelog
     elif opts.perforce_path:
         #special case
-        create_event_xml(parse_perforce_path(opts.perforce_path), output)
+        create_event_xml(parse_perforce_path(opts.perforce_path, opts), output)
         return
     else:
         print >>stderr, "No repository format given, for more info see:\n   convert_logs.py --help"
