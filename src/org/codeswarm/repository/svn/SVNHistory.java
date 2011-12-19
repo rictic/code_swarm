@@ -77,7 +77,7 @@ public class SVNHistory extends AbstractSVNHistoryVisitor {
      * looks up the cache. Stops proceeding if a cached version for this
      * repository was found.
      * @param pRevision the latest repository revision.
-     * @return false if a cached version was found, true if the history shall 
+     * @return false if a cached version was found, true if the history shall
      * be fetched from repository.
      */
     public boolean handleFetchingLatestRepositoryRevision(Long pRevision) {
@@ -108,7 +108,7 @@ public class SVNHistory extends AbstractSVNHistoryVisitor {
         Set<String> keySet = logEntry.getChangedPaths().keySet();
         for(String key : keySet){
             SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths().get(key);
-            list.addEvent(new Event(entryPath.getPath(),logEntry.getDate().getTime(),logEntry.getAuthor()));    
+            list.addEvent(new Event(entryPath.getPath(),logEntry.getDate().getTime(),logEntry.getAuthor()));
             if(LOGGER.isLoggable(Level.FINE)){
                 LOGGER.log(Level.FINE, "fetched entry {0}\n date {1}\n rev. {2}\n--", new Object[]{entryPath.getPath(),logEntry.getDate(), logEntry.getRevision()});
             }
@@ -127,11 +127,11 @@ public class SVNHistory extends AbstractSVNHistoryVisitor {
                 SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths().get(changedPath);
                 /*
                  * SVNLogEntryPath.getPath returns the changed path itself;
-                 * 
+                 *
                  * SVNLogEntryPath.getType returns a charecter describing
                  * how the path was changed ('A' - added, 'D' - deleted or
                  * 'M' - modified);
-                 * 
+                 *
                  * If the path was copied from another one (branched) then
                  * SVNLogEntryPath.getCopyPath &
                  * SVNLogEntryPath.getCopyRevision tells where it was copied
@@ -143,7 +143,7 @@ public class SVNHistory extends AbstractSVNHistoryVisitor {
                         copyPathInfo.append("(from ").append(entryPath.getCopyPath());
                         copyPathInfo.append(" rev ").append(entryPath.getCopyRevision()).append(")");
                     }
-                    LOGGER.log(Level.FINE,"entry: {0} {1} {2}", 
+                    LOGGER.log(Level.FINE,"entry: {0} {1} {2}",
                             new Object[]{entryPath.getType(),entryPath.getPath(),copyPathInfo.toString()});
                 }
             }
@@ -154,7 +154,7 @@ public class SVNHistory extends AbstractSVNHistoryVisitor {
      */
     public void finishLogEntries() {
         try {
-            CodeSwarmEventsSerializer serializer = 
+            CodeSwarmEventsSerializer serializer =
                     new CodeSwarmEventsSerializer(list);
             serializer.serialize(getFilePath());
         } catch (ParserConfigurationException ex) {

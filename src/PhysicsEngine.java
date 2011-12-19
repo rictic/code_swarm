@@ -25,7 +25,7 @@ import javax.vecmath.Vector2f;
  *
  * @note Need to be derived to define force calculation algorithms between Nodes
  * @note Need to use the constructor to apply some configuration options
- * 
+ *
  * @note For portability, no Processing library should be use there, only standard Java packages
  */
 public abstract class PhysicsEngine
@@ -36,20 +36,20 @@ public abstract class PhysicsEngine
    * @param p Properties file
    */
   public abstract void setup (CodeSwarmConfig p);
-  
+
   /**
    * Method that allows Physics Engine to initialize the Frame
-   * 
+   *
    */
   public void initializeFrame() {}
 
-  
+
   /**
    * Method that allows Physics Engine to finalize the Frame
-   * 
+   *
    */
   public void finalizeFrame() {}
-  
+
 
   public void onRelax(code_swarm.PersonNode p){}
   public void onRelax(code_swarm.FileNode f){}
@@ -72,26 +72,26 @@ public abstract class PhysicsEngine
 
     node.decay();
   }
-  
+
   /**
-   * 
+   *
    * @return Vector2f vector holding the starting location for a Person Node
    */
   public Vector2f startLocation(code_swarm.PersonNode node){
     return randomLocation();
   }
-  
-  
+
+
   /**
-   * 
+   *
    * @return Vector2f vector holding the starting location for a File Node
    */
   public Vector2f startLocation(code_swarm.FileNode node){
     return randomLocation();
   }
-  
+
   /**
-   * 
+   *
    * @return Vector2f vector holding the starting velocity for a File Node
    */
   public Vector2f startVelocity(code_swarm.PersonNode node) {
@@ -103,19 +103,19 @@ public abstract class PhysicsEngine
     vec.scale((1 / vec.length()) * (float)Math.random() * 15 / node.mass);
     return vec;
   }
-  
+
   public Vector2f randomLocation() {
     Vector2f vec = new Vector2f(code_swarm.width*(float)Math.random(), code_swarm.height*(float)Math.random());
     return vec;
   }
-  
+
   protected float constrain(float value, float min, float max) {
     if (value < min) {
       return min;
     } else if (value > max) {
       return max;
     }
-    
+
     return value;
   }
 }
