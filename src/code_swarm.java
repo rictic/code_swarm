@@ -1499,6 +1499,7 @@ public class code_swarm extends PApplet {
       String iconFile = avatarFetcher.fetchUserImage(name);
       if (iconFile != null) {
         icon = loadImage(iconFile, "unknown");
+	icon.resize(cfg.getPositiveIntProperty("AvatarSize"), cfg.getPositiveIntProperty("AvatarSize"));
         if (circularAvatars)
           icon.mask(avatarMask);
       }
