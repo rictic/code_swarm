@@ -96,7 +96,11 @@ def main():
 
 def root_path():
     "Returns the path of the code_swarm source directory"
-    real_path = os.path.join(os.path.dirname(__file__), os.readlink(__file__))
+    real_file = __file__
+    if os.path.islink():
+        real_file = os.readlink(__file__)
+
+    real_path = os.path.join(os.path.dirname(real_file))
     return os.path.dirname(real_path)
 
 
