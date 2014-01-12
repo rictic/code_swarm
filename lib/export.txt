@@ -1,12 +1,10 @@
-# if you want to support more platforms, see the jogl web site to get
-# the natives libraries for the platform in question (i.e. linux-amd64). 
-# then, add it to the applet line for export. for applications, you'll
-# have to make the changes by hand, i.e. use the linux version of the
-# export, and modify its contents to include the necessary files for
-# your platform.
+# If you want to support more platforms, visit jogamp.org to get the 
+# natives libraries for the platform in question (i.e. Solaris). 
 
-application.macosx = opengl.jar, jogl.jar, libjogl.jnilib, libjogl_awt.jnilib, libjogl_cg.jnilib
-application.windows = opengl.jar, jogl.jar, jogl.dll, jogl_awt.dll, jogl_cg.dll
-application.linux = opengl.jar, jogl.jar, libjogl.so, libjogl_awt.so, libjogl_cg.so, libjogl_drihack.so
+name = OpenGL
 
-applet = opengl.jar, jogl.jar, jogl-natives-linux-i586.jar, jogl-natives-macosx-ppc.jar, jogl-natives-macosx-universal.jar, jogl-natives-windows-i586.jar
+application.macosx=core.jar,jogl-all.jar,gluegen-rt.jar,jogl-all-natives-macosx-universal.jar,gluegen-rt-natives-macosx-universal.jar
+application.windows32=core.jar,jogl-all.jar,gluegen-rt.jar,jogl-all-natives-windows-i586.jar,gluegen-rt-natives-windows-i586.jar
+application.windows64=core.jar,jogl-all.jar,gluegen-rt.jar,jogl-all-natives-windows-amd64.jar,gluegen-rt-natives-windows-amd64.jar
+application.linux32=core.jar,jogl-all.jar,gluegen-rt.jar,jogl-all-natives-linux-i586.jar,gluegen-rt-natives-linux-i586.jar
+application.linux64=core.jar,jogl-all.jar,gluegen-rt.jar,jogl-all-natives-linux-amd64.jar,gluegen-rt-natives-linux-amd64.jar
