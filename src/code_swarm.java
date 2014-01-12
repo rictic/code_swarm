@@ -491,7 +491,7 @@ public class code_swarm extends PApplet {
     fill(fontColor, 255);
     String dateText = formatter.format(prevDate);
     textAlign(RIGHT, BASELINE);
-    textSize(font.size);
+    textSize(font.getSize());
     text(dateText, width - 3, height - (2 + textDescent()));
   }
 
@@ -534,7 +534,7 @@ public class code_swarm extends PApplet {
     for (int i = 0; i < colorAssigner.tests.size(); i++) {
       ColorTest t = colorAssigner.tests.get(i);
       fill(t.c1, 200);
-      text(t.label, font.size, 3 + ((i + 1) * (font.size + 2)));
+      text(t.label, font.getSize(), 3 + ((i + 1) * (font.getSize() + 2)));
     }
   }
 
